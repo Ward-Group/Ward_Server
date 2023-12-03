@@ -16,11 +16,9 @@
 (UI 사진 들어갈 공간 )
 
 ## 🌎Team Role
-### 🏄‍♂️김강현
-* iOS(Swift)
 ### 🏄‍♂️손지민
 * Server(Spring Boot)
-### 🏄‍♂️하늘
+### 🏄‍♂️진하늘
 * Server(Spring Boot)
 
 ## 📘Package
@@ -39,6 +37,6 @@
 ## 💻개발자
 * [김강현](https://github.com/keem-hyun)
 * [손지민](https://github.com/s0nnyday)
-* [하늘](https://github.com/mewluee)
+* [진하늘](https://github.com/mewluee)
 
 ## 🏢회고 및 피드백
