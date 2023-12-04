@@ -325,3 +325,14 @@ gradle-app.setting
 *.hprof
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij,gradle,java,windows,macos,intellij+all
+
+# ----- 하늘님 gitignore 추가 요청 20231204.1641
+.DS_store
+gradle/wrapper/gradle-wrapper.jar
+
+#yml
+*.yml
+application.properties
+
+#SQL files
+*.sql
