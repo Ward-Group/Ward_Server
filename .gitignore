@@ -91,10 +91,10 @@ cmake-build-*/
 .idea/**/mongoSettings.xml
 
 # File-based project format
-*.iws
+# *.iws // 중복, 위에서 완료
 
 # IntelliJ
-out/
+# out/ // 중복, 위에서 완료
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
@@ -298,7 +298,7 @@ $RECYCLE.BIN/
 *.lnk
 
 ### Gradle ###
-.gradle
+# .gradle // 중복 위에서 완료
 **/build/
 !src/**/build/
 
@@ -316,9 +316,9 @@ gradle-app.setting
 
 # Eclipse Gradle plugin generated files
 # Eclipse Core
-.project
+#.project // 중복, 위에서 완료
 # JDT-specific (Eclipse Java Development Tools)
-.classpath
+# .classpath // 중복, 위에서 완료
 
 ### Gradle Patch ###
 # Java heap dump
