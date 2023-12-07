@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 @Setter
 @Configuration
-@ConfigurationProperties("security.jwt")
+@ConfigurationProperties(prefix = "security.jwt")
 public class JwtProperties {
     /**
      * Secret key used for issuing JWT

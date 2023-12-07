@@ -16,11 +16,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthController {
     private final JwtIssuer jwtIssuer;
-
-    @GetMapping("/")
-    public String greeting(){
-        return "Hello, World";
-    }
     
     @PostMapping("/auth/login")
     public LoginResponse login(@RequestBody @Validated LoginRequest request){
