@@ -1,5 +1,6 @@
 package com.ward.ward_server.security;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,6 +13,8 @@ import java.util.Collection;
 public class UserPrincipal implements UserDetails {
     private final Long userId;
     private final String email;
+    @JsonIgnore
+    private final String password;
     private final Collection<? extends GrantedAuthority> authorities;
 
     // 사용자에게 부여된 권한 목록을 반환한다.
@@ -23,7 +26,7 @@ public class UserPrincipal implements UserDetails {
     // 사용자의 비밀번호를 반환한다.
     @Override
     public String getPassword() {
-        return null;
+        return password;
     }
 
     // 사용자의 이름(아이디)를 반환한다.
