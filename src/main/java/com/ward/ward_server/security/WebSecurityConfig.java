@@ -20,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomUserDetailService customUserDetailService;
+    private final UnauthorizedHandler unauthorizedHandler;
 
     @Bean
     public SecurityFilterChain applicationSecurity(HttpSecurity http) throws Exception {
@@ -32,6 +33,9 @@ public class WebSecurityConfig {
                 .sessionManagement(sessionManagementConfigurer
                         -> sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(AbstractHttpConfigurer::disable)
+                    .exceptionHandling()
+                    .authenticationEntryPoint(unauthorizedHandler)
+                    .and()
                 .authorizeHttpRequests(registry -> registry // 요청에 대한 권한 설정 메서드
                         .requestMatchers("/").permitAll() // / 경로 요청에 대한 권한을 설정. permitAll() 모든 사용자, 인증되지않은 사용자에게 허용
                         .requestMatchers("/auth/login").permitAll()
