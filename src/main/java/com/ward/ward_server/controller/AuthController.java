@@ -2,8 +2,6 @@ package com.ward.ward_server.controller;
 
 import com.ward.ward_server.model.LoginRequest;
 import com.ward.ward_server.model.LoginResponse;
-import com.ward.ward_server.security.JwtIssuer;
-import com.ward.ward_server.security.UserPrincipal;
 import com.ward.ward_server.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
