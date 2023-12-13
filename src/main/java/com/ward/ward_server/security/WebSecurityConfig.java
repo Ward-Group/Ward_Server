@@ -31,15 +31,15 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .securityMatcher("/**") // map current config to given resource path
                 .sessionManagement(sessionManagementConfigurer
-                        -> sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        -> sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 관리 정책 설정 - 상태를 유지하지 않는 세션
                 .formLogin(AbstractHttpConfigurer::disable)
                     .exceptionHandling()
                     .authenticationEntryPoint(unauthorizedHandler)
                     .and()
                 .authorizeHttpRequests(registry -> registry // 요청에 대한 권한 설정 메서드
                         .requestMatchers("/").permitAll() // / 경로 요청에 대한 권한을 설정. permitAll() 모든 사용자, 인증되지않은 사용자에게 허용
-                        .requestMatchers("/auth/login").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/auth/login").permitAll() // 모든 사용자에게 허용
+                        .requestMatchers("/admin/**").hasRole("ADMIN") // ROLE_ADMIN 에게만 허용
                         .anyRequest().authenticated() // 다른 나머지 모든 요청에 대한 권한 설정, authenticated()는 인증된 사용자에게만 허용, 로그인해야만 접근 가능
                 );
 

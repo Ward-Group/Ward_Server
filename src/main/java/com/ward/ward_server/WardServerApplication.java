@@ -8,6 +8,5 @@ public class WardServerApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(WardServerApplication.class, args);
-		System.out.println("Application 시작");
 	}
 }

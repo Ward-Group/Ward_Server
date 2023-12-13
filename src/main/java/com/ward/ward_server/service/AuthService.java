@@ -15,12 +15,13 @@ import org.springframework.stereotype.Service;
 public class AuthService {
     private final JwtIssuer jwtIssuer;
     private final AuthenticationManager authenticationManager;
-    public LoginResponse attemtLogion(String email, String password) {
-        var authentication = authenticationManager.authenticate(
+
+    public LoginResponse attemptLogin(String email, String password) {
+        var authentication = authenticationManager.authenticate( // 사용자의 인증을 시도하고, 인증이 성공하면 Authentication 객체를 반환
                 new UsernamePasswordAuthenticationToken(email, password)
         );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        var principal = (UserPrincipal) authentication.getPrincipal();
+        SecurityContextHolder.getContext().setAuthentication(authentication); // 현재 사용자의 인증 정보를 설정
+        var principal = (UserPrincipal) authentication.getPrincipal(); // 현재 사용자의 UserPrincipal을 가져옵니다
 
         var roles = principal.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)

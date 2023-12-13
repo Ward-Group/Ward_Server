@@ -18,7 +18,7 @@ public class JwtToPrincipalConverter {
 
     private List<SimpleGrantedAuthority> extractAuthoritiesFromClaim(DecodedJWT jwt) {
         var claim = jwt.getClaim("a");
-        if (claim.isNull() || claim.isMissing()) return List.of();
-        return claim.asList(SimpleGrantedAuthority.class);
+        if (claim.isNull() || claim.isMissing()) return List.of(); // 빈 권한 목록 반환
+        return claim.asList(SimpleGrantedAuthority.class); // 클레임 존재하면 해당 클레임을 SimpleGrantedAuthority 객체의 목록으로 반환
     }
 }
