@@ -37,6 +37,10 @@ dependencies {
 	testImplementation("org.springframework.batch:spring-batch-test")
 	testImplementation("org.springframework.kafka:spring-kafka-test")
 	testImplementation("org.springframework.security:spring-security-test")
+	//selenium
+	implementation("org.seleniumhq.selenium:selenium-java:4.6.0")
+	implementation("org.jsoup:jsoup:1.17.1")
+	//implementation("org.seleniumhq.selenium:selenium-devtools-v86:4.14.1")
 }
 
 tasks.withType<Test> {
