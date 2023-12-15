@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+// Security에서 인증되지 않은 사용자의 접근 시 발생하는 예외를 처리하는 클래스
 @Component
 public class UnauthorizedHandler implements AuthenticationEntryPoint {
     @Override

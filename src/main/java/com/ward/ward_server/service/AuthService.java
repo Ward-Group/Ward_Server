@@ -17,7 +17,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     public LoginResponse attemptLogin(String email, String password) {
-        var authentication = authenticationManager.authenticate( // 사용자의 인증을 시도하고, 인증이 성공하면 Authentication 객체를 반환
+        var authentication = authenticationManager.authenticate( // 사용자의 인증을 시도하고, 인증이 성공하면 Authentication 객체를 반환, 이 객체에는 사용자 정보와 권한이 포함
                 new UsernamePasswordAuthenticationToken(email, password)
         );
         SecurityContextHolder.getContext().setAuthentication(authentication); // 현재 사용자의 인증 정보를 설정

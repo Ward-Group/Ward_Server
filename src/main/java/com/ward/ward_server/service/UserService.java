@@ -12,6 +12,7 @@ public class UserService {
 
     public Optional<UserEntity> findByEmail(String email) {
         // TODO : Move this to a database
+        // 내부로직으로 임시 사용자 만들어서 사용했는데, 이렇게 말고 DB 에서 불러오도록 변경해야함.
         if (EXISTING_EMAIL.equalsIgnoreCase(email)) {
             var user = new UserEntity();
             user.setId(1L);
