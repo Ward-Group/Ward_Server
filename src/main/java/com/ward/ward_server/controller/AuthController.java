@@ -2,6 +2,7 @@ package com.ward.ward_server.controller;
 
 import com.ward.ward_server.model.LoginRequest;
 import com.ward.ward_server.model.LoginResponse;
+import com.ward.ward_server.model.RegisterRequest;
 import com.ward.ward_server.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -17,5 +18,10 @@ public class AuthController {
     @PostMapping("/auth/login")
     public LoginResponse login(@RequestBody @Validated LoginRequest request){
         return authService.attemptLogin(request.getEmail(), request.getPassword());
+    }
+
+    @PostMapping("/auth/registerUser")
+    public Object register(@RequestBody @Validated RegisterRequest request) {
+        return authService.registerUser(request);
     }
 }
