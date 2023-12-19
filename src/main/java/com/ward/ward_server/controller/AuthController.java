@@ -1,7 +1,6 @@
 package com.ward.ward_server.controller;
 
 import com.ward.ward_server.model.LoginRequest;
-import com.ward.ward_server.model.LoginResponse;
 import com.ward.ward_server.model.RegisterRequest;
 import com.ward.ward_server.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/auth/login")
-    public LoginResponse login(@RequestBody @Validated LoginRequest request){
+    public Object login(@RequestBody @Validated LoginRequest request){
         return authService.attemptLogin(request.getEmail(), request.getPassword());
     }
 
