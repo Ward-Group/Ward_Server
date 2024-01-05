@@ -9,5 +9,4 @@ public class WardServerApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(WardServerApplication.class, args);
 	}
-
 }
