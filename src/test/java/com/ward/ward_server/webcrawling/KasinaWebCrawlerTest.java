@@ -8,18 +8,18 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = WebCrawlingUtil.class)
-class WebCrawlingUtilTest {
-
+@ContextConfiguration(classes = KasinaWebCrawler.class)
+class KasinaWebCrawlerTest {
     @Autowired
-    WebCrawlingUtil util;
+    KasinaWebCrawler crawler;
 
     @Test
     void test_connection() {
-        List<WebProductData> datas = util.getPage();
-        for (WebProductData data : datas) {
-            System.out.println(data.toString());
-        }
+        List<String> datas = crawler.getData();
+//        for (WebProductData data : datas) {
+//            System.out.println(data.toString());
+//        }
     }
 }

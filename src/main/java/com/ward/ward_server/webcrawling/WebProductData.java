@@ -1,15 +1,15 @@
 package com.ward.ward_server.webcrawling;
 
-import lombok.AllArgsConstructor;
-import lombok.ToString;
+import com.ward.ward_server.webcrawling.enumtype.Brand;
 
-@AllArgsConstructor
-@ToString
-public class WebProductData {
-    private String name;
-    private String imgUrl;
-    private String month;
-    private String day;
-    private String ampm;
-    private String time;
-}
+import java.time.LocalDateTime;
+
+public record WebProductData(
+        String name,
+        String imgUrl,
+        String siteUrl,
+        LocalDateTime releaseDate,
+        LocalDateTime dueDate,
+        LocalDateTime presentationDate,
+        Brand brand
+){}
