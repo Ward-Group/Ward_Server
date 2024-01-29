@@ -1,6 +1,7 @@
-package com.ward.ward_server.webcrawling;
+package com.ward.ward_server.webcrawling.entity;
 
-import com.ward.ward_server.webcrawling.enumtype.Brand;
+import com.ward.ward_server.webcrawling.entity.enumtype.Brand;
+import com.ward.ward_server.webcrawling.entity.enumtype.State;
 
 import java.time.LocalDateTime;
 
@@ -11,5 +12,6 @@ public record WebProductData(
         LocalDateTime releaseDate,
         LocalDateTime dueDate,
         LocalDateTime presentationDate,
+        State state,
         Brand brand
 ){}

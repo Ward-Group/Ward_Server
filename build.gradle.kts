@@ -22,25 +22,17 @@ repositories {
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-batch")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation("org.springframework.boot:spring-boot-starter-security")
+	//implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("org.apache.kafka:kafka-streams")
-	implementation("org.springframework.kafka:spring-kafka")
 	compileOnly("org.projectlombok:lombok")
-	developmentOnly("org.springframework.boot:spring-boot-devtools")
-	developmentOnly("org.springframework.boot:spring-boot-docker-compose")
 	runtimeOnly("com.mysql:mysql-connector-j")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	testImplementation("org.springframework.batch:spring-batch-test")
-	testImplementation("org.springframework.kafka:spring-kafka-test")
 	testImplementation("org.springframework.security:spring-security-test")
 	//selenium
 	implementation("org.seleniumhq.selenium:selenium-java:4.6.0")
 	implementation("org.jsoup:jsoup:1.17.1")
-	//implementation("org.seleniumhq.selenium:selenium-devtools-v86:4.14.1")
 }
 
 tasks.withType<Test> {

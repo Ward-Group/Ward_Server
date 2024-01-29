@@ -1,4 +1,4 @@
-package com.ward.ward_server.webcrawling.enumtype;
+package com.ward.ward_server.webcrawling.entity.enumtype;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +14,7 @@ public enum Brand {
     private String koreanName;
     private int code;
 
-    public static Brand fromCode(int dbData){
+    public static Brand ofCode(Integer dbData){
         return Arrays.stream(Brand.values())
                 .filter(e->e.getCode()==dbData)
                 .findAny()

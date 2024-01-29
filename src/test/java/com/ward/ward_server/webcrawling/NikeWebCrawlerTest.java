@@ -1,6 +1,7 @@
 package com.ward.ward_server.webcrawling;
 
-import com.ward.ward_server.webcrawling.entity.Item;
+import com.ward.ward_server.webcrawling.entity.WebProductData;
+import com.ward.ward_server.webcrawling.webCrawler.NikeWebCrawler;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +15,12 @@ import java.util.List;
 class NikeWebCrawlerTest {
 
     @Autowired
-    NikeWebCrawler util;
+    NikeWebCrawler crawler;
 
     @Test
     void test_connection() {
-        List<Item> datas = util.getData();
-        for (Item data : datas) {
+        List<WebProductData> datas = crawler.getData();
+        for (WebProductData data : datas) {
             System.out.println(data.toString());
         }
     }
