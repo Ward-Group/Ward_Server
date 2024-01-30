@@ -1,7 +1,7 @@
 package com.ward.ward_server.webcrawling;
 
-import com.ward.ward_server.webcrawling.entity.WebProductData;
-import com.ward.ward_server.webcrawling.webCrawler.KasinaWebCrawler;
+import com.ward.ward_server.api.webcrawling.dto.WebProductData;
+import com.ward.ward_server.api.webcrawling.webCrawler.KasinaWebCrawler;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,7 +1,7 @@
 package com.ward.ward_server.controller;
 
-import com.ward.ward_server.security.UserPrincipal;
-import com.ward.ward_server.security.UserPrincipalAuthenticationToken;
+import com.ward.ward_server.global.auth.security.UserPrincipal;
+import com.ward.ward_server.global.auth.security.UserPrincipalAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
