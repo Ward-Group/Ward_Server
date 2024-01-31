@@ -336,3 +336,10 @@ application.properties
 
 #SQL files
 *.sql
+
+#docker
+Dockerfile
+
+#gradlew
+gradlew.bat
+gradlew
