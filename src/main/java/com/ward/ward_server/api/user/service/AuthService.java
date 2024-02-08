@@ -105,10 +105,7 @@ public class AuthService {
                         .build();
             }
 
-            UserEntity newUser = new UserEntity();
-            newUser.setEmail(request.getEmail());
-            newUser.setPassword(passwordEncoder.encode(request.getPassword()));
-            newUser.setRole("ROLE_USER");
+            UserEntity newUser = UserEntity.createUser(request.getEmail(), passwordEncoder.encode(request.getPassword()), "");
 
             userRepository.save(newUser);
 
@@ -119,7 +116,7 @@ public class AuthService {
                     .user(RegisterSuccessResponse.UserResponse.builder()
                             .userId(newUser.getId())
                             .email(newUser.getEmail())
-                            .role(newUser.getRole())
+                            .role(String.valueOf(newUser.getUserRole()))
                             .build())
                     .build();
         } catch (DataIntegrityViolationException e) {
