@@ -1,12 +1,10 @@
-package com.ward.ward_server.api.user.repository;
+package com.ward.ward_server.api.auth.securityoauthjwtwebview.repository;
 
-import com.ward.ward_server.api.user.entity.UserEntity;
+import com.ward.ward_server.api.auth.securityoauthjwtwebview.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
-    Optional<UserEntity> findByEmail(String email);
+    UserEntity findByUsername(String username);
 }

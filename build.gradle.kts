@@ -26,9 +26,14 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-	implementation("com.auth0:java-jwt:4.4.0")
+	//jwt 버전에 따라 메서드가 상이하여 버전 기록 필수
+	implementation("io.jsonwebtoken:jjwt-api:0.12.3")
+	implementation("io.jsonwebtoken:jjwt-impl:0.12.3")
+	implementation("io.jsonwebtoken:jjwt-jackson:0.12.3")
+
 	implementation("commons-validator:commons-validator:1.8.0")
 	implementation ("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.1") // 쿼리 파라미터 로그 남기기, 배포용엔 제외
+	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 	compileOnly("org.projectlombok:lombok")
 	runtimeOnly("com.mysql:mysql-connector-j")
 	annotationProcessor("org.projectlombok:lombok")
