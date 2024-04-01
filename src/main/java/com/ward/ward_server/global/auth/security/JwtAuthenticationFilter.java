@@ -23,7 +23,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         extractTokenFromRequest(request) // 헤더에서 JWT 토큰 추출
                 .map(jwtDecoder::decode) // JWT 토큰 해독하여 사용자 정보 가져오기
-                .map(jwtToPrincipalConverter::convert) // 가져온 사용자 정보를 UserPrincipal 객체로 변환, 생성
+                .map(jwtToPrincipalConverter::convert) // 가져온 사용자 정보를 CustomUserDetails 객체로 변환, 생성
                 .map(UserPrincipalAuthenticationToken::new) // UserPrincipalAuthenticationToken을 생성하여 인증된 사용자로 설정
                         .ifPresent(authentication -> SecurityContextHolder.getContext().setAuthentication(authentication));
         // 앞에 UPAT 객체가 존재하면, 즉 토큰 검증,사용자 인증 성공했을 때 -> SecurityContextHolder에 현재 스레드에 대한 인증 객체를 설정

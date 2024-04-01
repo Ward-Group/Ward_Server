@@ -3,9 +3,9 @@ package com.ward.ward_server.global.auth.security;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 
 public class UserPrincipalAuthenticationToken extends AbstractAuthenticationToken {
-    private final UserPrincipal principal;
+    private final CustomUserDetails principal;
 
-    public UserPrincipalAuthenticationToken(UserPrincipal principal) {
+    public UserPrincipalAuthenticationToken(CustomUserDetails principal) {
         super(principal.getAuthorities());
         this.principal = principal;
         setAuthenticated(true);
@@ -17,7 +17,7 @@ public class UserPrincipalAuthenticationToken extends AbstractAuthenticationToke
     }
 
     @Override
-    public UserPrincipal getPrincipal() {
+    public CustomUserDetails getPrincipal() {
         return principal;
     }
 }

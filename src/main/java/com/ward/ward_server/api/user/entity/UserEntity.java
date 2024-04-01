@@ -18,23 +18,26 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column(unique = true, nullable = false)
+    private String username; // provider + providerId 정규화
+    private String name;
+    @Column(unique = true, nullable = false)
     private String email;
-
-    @JsonIgnore
-    private String password;
 
     @Enumerated(EnumType.STRING)
     private UserRole userRole; //[ROLE_USER,ROLE_ADMIN]
 
-    private String extraInfo;
+    @JsonIgnore
+    private String password;
 
     //==생성 메서드==//
-    public static UserEntity createUser(String email, String password, String extraInfo) {
+    public static UserEntity createUser(String username, String name, String email, String password) {
         UserEntity userEntity = new UserEntity();
+        userEntity.setUsername(username);
+        userEntity.setName(name);
         userEntity.setEmail(email);
-        userEntity.setPassword(password);
         userEntity.setUserRole(UserRole.ROLE_USER);
-        userEntity.setExtraInfo(extraInfo);
+        userEntity.setPassword(password);
         return userEntity;
     }
 }

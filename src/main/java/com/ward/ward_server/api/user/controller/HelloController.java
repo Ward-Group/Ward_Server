@@ -1,6 +1,6 @@
 package com.ward.ward_server.api.user.controller;
 
-import com.ward.ward_server.global.auth.security.UserPrincipal;
+import com.ward.ward_server.global.auth.security.CustomUserDetails;
 import com.ward.ward_server.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,14 +18,14 @@ public class HelloController {
     }
 
     @GetMapping("/secured")
-    public ApiResponse secured(@AuthenticationPrincipal UserPrincipal principal) {
+    public ApiResponse secured(@AuthenticationPrincipal CustomUserDetails principal) {
         String secured = "If you see this, then you're logged in as user " + principal.getEmail()
                 + " User ID: " + principal.getUserId();
         return ApiResponse.ok(secured);
     }
 
     @GetMapping("/admin")
-    public ApiResponse admin(@AuthenticationPrincipal UserPrincipal principal) {
+    public ApiResponse admin(@AuthenticationPrincipal CustomUserDetails principal) {
         String admin = "If you see this, then you are an Admin. User ID: " + principal.getUserId();
         return ApiResponse.ok(admin);
     }
