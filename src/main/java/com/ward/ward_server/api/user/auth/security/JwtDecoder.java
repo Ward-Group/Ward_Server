@@ -1,4 +1,4 @@
-package com.ward.ward_server.global.auth.security;
+package com.ward.ward_server.api.user.auth.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;

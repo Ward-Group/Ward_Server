@@ -1,4 +1,4 @@
-package com.ward.ward_server.global.auth.security;
+package com.ward.ward_server.api.user.auth.security;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -8,8 +8,8 @@ import java.util.List;
 
 @Component
 public class JwtToPrincipalConverter {
-    public UserPrincipal convert(DecodedJWT jwt) {
-        return UserPrincipal.builder()
+    public CustomUserDetails convert(DecodedJWT jwt) {
+        return CustomUserDetails.builder()
                 .userId(Long.valueOf(jwt.getSubject()))
                 .email(jwt.getClaim("e").asString())
                 .authorities(extractAuthoritiesFromClaim(jwt))

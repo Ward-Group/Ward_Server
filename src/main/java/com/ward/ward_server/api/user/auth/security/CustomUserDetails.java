@@ -1,4 +1,4 @@
-package com.ward.ward_server.global.auth.security;
+package com.ward.ward_server.api.user.auth.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
@@ -10,7 +10,7 @@ import java.util.Collection;
 
 @Getter
 @Builder
-public class UserPrincipal implements UserDetails {
+public class CustomUserDetails implements UserDetails {
     private final Long userId;
     private final String email;
     @JsonIgnore
