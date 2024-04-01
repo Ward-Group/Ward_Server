@@ -1,4 +1,4 @@
-package com.ward.ward_server.global.auth.security;
+package com.ward.ward_server.api.user.auth.security;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

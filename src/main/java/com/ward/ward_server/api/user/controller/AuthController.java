@@ -3,7 +3,7 @@ package com.ward.ward_server.api.user.controller;
 import com.ward.ward_server.api.user.dto.LoginRequest;
 import com.ward.ward_server.api.user.dto.RegisterRequest;
 import com.ward.ward_server.api.user.service.AuthService;
-import com.ward.ward_server.global.auth.security.JwtProperties;
+import com.ward.ward_server.api.user.auth.security.JwtProperties;
 import com.ward.ward_server.global.response.ApiResponse;
 import com.ward.ward_server.global.response.error.ErrorCode;
 import com.ward.ward_server.global.util.Constants;
@@ -23,8 +23,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public ApiResponse login(@RequestBody @Validated LoginRequest request){
-
-//        String token = authService.attemptLogin(request.getProvider(), request.getProviderId(), request.getEmail(), request.getPassword());
         String token = authService.attemptLogin(request.getProvider(), request.getProviderId(), request.getEmail(), properties.getPassword());
 
         if (token.startsWith("[ERROR]")) {
@@ -40,7 +38,5 @@ public class AuthController {
 
         //일단 메세지만 반환 나중에 jwt 반환으로 변경?
         return ApiResponse.ok(Constants.SUCCESSFUL_REGISTRATION);
-
-//        return authService.registerUser(request);
     }
 }

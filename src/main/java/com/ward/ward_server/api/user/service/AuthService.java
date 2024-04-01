@@ -5,9 +5,9 @@ import com.ward.ward_server.api.user.dto.RegisterRequest;
 import com.ward.ward_server.api.user.dto.RegisterSuccessResponse;
 import com.ward.ward_server.api.user.entity.UserEntity;
 import com.ward.ward_server.api.user.repository.UserRepository;
-import com.ward.ward_server.global.auth.security.CustomUserDetails;
-import com.ward.ward_server.global.auth.security.JwtIssuer;
-import com.ward.ward_server.global.auth.security.JwtProperties;
+import com.ward.ward_server.api.user.auth.security.CustomUserDetails;
+import com.ward.ward_server.api.user.auth.security.JwtIssuer;
+import com.ward.ward_server.api.user.auth.security.JwtProperties;
 import com.ward.ward_server.global.util.Constants;
 import com.ward.ward_server.global.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
@@ -153,9 +153,8 @@ public class AuthService {
             }
 
             //회원 등록 시작
-            //TODO request로 provider, providerId,이름, 이메일, 가짜 비밀번호 받기
             String username = request.getProvider()+request.getProviderId();
-            UserEntity newUser = UserEntity.createUser(username, request.getName(),request.getEmail(), passwordEncoder.encode(properties.getPassword()));
+            UserEntity newUser = new UserEntity(username, request.getName(),request.getEmail(), passwordEncoder.encode(properties.getPassword()));
 
             userRepository.save(newUser);
 

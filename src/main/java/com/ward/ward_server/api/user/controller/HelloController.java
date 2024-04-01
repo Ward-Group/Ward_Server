@@ -1,6 +1,6 @@
 package com.ward.ward_server.api.user.controller;
 
-import com.ward.ward_server.global.auth.security.CustomUserDetails;
+import com.ward.ward_server.api.user.auth.security.CustomUserDetails;
 import com.ward.ward_server.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

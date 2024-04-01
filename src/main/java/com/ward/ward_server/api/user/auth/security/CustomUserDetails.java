@@ -1,4 +1,4 @@
-package com.ward.ward_server.global.auth.security;
+package com.ward.ward_server.api.user.auth.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
