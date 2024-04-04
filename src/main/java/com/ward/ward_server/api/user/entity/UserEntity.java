@@ -1,6 +1,6 @@
 package com.ward.ward_server.api.user.entity;
 
-import com.ward.ward_server.api.user.entity.enumtype.UserRole;
+import com.ward.ward_server.api.user.entity.enumtype.Role;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -13,38 +13,58 @@ import lombok.NoArgsConstructor;
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private long id;
 
     @Column(unique = true, nullable = false)
     private String username; // provider + providerId 정규화
+
+    @Column(nullable = false)
     private String name;
+
     @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private UserRole userRole; //[ROLE_USER,ROLE_ADMIN]
+    private Role role; //[ROLE_USER,ROLE_ADMIN]
 
     private String password;
 
-    private String extraInfo;
+    @Column
+    private String nickname;
+
+    @Column(name = "email_notification", nullable = false)
+    private boolean emailNotification;
+
+    @Column(name = "app_push_notification", nullable = false)
+    private boolean appPushNotification;
+
+    @Column(name = "sns_notification", nullable = false)
+    private boolean snsNotification;
 
     //==생성 메서드==//
+    public UserEntity(String username, String name, String email, String password, Boolean emailNotification, Boolean appPushNotification, Boolean snsNotification) {
+        this.username = username;
+        this.name = name;
+        this.email = email;
+        this.role = Role.ROLE_USER;
+        this.password = password;
+        this.nickname = name;
+        this.emailNotification = emailNotification;
+        this.appPushNotification = appPushNotification;
+        this.snsNotification = snsNotification;
+    }
+
+    //==생성 메서드 @Setter 사용==//
 //    public static UserEntity createUser(String username, String name, String email, String password) {
 //        UserEntity userEntity = new UserEntity();
 //        userEntity.setUsername(username);
 //        userEntity.setName(name);
 //        userEntity.setEmail(email);
-//        userEntity.setUserRole(UserRole.ROLE_USER);
+//        userEntity.setUserRole(Role.ROLE_USER);
 //        userEntity.setPassword(password);
 //        return userEntity;
 //    }
 
-    //==생성 메서드==//
-    public UserEntity(String username, String name, String email, String password) {
-        this.username = username;
-        this.name = name;
-        this.email = email;
-        this.userRole = UserRole.ROLE_USER;
-        this.password = password;
-    }
 }
