@@ -28,7 +28,7 @@
 ## 📗Architecture
 
 ## 📙DB ERD
-
+![Ward_Server](https://github.com/Ward-Group/Ward_Server/assets/135934401/e60696b8-d183-40d4-b93d-a3dfbb66db6c)
 
 ## 📕배포
 
