@@ -124,6 +124,8 @@ public class AuthService {
 //                    .build();
 //        }
 //    }
+
+    // TODO 리턴 타입 수정하기
     public Object registerUser(RegisterRequest request) {
 
         try {
@@ -154,7 +156,7 @@ public class AuthService {
 
             //회원 등록 시작
             String username = request.getProvider()+request.getProviderId();
-            UserEntity newUser = new UserEntity(username, request.getName(),request.getEmail(), passwordEncoder.encode(properties.getPassword()));
+            UserEntity newUser = new UserEntity(username, request.getName(),request.getEmail(), passwordEncoder.encode(properties.getPassword()),request.getEmailNotification(),request.getAppPushNotification(),request.getSnsNotification());
 
             userRepository.save(newUser);
 
@@ -166,7 +168,7 @@ public class AuthService {
                     .user(RegisterSuccessResponse.UserResponse.builder()
                             .userId(newUser.getId())
                             .email(newUser.getEmail())
-                            .role(String.valueOf(newUser.getUserRole()))
+                            .role(String.valueOf(newUser.getRole()))
                             .build())
                     .build();
         } catch (DataIntegrityViolationException e) {
