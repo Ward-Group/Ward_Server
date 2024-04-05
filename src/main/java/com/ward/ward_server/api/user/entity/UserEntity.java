@@ -1,10 +1,14 @@
 package com.ward.ward_server.api.user.entity;
 
+import com.ward.ward_server.api.entry.domain.EntryRecord;
 import com.ward.ward_server.api.user.entity.enumtype.Role;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -14,7 +18,7 @@ public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private long id;
+    private Long id;
 
     @Column(unique = true, nullable = false)
     private String username; // provider + providerId 정규화
@@ -42,6 +46,9 @@ public class UserEntity {
 
     @Column(name = "sns_notification", nullable = false)
     private boolean snsNotification;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<EntryRecord> entryRecords = new ArrayList<>();
 
     //==생성 메서드==//
     public UserEntity(String username, String name, String email, String password, Boolean emailNotification, Boolean appPushNotification, Boolean snsNotification) {
