@@ -65,7 +65,10 @@ public class EntryService {
                 });
 
         // 사용자의 전체 응모 내역 조회
-        List<EntryRecord> allByUserId = entryRepository.findAllByUser(user);
+//        List<EntryRecord> allByUserId = entryRepository.findAllByUser(user);
+
+        // 사용자의 전체 응모 내역 조회 (패치 조인 사용)
+        List<EntryRecord> allByUserId = entryRepository.findAllByUserIdWithFetch(userId);
 
         return allByUserId;
     }
