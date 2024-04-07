@@ -21,6 +21,7 @@ public class AuthController {
     private final AuthService authService;
     private final JwtProperties properties;
 
+    //TODO 현재 Email 만 같으면 로그인 처리 되게 되어있음.
     @PostMapping("/login")
     public ApiResponse login(@RequestBody @Validated LoginRequest request){
         String token = authService.attemptLogin(request.getProvider(), request.getProviderId(), request.getEmail(), properties.getPassword());
@@ -39,4 +40,6 @@ public class AuthController {
         //일단 메세지만 반환 나중에 jwt 반환으로 변경?
         return ApiResponse.ok(Constants.SUCCESSFUL_REGISTRATION);
     }
+
+    //TODO 로그아웃하면 토큰 블랙리스트 처리? 혹은 다른 방법
 }

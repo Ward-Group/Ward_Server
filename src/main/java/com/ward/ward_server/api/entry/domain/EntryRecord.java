@@ -1,6 +1,6 @@
 package com.ward.ward_server.api.entry.domain;
 
-import com.ward.ward_server.api.user.entity.UserEntity;
+import com.ward.ward_server.api.user.entity.User;
 import com.ward.ward_server.api.webcrawling.entity.Item;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -23,7 +23,7 @@ public class EntryRecord {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private UserEntity user;
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")
@@ -33,7 +33,7 @@ public class EntryRecord {
     @Column(name = "entry_date")
     private Date entryDate;
 
-    public EntryRecord(UserEntity user, Item item) {
+    public EntryRecord(User user, Item item) {
         this.user = user;
         this.item = item;
         this.entryDate = new Date();

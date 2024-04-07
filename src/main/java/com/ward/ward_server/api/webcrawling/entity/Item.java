@@ -1,18 +1,23 @@
 package com.ward.ward_server.api.webcrawling.entity;
 
+import com.ward.ward_server.api.entry.domain.EntryRecord;
 import com.ward.ward_server.api.webcrawling.entity.enumtype.Brand;
 import com.ward.ward_server.api.webcrawling.entity.enumtype.State;
 import com.ward.ward_server.api.webcrawling.entity.enumtype.converter.BrandConverter;
 import jakarta.persistence.*;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
 @ToString
+@Getter
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,6 +50,9 @@ public class Item {
     @Convert(converter = BrandConverter.class)
     //TODO converter로 수정하기
     private Brand brand;
+
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
+    private List<EntryRecord> entryRecords = new ArrayList<>();
 
     @Builder
     public Item(String name, String image, String siteUrl, LocalDateTime releaseDate, LocalDateTime dueDate, LocalDateTime presentationDate, State state, Brand brand) {

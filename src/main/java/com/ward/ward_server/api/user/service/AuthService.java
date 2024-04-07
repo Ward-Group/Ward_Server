@@ -3,7 +3,7 @@ package com.ward.ward_server.api.user.service;
 import com.ward.ward_server.api.user.dto.RegisterErrorResponse;
 import com.ward.ward_server.api.user.dto.RegisterRequest;
 import com.ward.ward_server.api.user.dto.RegisterSuccessResponse;
-import com.ward.ward_server.api.user.entity.UserEntity;
+import com.ward.ward_server.api.user.entity.User;
 import com.ward.ward_server.api.user.repository.UserRepository;
 import com.ward.ward_server.api.user.auth.security.CustomUserDetails;
 import com.ward.ward_server.api.user.auth.security.JwtIssuer;
@@ -156,7 +156,7 @@ public class AuthService {
 
             //회원 등록 시작
             String username = request.getProvider()+request.getProviderId();
-            UserEntity newUser = new UserEntity(username, request.getName(),request.getEmail(), passwordEncoder.encode(properties.getPassword()),request.getEmailNotification(),request.getAppPushNotification(),request.getSnsNotification());
+            User newUser = new User(username, request.getName(),request.getEmail(), passwordEncoder.encode(properties.getPassword()),request.getEmailNotification(),request.getAppPushNotification(),request.getSnsNotification());
 
             userRepository.save(newUser);
 

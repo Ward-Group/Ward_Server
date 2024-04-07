@@ -14,7 +14,7 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED) //JPA 쓰면서 protected 키워드는 생성해서 쓰지말라는 의미
-public class UserEntity {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -51,7 +51,7 @@ public class UserEntity {
     private List<EntryRecord> entryRecords = new ArrayList<>();
 
     //==생성 메서드==//
-    public UserEntity(String username, String name, String email, String password, Boolean emailNotification, Boolean appPushNotification, Boolean snsNotification) {
+    public User(String username, String name, String email, String password, Boolean emailNotification, Boolean appPushNotification, Boolean snsNotification) {
         this.username = username;
         this.name = name;
         this.email = email;
@@ -62,16 +62,5 @@ public class UserEntity {
         this.appPushNotification = appPushNotification;
         this.snsNotification = snsNotification;
     }
-
-    //==생성 메서드 @Setter 사용==//
-//    public static UserEntity createUser(String username, String name, String email, String password) {
-//        UserEntity userEntity = new UserEntity();
-//        userEntity.setUsername(username);
-//        userEntity.setName(name);
-//        userEntity.setEmail(email);
-//        userEntity.setUserRole(Role.ROLE_USER);
-//        userEntity.setPassword(password);
-//        return userEntity;
-//    }
 
 }
