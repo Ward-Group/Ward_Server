@@ -58,11 +58,11 @@ public class EntryService {
         // userId를 사용하여 특정 사용자의 전체 응모 내역 조회하고 반환
 
         // 사용자 엔티티 조회
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> {
-                    log.error("[Slf4j]User not found with ID: {}", userId);
-                    return new ApiException(USER_NOT_FOUND);
-                });
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> {
+//                    log.error("[Slf4j]User not found with ID: {}", userId);
+//                    return new ApiException(USER_NOT_FOUND);
+//                });
 
         // 사용자의 전체 응모 내역 조회
 //        List<EntryRecord> allByUserId = entryRepository.findAllByUser(user);
