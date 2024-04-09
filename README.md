@@ -19,12 +19,13 @@
 ### 🏄‍♂️손지민
 * Server(Spring Boot)
 * DB 설계 및 구축
+* AWS EC2 연결
 * 회원가입/로그인 기능 구현( Spring Security/JWT )
 * 유저 관련 기능 ( CRUD ) 기능 구현
 * 응모 내역 기능 ( CRUD ) 구현
 ### 🏄‍♂️진하늘
 * Server(Spring Boot)
-* 나이키/카시나 크롤링 기능 구현 ( Selenium/Jsoup )
+* 웹 크롤링 기능 구현 ( Selenium/Jsoup )
 
 ## 📘Package
 
