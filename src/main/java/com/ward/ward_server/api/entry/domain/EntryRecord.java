@@ -1,6 +1,6 @@
-package com.ward.ward_server.api.entry;
+package com.ward.ward_server.api.entry.domain;
 
-import com.ward.ward_server.api.user.entity.UserEntity;
+import com.ward.ward_server.api.user.entity.User;
 import com.ward.ward_server.api.webcrawling.entity.Item;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -19,23 +19,23 @@ public class EntryRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "entry_id")
-    private int entryId;
+    private Long entryId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private UserEntity userId;
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")
-    private Item itemId;
+    private Item item;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "entry_date")
     private Date entryDate;
 
-    public EntryRecord(UserEntity userId, Item itemId, Date entryDate) {
-        this.userId = userId;
-        this.itemId = itemId;
-        this.entryDate = entryDate;
+    public EntryRecord(User user, Item item) {
+        this.user = user;
+        this.item = item;
+        this.entryDate = new Date();
     }
 }
