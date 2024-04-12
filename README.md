@@ -41,7 +41,7 @@
 ![Ward_Server (1)](https://github.com/Ward-Group/Ward_Server/assets/135934401/eb9a144e-f8ce-42b3-8e6f-5363a91ce775)
 
 ## 📕배포
-
+* AWS EC2 - 클라우드 컴퓨팅 시스템
 ## 📚사용된 도구
 
 ## 💻팀원
