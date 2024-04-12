@@ -33,6 +33,7 @@ public class ItemService {
 
     public Item getItemById(Long itemId) {
         // 해당 itemId를 이용하여 Item을 조회
+        // TODO 예외 메세지 수정
         return itemRepository.findById(itemId)
                 .orElseThrow(() -> new IllegalArgumentException("Item not found with id: " + itemId));
     }

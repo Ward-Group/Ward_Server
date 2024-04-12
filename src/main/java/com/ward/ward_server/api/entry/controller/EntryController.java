@@ -24,6 +24,13 @@ public class EntryController {
         return ApiResponse.ok(entryId);
     }
 
+    // 응모 내역 제거
+    @DeleteMapping("/delete")
+    public ApiResponse deleteEntry(@RequestBody EntryRequestDTO entryRequestDTO) {
+        entryService.deleteEntry(entryRequestDTO);
+        return ApiResponse.ok();
+    }
+
     //응모 1건 내역 조회 - 보고 있는 상세 아이템 1건의 응모 여부 확인
     @GetMapping("/{entryId}")
     public ApiResponse getEntry(@PathVariable("entryId") Long entryId) {
@@ -49,13 +56,5 @@ public class EntryController {
         boolean isEntryExist = entryService.isEntryExist(entryRequestDTO.getUserId(), entryRequestDTO.getItemId());
         return ApiResponse.ok(isEntryExist);
     }
-
-//    // 응모 내역 제거
-//    @DeleteMapping("/{entryId}/delete")
-//    public ApiResponse deleteEntry(@PathVariable Long entryId) {
-//        // entryId를 사용하여 해당 응모 내역 삭제
-//        entryService.deleteEntry(entryId);
-//        return ApiResponse.ok();
-//    }
 
 }
