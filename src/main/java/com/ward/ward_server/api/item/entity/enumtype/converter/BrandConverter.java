@@ -1,6 +1,6 @@
-package com.ward.ward_server.api.webcrawling.entity.enumtype.converter;
+package com.ward.ward_server.api.item.entity.enumtype.converter;
 
-import com.ward.ward_server.api.webcrawling.entity.enumtype.Brand;
+import com.ward.ward_server.api.item.entity.enumtype.Brand;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import lombok.extern.slf4j.Slf4j;

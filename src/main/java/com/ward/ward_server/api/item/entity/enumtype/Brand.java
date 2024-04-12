@@ -1,4 +1,4 @@
-package com.ward.ward_server.api.webcrawling.entity.enumtype;
+package com.ward.ward_server.api.item.entity.enumtype;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

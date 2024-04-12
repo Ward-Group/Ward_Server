@@ -1,6 +1,6 @@
-package com.ward.ward_server.api.webcrawling.dto;
+package com.ward.ward_server.api.item.dto;
 
-import com.ward.ward_server.api.webcrawling.entity.Item;
+import com.ward.ward_server.api.item.entity.Item;
 import lombok.Data;
 
 import java.time.LocalDateTime;
