@@ -46,7 +46,6 @@
 * [진하늘](https://github.com/mewluee)
 ### iOS
 * [김강현](https://github.com/keem-hyun)
-* [윤여송]()
 ### PM
 * 이태인
 ### 디자이너
