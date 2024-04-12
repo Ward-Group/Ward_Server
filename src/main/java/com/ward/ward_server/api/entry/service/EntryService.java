@@ -5,8 +5,8 @@ import com.ward.ward_server.api.entry.domain.EntryRecord;
 import com.ward.ward_server.api.entry.repository.EntryRepository;
 import com.ward.ward_server.api.user.entity.User;
 import com.ward.ward_server.api.user.repository.UserRepository;
-import com.ward.ward_server.api.webcrawling.ItemRepository;
-import com.ward.ward_server.api.webcrawling.entity.Item;
+import com.ward.ward_server.api.item.repository.ItemRepository;
+import com.ward.ward_server.api.item.entity.Item;
 import com.ward.ward_server.global.exception.ApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,10 +26,16 @@ public class EntryService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
 
+    // 응모 내역 1건 존재 여부 확인
+    public boolean isEntryExist(Long userId, Long itemId) {
+        return entryRepository.existsByUserIdAndItemId(userId, itemId);
+    }
+
+    // 응모 내역 추가
     @Transactional
     public Long createEntry(EntryRequestDTO entryRequestDTO) {
         // 요청된 사용자 ID와 아이템 ID로 이미 응모 기록이 있는지 확인
-        boolean isEntryExist = entryRepository.existsByUserIdAndItemId(entryRequestDTO.getUserId(), entryRequestDTO.getItemId());
+        boolean isEntryExist = isEntryExist(entryRequestDTO.getUserId(), entryRequestDTO.getItemId());
         if (isEntryExist) {
             throw new ApiException(DUPLICATE_ENTRY); // 이미 응모한 경우 에러 발생
         }
@@ -49,12 +55,17 @@ public class EntryService {
         return entryRecord.getEntryId();
     }
 
-//    public EntryRecord getEntryById(Long entryId) {
-//        // entryId를 사용하여 특정 응모 내역을 조회하고 반환
-//        return entryRepository.findById(entryId).orElse(null);
-//    }
-//
-    public List<EntryRecord> getUsersEntryRecord(Long userId) {
+    // 응모 내역 단건 조회
+    public EntryRecord getEntryById(Long entryId) {
+
+        // entryId를 사용하여 특정 응모 내역을 조회하고 반환
+        EntryRecord entryRecord = entryRepository.findById(entryId).orElse(null);
+
+        return entryRecord;
+    }
+
+    // 응모 내역 전체 조회 - user 1명에 대해
+    public List<EntryRecord> getUsersAllEntryRecord(Long userId) {
         // userId를 사용하여 특정 사용자의 전체 응모 내역 조회하고 반환
 
         // 사용자 엔티티 조회
