@@ -34,16 +34,19 @@ public class EntryService {
     // 응모 내역 추가
     @Transactional
     public Long createEntry(EntryRequestDTO entryRequestDTO) {
+
+        long userId = entryRequestDTO.getUserId();
+        long itemId = entryRequestDTO.getItemId();
         // 요청된 사용자 ID와 아이템 ID로 이미 응모 기록이 있는지 확인
-        boolean isEntryExist = isEntryExist(entryRequestDTO.getUserId(), entryRequestDTO.getItemId());
+        boolean isEntryExist = isEntryExist(userId, itemId);
         if (isEntryExist) {
             throw new ApiException(DUPLICATE_ENTRY); // 이미 응모한 경우 에러 발생
         }
 
         //엔티티 조회
-        User user = userRepository.findById(entryRequestDTO.getUserId())
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(USER_NOT_FOUND));
-        Item item = itemRepository.findById(entryRequestDTO.getItemId())
+        Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
 
         //응모 내역 생성
@@ -83,10 +86,19 @@ public class EntryService {
 
         return allByUserId;
     }
-//
-//    @Transactional
-//    public void deleteEntry(Long entryId) {
-//        // entryId를 사용하여 특정 응모 내역을 삭제
-//        entryRepository.deleteById(entryId);
-//    }
+
+    @Transactional
+    public void deleteEntry(EntryRequestDTO entryRequestDTO) {
+
+        long userId = entryRequestDTO.getUserId();
+        long itemId = entryRequestDTO.getItemId();
+
+        boolean isEntryExist = isEntryExist(userId, itemId);
+        if (!isEntryExist) {
+            throw new ApiException(NO_ENTRY_RECORD_FOUND); // 응모 내역이 존재하지 않음
+        }
+
+        // userId, entryId를 사용하여 특정 응모 내역을 삭제
+        entryRepository.deleteByUserIdAndItemId(userId,itemId);
+    }
 }
