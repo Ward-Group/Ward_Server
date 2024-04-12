@@ -1,8 +1,8 @@
-package com.ward.ward_server.api.webcrawling.webCrawler;
+package com.ward.ward_server.api.item.webCrawler;
 
-import com.ward.ward_server.api.webcrawling.dto.WebProductData;
-import com.ward.ward_server.api.webcrawling.entity.enumtype.Brand;
-import com.ward.ward_server.api.webcrawling.entity.enumtype.State;
+import com.ward.ward_server.api.item.dto.WebProductData;
+import com.ward.ward_server.api.item.entity.enumtype.Brand;
+import com.ward.ward_server.api.item.entity.enumtype.State;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

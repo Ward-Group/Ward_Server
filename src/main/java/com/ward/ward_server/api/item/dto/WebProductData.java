@@ -1,7 +1,7 @@
-package com.ward.ward_server.api.webcrawling.dto;
+package com.ward.ward_server.api.item.dto;
 
-import com.ward.ward_server.api.webcrawling.entity.enumtype.Brand;
-import com.ward.ward_server.api.webcrawling.entity.enumtype.State;
+import com.ward.ward_server.api.item.entity.enumtype.Brand;
+import com.ward.ward_server.api.item.entity.enumtype.State;
 
 import java.time.LocalDateTime;
 

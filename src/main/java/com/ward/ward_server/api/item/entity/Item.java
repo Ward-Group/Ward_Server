@@ -1,9 +1,9 @@
-package com.ward.ward_server.api.webcrawling.entity;
+package com.ward.ward_server.api.item.entity;
 
 import com.ward.ward_server.api.entry.domain.EntryRecord;
-import com.ward.ward_server.api.webcrawling.entity.enumtype.Brand;
-import com.ward.ward_server.api.webcrawling.entity.enumtype.State;
-import com.ward.ward_server.api.webcrawling.entity.enumtype.converter.BrandConverter;
+import com.ward.ward_server.api.item.entity.enumtype.Brand;
+import com.ward.ward_server.api.item.entity.enumtype.State;
+import com.ward.ward_server.api.item.entity.enumtype.converter.BrandConverter;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;

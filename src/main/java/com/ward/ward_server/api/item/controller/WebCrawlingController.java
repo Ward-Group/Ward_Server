@@ -1,6 +1,7 @@
-package com.ward.ward_server.api.webcrawling;
+package com.ward.ward_server.api.item.controller;
 
-import com.ward.ward_server.api.webcrawling.dto.WebProductData;
+import com.ward.ward_server.api.item.service.WebCrawlingService;
+import com.ward.ward_server.api.item.dto.WebProductData;
 import com.ward.ward_server.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

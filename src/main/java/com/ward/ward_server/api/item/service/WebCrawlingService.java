@@ -1,9 +1,10 @@
-package com.ward.ward_server.api.webcrawling;
+package com.ward.ward_server.api.item.service;
 
-import com.ward.ward_server.api.webcrawling.dto.WebProductData;
-import com.ward.ward_server.api.webcrawling.entity.Item;
-import com.ward.ward_server.api.webcrawling.webCrawler.KasinaWebCrawler;
-import com.ward.ward_server.api.webcrawling.webCrawler.NikeWebCrawler;
+import com.ward.ward_server.api.item.repository.ItemRepository;
+import com.ward.ward_server.api.item.dto.WebProductData;
+import com.ward.ward_server.api.item.entity.Item;
+import com.ward.ward_server.api.item.webCrawler.KasinaWebCrawler;
+import com.ward.ward_server.api.item.webCrawler.NikeWebCrawler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

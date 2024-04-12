@@ -1,7 +1,7 @@
 package com.ward.ward_server.api.entry.dto;
 
 import com.ward.ward_server.api.entry.domain.EntryRecord;
-import com.ward.ward_server.api.webcrawling.dto.ItemDTO;
+import com.ward.ward_server.api.item.dto.ItemDTO;
 import lombok.Data;
 
 import java.util.Date;

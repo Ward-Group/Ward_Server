@@ -1,7 +1,7 @@
 package com.ward.ward_server.api.entry.domain;
 
 import com.ward.ward_server.api.user.entity.User;
-import com.ward.ward_server.api.webcrawling.entity.Item;
+import com.ward.ward_server.api.item.entity.Item;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
