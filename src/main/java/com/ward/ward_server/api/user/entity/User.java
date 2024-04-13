@@ -2,6 +2,7 @@ package com.ward.ward_server.api.user.entity;
 
 import com.ward.ward_server.api.entry.domain.EntryRecord;
 import com.ward.ward_server.api.user.entity.enumtype.Role;
+import com.ward.ward_server.api.wishlist.domain.Wishlist;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -49,6 +50,9 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<EntryRecord> entryRecords = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Wishlist> wishlists = new ArrayList<>();
 
     //==생성 메서드==//
     public User(String username, String name, String email, String password, Boolean emailNotification, Boolean appPushNotification, Boolean snsNotification) {

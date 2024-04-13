@@ -4,6 +4,7 @@ import com.ward.ward_server.api.entry.domain.EntryRecord;
 import com.ward.ward_server.api.item.entity.enumtype.Brand;
 import com.ward.ward_server.api.item.entity.enumtype.State;
 import com.ward.ward_server.api.item.entity.enumtype.converter.BrandConverter;
+import com.ward.ward_server.api.wishlist.domain.Wishlist;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -53,6 +54,9 @@ public class Item {
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
     private List<EntryRecord> entryRecords = new ArrayList<>();
+
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
+    private List<Wishlist> wishlists = new ArrayList<>();
 
     @Builder
     public Item(String name, String image, String siteUrl, LocalDateTime releaseDate, LocalDateTime dueDate, LocalDateTime presentationDate, State state, Brand brand) {
