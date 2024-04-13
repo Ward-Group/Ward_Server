@@ -18,6 +18,7 @@ public class ItemService {
     private final EntryService entryService;
     private final ItemRepository itemRepository;
 
+    // 상세 페이지
     public ItemResponseDTO getItemDetail(Long itemId, Long userId) {
         Item item = getItemById(itemId);
         ItemResponseDTO responseDTO = new ItemResponseDTO(item);
@@ -31,6 +32,7 @@ public class ItemService {
         return responseDTO;
     }
 
+    // ItemId로 상품 1개 조회
     public Item getItemById(Long itemId) {
         // 해당 itemId를 이용하여 Item을 조회
         // TODO 예외 메세지 수정
