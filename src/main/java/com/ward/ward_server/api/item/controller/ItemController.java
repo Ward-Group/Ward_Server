@@ -29,7 +29,7 @@ public class ItemController {
 
         Long itemId = requestDTO.getItemId();
         Long userId = requestDTO.getUserId();
-        // TODO itemId 만 받아서 Principal 에서 꺼내서도 가능한지 체크
+        // TODO itemId 만 받아서 Spring Security의 Principal 에서 꺼내서도 가능한지 체크
 //        Long userId = (principal != null) ? Long.parseLong(principal.getName()) : null;
 
         ItemResponseDTO responseDTO = itemService.getItemDetail(itemId, userId);
