@@ -1,7 +1,8 @@
 package com.ward.ward_server.api.entry.controller;
 
 import com.ward.ward_server.api.entry.domain.EntryRecord;
-import com.ward.ward_server.api.entry.dto.EntryRecordDTO;
+import com.ward.ward_server.api.entry.dto.EntryRecordResponseDTO;
+import com.ward.ward_server.api.entry.dto.EntryRequestDTO;
 import com.ward.ward_server.api.entry.service.EntryService;
 import com.ward.ward_server.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -40,11 +41,11 @@ public class EntryController {
 
     //응모 내역 전체 조회 - 개별 사용자의 전체 리스트
     @GetMapping("/user/{userId}")
-    public ApiResponse<List<EntryRecordDTO>> getUsersEntryRecord(@PathVariable("userId") Long userId) {
+    public ApiResponse<List<EntryRecordResponseDTO>> getUsersEntryRecord(@PathVariable("userId") Long userId) {
         // userId를 사용하여 해당 사용자의 전체 응모 내역 조회
         List<EntryRecord> entryRecords = entryService.getUsersAllEntryRecord(userId);
-        List<EntryRecordDTO> result = entryRecords.stream()
-                .map(e -> new EntryRecordDTO(e))
+        List<EntryRecordResponseDTO> result = entryRecords.stream()
+                .map(e -> new EntryRecordResponseDTO(e))
                 .collect(Collectors.toList());
 
         return ApiResponse.ok(result);

@@ -1,6 +1,6 @@
 package com.ward.ward_server.api.entry.service;
 
-import com.ward.ward_server.api.entry.controller.EntryRequestDTO;
+import com.ward.ward_server.api.entry.dto.EntryRequestDTO;
 import com.ward.ward_server.api.entry.domain.EntryRecord;
 import com.ward.ward_server.api.entry.repository.EntryRepository;
 import com.ward.ward_server.api.user.entity.User;
