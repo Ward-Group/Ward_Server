@@ -7,14 +7,14 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class EntryRecordDTO {
+public class EntryRecordResponseDTO {
 
     private Long entryRecordId;
     private String name;
     private ItemDTO item;
     private Date entryDate;
 
-    public EntryRecordDTO(EntryRecord entryRecord) {
+    public EntryRecordResponseDTO(EntryRecord entryRecord) {
         this.entryRecordId = entryRecord.getEntryId();
         this.name = entryRecord.getUser().getName();
         this.entryDate = entryRecord.getEntryDate();

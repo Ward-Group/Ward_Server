@@ -20,7 +20,8 @@ public enum ExceptionCode {
     USER_NOT_FOUND(5208, "사용자를 찾을 수 없습니다."),
     ITEM_NOT_FOUND(5208, "아이템을 찾을 수 없습니다."),
     DUPLICATE_ENTRY(5209, "이미 응모하였습니다."),
-    NO_ENTRY_RECORD_FOUND(5210, "응모내역이 존재하지 않습니다.");
+    NO_ENTRY_RECORD_FOUND(5210, "응모내역이 존재하지 않습니다."),
+    DUPLICATE_WISHLIST(5211, "이미 등록하였습니다.");
 
     private final int code;
     private final String message;

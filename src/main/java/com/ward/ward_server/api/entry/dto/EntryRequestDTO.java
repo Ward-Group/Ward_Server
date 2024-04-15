@@ -1,4 +1,4 @@
-package com.ward.ward_server.api.entry.controller;
+package com.ward.ward_server.api.entry.dto;
 
 import lombok.Getter;
 import lombok.Setter;
