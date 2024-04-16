@@ -4,10 +4,7 @@ import com.ward.ward_server.api.wishlist.dto.WishlistRequestDTO;
 import com.ward.ward_server.api.wishlist.service.WishlistService;
 import com.ward.ward_server.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,7 +13,7 @@ public class WishlistController {
 
     private final WishlistService wishlistService;
 
-    // TODO 추가, 삭제, 조회
+    // TODO 삭제, 조회
 
     // 추가
     @PostMapping("/create")
@@ -26,6 +23,11 @@ public class WishlistController {
     }
 
     // 삭제
+    @DeleteMapping("/delete")
+    public ApiResponse deleteWishlist(@RequestBody WishlistRequestDTO wishlistRequestDTO) {
+        wishlistService.deleteWishlist(wishlistRequestDTO);
+        return ApiResponse.ok();
+    }
 
     // 전체 조회
 }
