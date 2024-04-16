@@ -26,6 +26,7 @@
 * 회원가입/로그인 기능 구현( Spring Security/JWT )
 * 유저 관련 기능 ( CRUD ) 기능 구현
 * 응모 내역 기능 ( CRUD ) 구현
+* 관심 목록 기능 ( CRUD ) 구현
 * 상품 조회 기능 구현
 ### 🏄‍♂️진하늘
 * Server(Spring Boot)
