@@ -17,7 +17,7 @@ public class EntryRecordResponseDTO {
     public EntryRecordResponseDTO(EntryRecord entryRecord) {
         this.entryRecordId = entryRecord.getEntryId();
         this.name = entryRecord.getUser().getName();
-        this.entryDate = entryRecord.getEntryDate();
         this.item = new ItemDTO(entryRecord.getItem());
+        this.entryDate = entryRecord.getEntryDate();
     }
 }

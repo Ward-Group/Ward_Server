@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static com.ward.ward_server.global.exception.ExceptionCode.*;
 
 @Service
@@ -24,7 +26,7 @@ public class WishlistService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
 
-    // 중복 조회
+    // 중복 조회, 관심목록 존재 여부 확인
     public boolean isWishlistExist(Long userId, Long itemId) {
         return wishlistRepository.existsByUserIdAndItemId(userId, itemId);
     }
@@ -52,6 +54,14 @@ public class WishlistService {
         wishlistRepository.save(wishlist);
 
         return wishlist.getWishlistId();
+    }
+
+    // 전체 조회
+    public List<Wishlist> getUsersAllWishlist(Long userId) {
+
+        List<Wishlist> allByUserIdWithFetch = wishlistRepository.findAllByUserIdWithFetch(userId);
+
+        return allByUserIdWithFetch;
     }
 
     // 삭제
