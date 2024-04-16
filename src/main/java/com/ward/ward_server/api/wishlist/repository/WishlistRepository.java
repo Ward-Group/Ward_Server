@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 public interface WishlistRepository extends JpaRepository<Wishlist, Long> {
     // userId와 itemId 기반으로 해당 관심 목록이 존재하는지 확인하는 메서드
     boolean existsByUserIdAndItemId(Long userId, Long itemId);
+
+    void deleteByUserIdAndItemId(long userId, long itemId);
 }

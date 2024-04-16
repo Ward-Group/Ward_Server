@@ -24,10 +24,12 @@ public class WishlistService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
 
+    // 중복 조회
     public boolean isWishlistExist(Long userId, Long itemId) {
         return wishlistRepository.existsByUserIdAndItemId(userId, itemId);
     }
 
+    // 추가
     @Transactional
     public Long createWishlist(WishlistRequestDTO wishlistRequestDTO) {
 
@@ -50,6 +52,21 @@ public class WishlistService {
         wishlistRepository.save(wishlist);
 
         return wishlist.getWishlistId();
+    }
+
+    // 삭제
+    @Transactional
+    public void deleteWishlist(WishlistRequestDTO wishlistRequestDTO) {
+
+        long userId = wishlistRequestDTO.getUserId();
+        long itemId = wishlistRequestDTO.getItemId();
+
+        boolean wishlistExist = isWishlistExist(userId, itemId);
+        if (!wishlistExist) {
+            throw new ApiException(NO_WISHLIST_FOUND);
+        }
+
+        wishlistRepository.deleteByUserIdAndItemId(userId, itemId);
     }
 
 }
