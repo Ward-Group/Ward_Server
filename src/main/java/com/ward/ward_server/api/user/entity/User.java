@@ -55,13 +55,13 @@ public class User {
     private List<Wishlist> wishlists = new ArrayList<>();
 
     //==생성 메서드==//
-    public User(String username, String name, String email, String password, Boolean emailNotification, Boolean appPushNotification, Boolean snsNotification) {
+    public User(String username, String name, String email, String password, String nickname, Boolean emailNotification, Boolean appPushNotification, Boolean snsNotification) {
         this.username = username;
         this.name = name;
         this.email = email;
         this.role = Role.ROLE_USER;
         this.password = password;
-        this.nickname = name;
+        this.nickname = nickname;
         this.emailNotification = emailNotification;
         this.appPushNotification = appPushNotification;
         this.snsNotification = snsNotification;

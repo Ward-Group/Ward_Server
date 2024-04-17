@@ -14,6 +14,7 @@ public class RegisterRequest {
     private String providerId;
     private String name;
     private String email;
+    private String nickname;
     private Boolean emailNotification;
     private Boolean appPushNotification;
     private Boolean snsNotification;
