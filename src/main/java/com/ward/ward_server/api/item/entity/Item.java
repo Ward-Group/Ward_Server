@@ -20,6 +20,8 @@ import java.util.List;
 @ToString
 @Getter
 public class Item {
+    //TODO ERD 에 맞게 변경하기
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

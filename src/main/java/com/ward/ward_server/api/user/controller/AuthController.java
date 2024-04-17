@@ -21,6 +21,7 @@ public class AuthController {
     private final AuthService authService;
     private final JwtProperties properties;
 
+    //TODO 관리자 권한 부여 기능
     //TODO 현재 Email 만 같으면 로그인 처리 되게 되어있음.
     @PostMapping("/login")
     public ApiResponse login(@RequestBody @Validated LoginRequest request){
@@ -32,6 +33,7 @@ public class AuthController {
         return ApiResponse.ok(token);
     }
 
+    //TODO nickname 도 요청값에 추가
     @PostMapping("/registerUser")
     public ApiResponse register(@RequestBody @Validated RegisterRequest request) {
         //회원 가입 하고 성공 여부만 or jwt 반환하여 로그인까지?

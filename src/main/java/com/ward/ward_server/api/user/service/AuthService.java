@@ -156,11 +156,20 @@ public class AuthService {
 
             //회원 등록 시작
             String username = request.getProvider()+request.getProviderId();
-            User newUser = new User(username, request.getName(),request.getEmail(), passwordEncoder.encode(properties.getPassword()),request.getEmailNotification(),request.getAppPushNotification(),request.getSnsNotification());
+            User newUser = new User(
+                    username,
+                    request.getName(),
+                    request.getEmail(),
+                    passwordEncoder.encode(properties.getPassword()),
+                    request.getNickname(),
+                    request.getEmailNotification(),
+                    request.getAppPushNotification(),
+                    request.getSnsNotification()
+            );
 
             userRepository.save(newUser);
 
-            // jwt 반환해주기?
+            // TODO 회원가입 성공만 반환하기 or 로그인까지 시키기
             return RegisterSuccessResponse.builder()
                     .status(200)
                     .success(true)
