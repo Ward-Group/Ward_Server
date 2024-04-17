@@ -41,7 +41,6 @@
 ## 📙DB ERD
 ![Ward_Server (2)](https://github.com/Ward-Group/Ward_Server/assets/135934401/012888c5-b773-4043-b286-ab8fd17f84c0)
 
-
 ## 📕배포
 * AWS EC2 - 클라우드 컴퓨팅 시스템
 ## 📚사용된 도구
