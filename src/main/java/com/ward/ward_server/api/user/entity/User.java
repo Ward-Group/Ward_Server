@@ -67,4 +67,14 @@ public class User {
         this.snsNotification = snsNotification;
     }
 
+    //==관리자 권한 부여==//
+    public void grantAdminRole() {
+        this.role = Role.ROLE_ADMIN;
+    }
+
+    //==사용자 권한 부여==//
+    public void grantUserRole() {
+        this.role = Role.ROLE_USER;
+    }
+
 }
