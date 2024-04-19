@@ -1,4 +1,4 @@
-package com.ward.ward_server.api.user.config;
+package com.ward.ward_server.global.config;
 
 import com.ward.ward_server.api.user.auth.security.CustomUserDetailService;
 import com.ward.ward_server.api.user.auth.security.JwtAuthenticationFilter;
