@@ -1,7 +1,7 @@
 package com.ward.ward_server.controller;
 
-import com.ward.ward_server.global.auth.security.UserPrincipal;
-import com.ward.ward_server.global.auth.security.UserPrincipalAuthenticationToken;
+import com.ward.ward_server.api.user.auth.security.CustomUserDetails;
+import com.ward.ward_server.api.user.auth.security.UserPrincipalAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,7 +17,7 @@ public class WithMockUserSecurityContextFactory implements WithSecurityContextFa
                 .map(SimpleGrantedAuthority::new)
                 .toList();
 
-        var principle= UserPrincipal.builder()
+        var principle= CustomUserDetails.builder()
                 .userId(annotation.userId())
                 .email("fake@email.com")
                 .authorities(authorities)

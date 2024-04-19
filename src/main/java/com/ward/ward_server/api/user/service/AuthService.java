@@ -1,10 +1,13 @@
 package com.ward.ward_server.api.user.service;
 
-import com.ward.ward_server.api.user.dto.*;
-import com.ward.ward_server.api.user.entity.UserEntity;
+import com.ward.ward_server.api.user.dto.RegisterErrorResponse;
+import com.ward.ward_server.api.user.dto.RegisterRequest;
+import com.ward.ward_server.api.user.dto.RegisterSuccessResponse;
+import com.ward.ward_server.api.user.entity.User;
 import com.ward.ward_server.api.user.repository.UserRepository;
-import com.ward.ward_server.global.auth.security.JwtIssuer;
-import com.ward.ward_server.global.auth.security.UserPrincipal;
+import com.ward.ward_server.api.user.auth.security.CustomUserDetails;
+import com.ward.ward_server.api.user.auth.security.JwtIssuer;
+import com.ward.ward_server.api.user.auth.security.JwtProperties;
 import com.ward.ward_server.global.util.Constants;
 import com.ward.ward_server.global.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
@@ -27,60 +30,106 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtIssuer jwtIssuer;
     private final AuthenticationManager authenticationManager;
+    private final JwtProperties properties;
 
-    public Object attemptLogin(String email, String password) {
+    public String attemptLogin(String provider, String providerId, String email, String password) {
+
+        String username = provider + providerId;
+        log.info("[Slf4j]Username: " + username);
+
         // 존재하지 않는 이메일
         if (userRepository.findByEmail(email).isEmpty()) {
-            return LoginErrorResponse.builder()
-                    .status(401) // Unauthorized
-                    .success(false)
-                    .message(Constants.NON_EXISTENT_EMAIL)
-                    .error("INVALID_CREDENTIALS")
-                    .build();
+            return Constants.NON_EXISTENT_EMAIL;
         }
+
+        // 로그인 시작
         try {
             var authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(email, password)
             );
             SecurityContextHolder.getContext().setAuthentication(authentication); // SecurityContext 에 authenticaiton 저장
-            var principal = (UserPrincipal) authentication.getPrincipal();
-            log.info("로그인 UserPrincipal:" + principal.toString());
+            var principal = (CustomUserDetails) authentication.getPrincipal();
+            log.info("[Slf4j]로그인 CustomUserDetails: " + principal.toString());
             var roles = principal.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .toList();
 
             var token = jwtIssuer.issue(principal.getUserId(), principal.getEmail(), roles);
-            // 로그인
-            return LoginSuccessResponse.builder()
-                    .status(200)
-                    .success(true)
-                    .message(Constants.LOGIN_SUCCESS_MESSAGE)
-                    .accessToken(token)
-                    .build();
-        } catch (BadCredentialsException e) {
+            // token 반환
+            return token;
+        }
+        catch (BadCredentialsException e) {
             // 잘못된 아이디 또는 비밀번호
             log.error("Login failed: ", e);
-            return LoginErrorResponse.builder()
-                    .status(401) // Unauthorized
-                    .success(false)
-                    .message(Constants.INVALID_USERNAME_OR_PASSWORD_MESSAGE)
-                    .error("INVALID_CREDENTIALS")
-                    .build();
-        } catch (AuthenticationException e) {
+            return Constants.INVALID_USERNAME_OR_PASSWORD_MESSAGE;
+        }
+        catch (AuthenticationException e) {
             // 로그인 실패 처리
             log.error("Login failed: ", e);
-            return LoginErrorResponse.builder()
-                    .status(401)
-                    .success(false)
-                    .message(Constants.LOGIN_ERROR_MESSAGE)
-                    .error("Invalid credentials")
-                    .build();
+            return Constants.LOGIN_ERROR_MESSAGE;
         }
     }
 
+    //    public Object attemptLogin(String provider, String providerId, String email, String password) {
+//
+//        String username = provider + providerId;
+//        log.info("[Slf4j]Username: " + username);
+//
+//        // 존재하지 않는 이메일
+//        if (userRepository.findByEmail(email).isEmpty()) {
+//            return LoginErrorResponse.builder()
+//                    .status(401) // Unauthorized
+//                    .success(false)
+//                    .message(Constants.NON_EXISTENT_EMAIL)
+//                    .error("INVALID_CREDENTIALS")
+//                    .build();
+//        }
+//        // 로그인 시작
+//        try {
+//            var authentication = authenticationManager.authenticate(
+//                    new UsernamePasswordAuthenticationToken(email, password)
+//            );
+//            SecurityContextHolder.getContext().setAuthentication(authentication); // SecurityContext 에 authenticaiton 저장
+//            var principal = (CustomUserDetails) authentication.getPrincipal();
+//            log.info("[Slf4j]로그인 CustomUserDetails: " + principal.toString());
+//            var roles = principal.getAuthorities().stream()
+//                    .map(GrantedAuthority::getAuthority)
+//                    .toList();
+//
+//            var token = jwtIssuer.issue(principal.getUserId(), principal.getEmail(), roles);
+//            // token 반환
+//            return LoginSuccessResponse.builder()
+//                    .status(200)
+//                    .success(true)
+//                    .message(Constants.LOGIN_SUCCESS_MESSAGE)
+//                    .accessToken(token)
+//                    .build();
+//        } catch (BadCredentialsException e) {
+//            // 잘못된 아이디 또는 비밀번호
+//            log.error("Login failed: ", e);
+//            return LoginErrorResponse.builder()
+//                    .status(401) // Unauthorized
+//                    .success(false)
+//                    .message(Constants.INVALID_USERNAME_OR_PASSWORD_MESSAGE)
+//                    .error("INVALID_CREDENTIALS")
+//                    .build();
+//        } catch (AuthenticationException e) {
+//            // 로그인 실패 처리
+//            log.error("Login failed: ", e);
+//            return LoginErrorResponse.builder()
+//                    .status(401)
+//                    .success(false)
+//                    .message(Constants.LOGIN_ERROR_MESSAGE)
+//                    .error("Invalid credentials")
+//                    .build();
+//        }
+//    }
 
+    // TODO 리턴 타입 수정하기
     public Object registerUser(RegisterRequest request) {
+
         try {
+            //예외 처리
             if (!ValidationUtil.isValidEmail(request.getEmail())) {
                 return RegisterErrorResponse.builder()
                         .status(400)
@@ -89,7 +138,7 @@ public class AuthService {
                         .build();
             }
 
-            if (!ValidationUtil.isValidPassword(request.getPassword())) {
+            if (!ValidationUtil.isValidPassword(properties.getPassword())) {
                 return RegisterErrorResponse.builder()
                         .status(400)
                         .success(false)
@@ -105,13 +154,22 @@ public class AuthService {
                         .build();
             }
 
-            UserEntity newUser = new UserEntity();
-            newUser.setEmail(request.getEmail());
-            newUser.setPassword(passwordEncoder.encode(request.getPassword()));
-            newUser.setRole("ROLE_USER");
+            //회원 등록 시작
+            String username = request.getProvider()+request.getProviderId();
+            User newUser = new User(
+                    username,
+                    request.getName(),
+                    request.getEmail(),
+                    passwordEncoder.encode(properties.getPassword()),
+                    request.getNickname(),
+                    request.getEmailNotification(),
+                    request.getAppPushNotification(),
+                    request.getSnsNotification()
+            );
 
             userRepository.save(newUser);
 
+            // TODO 회원가입 성공만 반환하기 or 로그인까지 시키기
             return RegisterSuccessResponse.builder()
                     .status(200)
                     .success(true)
@@ -119,7 +177,7 @@ public class AuthService {
                     .user(RegisterSuccessResponse.UserResponse.builder()
                             .userId(newUser.getId())
                             .email(newUser.getEmail())
-                            .role(newUser.getRole())
+                            .role(String.valueOf(newUser.getRole()))
                             .build())
                     .build();
         } catch (DataIntegrityViolationException e) {
