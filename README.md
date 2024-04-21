@@ -39,7 +39,7 @@
 ## 📗Architecture
 
 ## 📙DB ERD
-![Ward_v1 1](https://github.com/Ward-Group/Ward_Server/assets/135934401/4c3625eb-6104-4995-85c4-bb2cc2181180)
+![Ward_v1 1 (1)](https://github.com/Ward-Group/Ward_Server/assets/135934401/472bacec-1abe-4419-810c-643fbf02cc1b)
 
 ## 📕배포
 * AWS EC2 - 클라우드 컴퓨팅 시스템
