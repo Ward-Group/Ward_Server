@@ -36,7 +36,7 @@ public class User {
 
     private String password;
 
-    @Column
+    @Column(unique = true, nullable = false)
     private String nickname;
 
     @Column(name = "email_notification", nullable = false)

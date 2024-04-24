@@ -20,7 +20,6 @@
 
 ## 🌎Team Role
 ### 🏄‍♂️손지민
-* Server(Spring Boot)
 * DB 설계 및 구축
 * AWS EC2 연결
 * 회원가입/로그인 기능 구현( Spring Security/JWT )
@@ -29,7 +28,7 @@
 * 관심 목록 기능 ( CRUD ) 구현
 * 상품 조회 기능 구현
 ### 🏄‍♂️진하늘
-* Server(Spring Boot)
+* DB 설계 및 구축
 * 웹 크롤링 기능 구현 ( Selenium/Jsoup )
 
 ## 📘Package
@@ -39,7 +38,7 @@
 ## 📗Architecture
 
 ## 📙DB ERD
-![Ward_Server (2)](https://github.com/Ward-Group/Ward_Server/assets/135934401/012888c5-b773-4043-b286-ab8fd17f84c0)
+![Ward_v1 1 (3)](https://github.com/Ward-Group/Ward_Server/assets/135934401/7440fe5f-d667-4ef4-b1fc-9ba340e5ae42)
 
 ## 📕배포
 * AWS EC2 - 클라우드 컴퓨팅 시스템

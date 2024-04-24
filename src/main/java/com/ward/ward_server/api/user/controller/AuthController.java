@@ -20,9 +20,9 @@ public class AuthController {
     private final UserService userService;
     private final JwtProperties properties;
 
-    //TODO 관리자 권한 부여 기능
     //TODO 현재 Email 만 같으면 로그인 처리 되게 되어있음.
     //TODO Refresh token 기능 추가
+    // 닉네임 중복 체크
     @PostMapping("/login")
     public ApiResponse login(@RequestBody @Validated LoginRequest request){
         String token = authService.attemptLogin(request.getProvider(), request.getProviderId(), request.getEmail(), properties.getPassword());
@@ -33,7 +33,6 @@ public class AuthController {
         return ApiResponse.ok(token);
     }
 
-    //TODO nickname 도 요청값에 추가
     @PostMapping("/registerUser")
     public ApiResponse register(@RequestBody @Validated RegisterRequest request) {
         //회원 가입 하고 성공 여부만 or jwt 반환하여 로그인까지?
@@ -58,6 +57,16 @@ public class AuthController {
         return ApiResponse.ok();
 
     }
+
+    // 닉네임 중복 체크
+    @GetMapping("/checkNickname")
+    public ApiResponse<Boolean> checkDuplicateNickname(@RequestParam("nickname") String nickname) {
+
+        boolean checkDuplicateNickname = authService.checkDuplicateNickname(nickname);
+
+        return ApiResponse.ok(checkDuplicateNickname);
+    }
+
 
     //TODO 로그아웃하면 토큰 블랙리스트 처리? 혹은 다른 방법
 }

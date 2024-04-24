@@ -1,4 +1,4 @@
-package com.ward.ward_server.api.user.config;
+package com.ward.ward_server.global.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
