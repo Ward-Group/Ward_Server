@@ -28,7 +28,7 @@ public class AuthController {
         String token = authService.attemptLogin(request.getProvider(), request.getProviderId(), request.getEmail(), properties.getPassword());
 
         if (token.startsWith("[ERROR]")) {
-            return ApiResponse.failure(ErrorCode.NON_EXISTENT_EMAIL);
+            return ApiResponse.error(ErrorCode.NON_EXISTENT_EMAIL);
         }
         return ApiResponse.ok(token);
     }

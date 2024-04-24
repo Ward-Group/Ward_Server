@@ -1,7 +1,7 @@
 package com.ward.ward_server.api.item.dto;
 
 import com.ward.ward_server.api.item.entity.enumtype.Brand;
-import com.ward.ward_server.api.item.entity.enumtype.State;
+import com.ward.ward_server.api.item.entity.enumtype.Status;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +12,7 @@ public record WebProductData(
         LocalDateTime releaseDate,
         LocalDateTime dueDate,
         LocalDateTime presentationDate,
-        State state,
+        Status status,
         Brand brand
-){}
+) {
+}

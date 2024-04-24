@@ -3,6 +3,8 @@ package com.ward.ward_server.api.entry.service;
 import com.ward.ward_server.api.entry.dto.EntryRequestDTO;
 import com.ward.ward_server.api.entry.domain.EntryRecord;
 import com.ward.ward_server.api.entry.repository.EntryRepository;
+import com.ward.ward_server.api.releaseInfo.entity.ReleaseInfo;
+import com.ward.ward_server.api.releaseInfo.repository.ReleaseInfoRepository;
 import com.ward.ward_server.api.user.entity.User;
 import com.ward.ward_server.api.user.repository.UserRepository;
 import com.ward.ward_server.api.item.repository.ItemRepository;
@@ -25,10 +27,12 @@ public class EntryService {
     private final EntryRepository entryRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
+    private final ReleaseInfoRepository releaseInfoRepository;
 
     // 응모 내역 1건 존재 여부 확인
     public boolean isEntryExist(Long userId, Long itemId) {
-        return entryRepository.existsByUserIdAndItemId(userId, itemId);
+        //return entryRepository.existsByUserIdAndItemId(userId, itemId);
+        return false;
     }
 
     // 응모 내역 추가
@@ -50,12 +54,14 @@ public class EntryService {
                 .orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
 
         //응모 내역 생성
-        EntryRecord entryRecord = new EntryRecord(user,item);
+        //EntryRecord entryRecord = new EntryRecord(user,item);
+        //FIXME 잠시 주석 처리
 
         //응모 저장
-        entryRepository.save(entryRecord);
+        //entryRepository.save(entryRecord);
 
-        return entryRecord.getEntryId();
+        //return entryRecord.getEntryId();
+        return null;
     }
 
     // 응모 내역 단건 조회
@@ -99,6 +105,6 @@ public class EntryService {
         }
 
         // userId, entryId를 사용하여 특정 응모 내역을 삭제
-        entryRepository.deleteByUserIdAndItemId(userId,itemId);
+        //entryRepository.deleteByUserIdAndItemId(userId,itemId);
     }
 }

@@ -73,8 +73,9 @@ public class WebSecurityConfig {
 
                 // 경로별 인가 작업
                 .authorizeHttpRequests(registry -> registry // 요청에 대한 권한 설정 메서드
-                        .requestMatchers("/", "/auth/**", "/v1/wc/**", "/item/**").permitAll() // / 경로 요청에 대한 권한을 설정. permitAll() 모든 사용자, 인증되지않은 사용자에게 허용
-                        .requestMatchers("/admin/**").hasRole("ADMIN") // ROLE_ADMIN 에게만 허용
+                        //.requestMatchers("/", "/auth/**", "/v1/wc/**", "/item/**").permitAll() // / 경로 요청에 대한 권한을 설정. permitAll() 모든 사용자, 인증되지않은 사용자에게 허용
+                        //.requestMatchers("/admin/**").hasRole("ADMIN") // ROLE_ADMIN 에게만 허용
+                        .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated() // 다른 나머지 모든 요청에 대한 권한 설정, authenticated()는 인증된 사용자에게만 허용, 로그인해야만 접근 가능
                 );
 

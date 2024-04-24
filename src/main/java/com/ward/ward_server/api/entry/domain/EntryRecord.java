@@ -1,5 +1,6 @@
 package com.ward.ward_server.api.entry.domain;
 
+import com.ward.ward_server.api.releaseInfo.entity.ReleaseInfo;
 import com.ward.ward_server.api.user.entity.User;
 import com.ward.ward_server.api.item.entity.Item;
 import jakarta.persistence.*;
@@ -18,24 +19,25 @@ public class EntryRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "entry_id")
-    private Long entryId;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "item_id")
-    private Item item;
+    @JoinColumn(name = "releaseInfo_id")
+    private ReleaseInfo releaseInfo;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "entry_date")
     private Date entryDate;
 
-    public EntryRecord(User user, Item item) {
+    private String memo;
+
+    public EntryRecord(User user, ReleaseInfo releaseInfo) {
         this.user = user;
-        this.item = item;
+        this.releaseInfo = releaseInfo;
         this.entryDate = new Date();
     }
 }
