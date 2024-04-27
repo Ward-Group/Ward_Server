@@ -24,8 +24,12 @@ public enum ExceptionCode {
     NO_WISHLIST_FOUND(5212, "관심 목록이 존재하지 않습니다."),
 
     //아이템
-    ITEM_NOT_FOUND(5300, "아이템을 찾을 수 없습니다."),
-    DUPLICATE_ITEM_CODE(5309, "아이템 코드 중복입니다.");
+    ITEM_NOT_FOUND(5300, "상품을 찾을 수 없습니다."),
+    DUPLICATE_ITEM_CODE(5309, "이미 등록된 상품코드입니다."),
+
+    //발매정보
+    RELEASE_INFO_NOT_FOUND(5400, "발매정보를 찾을 수 없습니다."),
+    DUPLICATE_DRAW_PLATFORM(5401, "해당 상품의 발매플랫폼이 이미 등록되었습니다.");
 
     private final int code;
     private final String message;
