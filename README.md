@@ -1,6 +1,5 @@
 # 👟 Ward
-* 사이드 프로젝트
- 
+
 * 프로젝트 기간 : 2023.11~
 
 * [API 문서](https://github.com/Ward-Group/Ward_Server/wiki)
