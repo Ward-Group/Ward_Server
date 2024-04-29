@@ -19,6 +19,7 @@ class KasinaWebCrawlerTest {
     @Test
     void test_connection() {
         List<WebProductData> datas = crawler.getData();
+        System.out.println("잉?");
         for (WebProductData data : datas) {
             System.out.println(data.toString());
         }

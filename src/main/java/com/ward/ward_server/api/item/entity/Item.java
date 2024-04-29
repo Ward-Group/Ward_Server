@@ -1,17 +1,17 @@
 package com.ward.ward_server.api.item.entity;
 
-import com.ward.ward_server.api.entry.domain.EntryRecord;
 import com.ward.ward_server.api.item.entity.enumtype.Brand;
-import com.ward.ward_server.api.item.entity.enumtype.State;
+import com.ward.ward_server.api.item.entity.enumtype.Category;
 import com.ward.ward_server.api.item.entity.enumtype.converter.BrandConverter;
+import com.ward.ward_server.api.item.entity.enumtype.converter.CategoryConverter;
 import com.ward.ward_server.api.wishlist.domain.Wishlist;
+import com.ward.ward_server.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,56 +19,71 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 @Getter
-public class Item {
-    //TODO ERD 에 맞게 변경하기
+public class Item extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
+    private String code;
+
+    @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, length = 500)
-    private String image;
-
-    @Column
-    private String siteUrl;
+    @Column(nullable = false)
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ItemImage> itemImages = new ArrayList<>();
 
     @Column(nullable = false)
-    private LocalDateTime releaseDate;
-
-    @Column
-    private LocalDateTime dueDate;
-
-    @Column
-    private LocalDateTime presentationDate;
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private State state;
-
-    @Column(nullable = false)
-    //@Enumerated(EnumType.STRING)
     @Convert(converter = BrandConverter.class)
-    //TODO converter로 수정하기
     private Brand brand;
 
-    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
-    private List<EntryRecord> entryRecords = new ArrayList<>();
+    private Long viewCount = 0L;
+
+    @Column(nullable = false)
+    @Convert(converter = CategoryConverter.class)
+    private Category category;
+
+    private int price;
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
     private List<Wishlist> wishlists = new ArrayList<>();
 
     @Builder
-    public Item(String name, String image, String siteUrl, LocalDateTime releaseDate, LocalDateTime dueDate, LocalDateTime presentationDate, State state, Brand brand) {
+    public Item(String name, String code, Brand brand, Category category, int price) {
         this.name = name;
-        this.image = image;
-        this.siteUrl = siteUrl;
-        this.releaseDate = releaseDate;
-        this.dueDate = dueDate;
-        this.presentationDate = presentationDate;
-        this.state = state;
+        this.code = code;
         this.brand = brand;
+        this.category = category;
+        this.price = price;
+    }
+
+    public void addItemImages(List<ItemImage> itemImages) {
+        this.itemImages = itemImages;
+    }
+
+    public void increaseViewCount() {
+        viewCount += 1;
+    }
+
+    public void updateBrand(Brand brand) {
+        this.brand = brand;
+    }
+
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updateCode(String code) {
+        this.code = code;
+    }
+
+    public void updateCategory(Category category) {
+        this.category = category;
+    }
+
+    public void updatePrice(int price) {
+        this.price = price;
     }
 }

@@ -1,5 +1,6 @@
 package com.ward.ward_server.global.response;
 
+import com.ward.ward_server.global.exception.ExceptionCode;
 import com.ward.ward_server.global.response.error.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -61,18 +62,34 @@ public class ApiResponse<T> {
         );
     }
 
-    public static <T> ApiResponse<T> failure(ErrorCode ec) {
+    public static <T> ApiResponse<T> failure(ExceptionCode exceptionCode) {
         return new ApiResponse<>(
-                ec.getMessage(),
-                ec.getCode(),
+                exceptionCode.getMessage(),
+                exceptionCode.getCode(),
                 null
         );
     }
 
-    public static <T> ApiResponse<T> failure(ErrorCode ec, T data) {
+    public static <T> ApiResponse<T> failure(ExceptionCode exceptionCode, T data) {
         return new ApiResponse<>(
-                ec.getMessage(),
-                ec.getCode(),
+                exceptionCode.getMessage(),
+                exceptionCode.getCode(),
+                data
+        );
+    }
+
+    public static <T> ApiResponse<T> error(ErrorCode errorCode) {
+        return new ApiResponse<>(
+                errorCode.getMessage(),
+                errorCode.getCode(),
+                null
+        );
+    }
+
+    public static <T> ApiResponse<T> error(ErrorCode errorCode, T data) {
+        return new ApiResponse<>(
+                errorCode.getMessage(),
+                errorCode.getCode(),
                 data
         );
     }

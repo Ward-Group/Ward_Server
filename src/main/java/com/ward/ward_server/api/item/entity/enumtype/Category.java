@@ -7,25 +7,26 @@ import java.util.Arrays;
 
 @Getter
 @AllArgsConstructor
-public enum Brand {
-    NIKE("나이키", 100),
-    KASINA("카시나", 101),
-    ADIDAS("아디다스", 102);
+public enum Category {
+    CLOTHING("옷", 500),
+    FOOTWEAR("신발", 501),
+    ACCESSORY("악세서리", 502),
+    OTHER("기타", 503);
 
     private String korean;
     private int code;
 
-    public static Brand ofCode(Integer dbData){
-        return Arrays.stream(Brand.values())
+    public static Category ofCode(Integer dbData){
+        return Arrays.stream(Category.values())
                 .filter(e->e.getCode()==dbData)
                 .findAny()
                 .orElseThrow(()->new IllegalArgumentException(String.format("brand code %d not exists.",dbData)));
     }
 
-    public static Brand ofKorean(String korean){
-        return Arrays.stream(Brand.values())
+    public static Category ofKorean(String korean){
+        return Arrays.stream(Category.values())
                 .filter(e->e.getKorean().equals(korean))
                 .findAny()
-                .orElseThrow(()->new IllegalArgumentException(String.format("brand korean %s not exists.",korean)));
+                .orElseThrow(()->new IllegalArgumentException(String.format("brand code %s not exists.",korean)));
     }
 }

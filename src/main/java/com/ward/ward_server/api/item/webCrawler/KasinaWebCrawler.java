@@ -2,10 +2,12 @@ package com.ward.ward_server.api.item.webCrawler;
 
 import com.ward.ward_server.api.item.dto.WebProductData;
 import com.ward.ward_server.api.item.entity.enumtype.Brand;
-import com.ward.ward_server.api.item.entity.enumtype.State;
+import com.ward.ward_server.api.item.entity.enumtype.Status;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -15,9 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 @Slf4j
 public class KasinaWebCrawler {
     //FIXME 나중에 사이트별로 웹 크롤러 만들때 다 쓰이니까 전역변수로 만들어줘야 한다.
+    //TODO 크롬 버전 자동 업데이트를 중지해야 한다.
     private String CHROME_DRIVER_PATH = "D:\\chromedriver/chromedriver-win64/chromedriver.exe";
     private WebDriver driver;
 
@@ -58,18 +59,32 @@ public class KasinaWebCrawler {
         ArrayList<WebProductData> results = new ArrayList<>();
         for (String next : subUrl) {
             driver.get(next);
-            driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+            //driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+            //WebDriverWait wait = new WebDriverWait(driver,  Duration.ofSeconds(60));
+            //wait.until(webDriver -> ((JavascriptExecutor) webDriver).executeScript("return document.readyState").equals("complete"));
             String html = driver.getPageSource();
+            //System.out.println("html:"+html);
             Document document = Jsoup.parse(html);
-
+            //System.out.println("html:"+document.toString());
             // 1.제품명 추출
             String productName = document.select(".dtl-title .sub-txt").first().text();
             productName = productName.replace("[앱 전용]", "").trim();
             log.debug("상품명 {}", productName);
+            System.out.println(productName);
 
             // 2.이미지 URL 추출
-            String imageUrl = document.select(".c-lazyload c-lazyload--ratio_normal c-lazyload--gray").first().attr("src");
-            log.debug("이미지 {}", imageUrl);
+            Set<String> imageUrlList =new HashSet<>();
+            //String imageUrl = document.select(".c-lazyload c-lazyload--ratio_normal c-lazyload--gray").first().attr("src");
+            //String imageUrl = document.select(".c-lazyload c-lazyload--ratio_normal c-lazyload--gray").first().attr("src");
+            //String imageUrl = document.select(".c-lazyload c-lazyload--ratio_normal c-lazyload--gray").attr("src");
+            //Elements elements=document.select(".c-lazyload c-lazyload--ratio_normal c-lazyload--gray");
+            Elements elements=document.select("div.l-grid img");
+            for (Element element : elements) {
+                String imageUrl = element.attr("src");
+                imageUrlList.add(imageUrl);
+                System.out.println(imageUrl);
+                log.debug("이미지 {}", imageUrl);
+            }
 
             // 3.사이트 URL 추출
             String siteUrl = null;
@@ -77,6 +92,7 @@ public class KasinaWebCrawler {
             // 4.날짜 추출
             String stringDate = document.select(".dtl-raffle__info dd").text();
             log.debug("총 날짜 {}", stringDate);
+            System.out.println("총날짜:"+stringDate);
             List<LocalDateTime> dates = getDates(stringDate);
             if (dates == null) continue;
             LocalDateTime releaseDate = dates.get(0);
@@ -86,15 +102,15 @@ public class KasinaWebCrawler {
 
             // 5.상태
             LocalDateTime now=LocalDateTime.now();
-            State state=State.IMPOSSIBLE;
-            if(now.isAfter(releaseDate)) state=State.POSSIBLE;
+            Status status = Status.IMPOSSIBLE;
+            if(now.isAfter(releaseDate)) status = Status.POSSIBLE;
 
             // 6.브랜드 KASINA
 
             // 결과 저장
-            results.add(new WebProductData(productName, imageUrl, siteUrl,
+            results.add(new WebProductData(productName, null, siteUrl,
                     releaseDate, dueDate, presentationDate,
-                    state, Brand.KASINA));
+                    status, Brand.KASINA));
         }
         return results;
     }

@@ -2,7 +2,7 @@ package com.ward.ward_server.api.item.webCrawler;
 
 import com.ward.ward_server.api.item.dto.WebProductData;
 import com.ward.ward_server.api.item.entity.enumtype.Brand;
-import com.ward.ward_server.api.item.entity.enumtype.State;
+import com.ward.ward_server.api.item.entity.enumtype.Status;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -79,15 +79,15 @@ public class NikeWebCrawler {
 
             // 5.상태
             LocalDateTime now=LocalDateTime.now();
-            State state=State.IMPOSSIBLE;
-            if(now.isAfter(releaseDate)) state=State.POSSIBLE;
+            Status status = Status.IMPOSSIBLE;
+            if(now.isAfter(releaseDate)) status = Status.POSSIBLE;
 
             // 6.브랜드 NIKE
 
             // 결과 저장
             results.add(new WebProductData(productName, imageUrl, siteUrl,
                     releaseDate, dueDate, presentationDate,
-                    state, Brand.NIKE));
+                    status, Brand.NIKE));
         }
         return results;
     }

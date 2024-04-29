@@ -18,12 +18,14 @@ public enum ExceptionCode {
     INVALID_USERNAME_OR_PASSWORD(5206,"잘못된 아이디 또는 비밀번호입니다."),
     REGISTRATION_ERROR_MESSAGE(5207,"회원 가입 중 오류가 발생했습니다. 나중에 다시 시도해주세요."),
     USER_NOT_FOUND(5208, "사용자를 찾을 수 없습니다."),
-    ITEM_NOT_FOUND(5208, "아이템을 찾을 수 없습니다."),
     DUPLICATE_ENTRY(5209, "이미 응모하였습니다."),
     NO_ENTRY_RECORD_FOUND(5210, "응모내역이 존재하지 않습니다."),
     DUPLICATE_WISHLIST(5211, "이미 등록하였습니다."),
-    NO_WISHLIST_FOUND(5212, "관심 목록이 존재하지 않습니다.");
+    NO_WISHLIST_FOUND(5212, "관심 목록이 존재하지 않습니다."),
 
+    //아이템
+    ITEM_NOT_FOUND(5300, "아이템을 찾을 수 없습니다."),
+    DUPLICATE_ITEM_CODE(5309, "아이템 코드 중복입니다.");
 
     private final int code;
     private final String message;
