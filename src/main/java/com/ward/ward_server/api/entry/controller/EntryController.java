@@ -13,20 +13,20 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/entry")
+@RequestMapping("/entries")
 public class EntryController {
 
     private final EntryService entryService;
 
     //응모 내역 추가
-    @PostMapping("/create")
+    @PostMapping
     public ApiResponse create(@RequestBody EntryRequestDTO entryRequestDTO) {
         Long entryId = entryService.createEntry(entryRequestDTO);
         return ApiResponse.ok(entryId);
     }
 
     // 응모 내역 제거
-    @DeleteMapping("/delete")
+    @DeleteMapping
     public ApiResponse deleteEntry(@RequestBody EntryRequestDTO entryRequestDTO) {
         entryService.deleteEntry(entryRequestDTO);
         return ApiResponse.ok();
