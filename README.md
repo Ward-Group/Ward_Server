@@ -19,6 +19,7 @@
 
 ## 🌎Team Role
 ### 🏄‍♂️손지민
+* 기획
 * DB 설계 및 구축
 * AWS EC2 연결
 * 회원가입/로그인 기능 구현( Spring Security/JWT )
