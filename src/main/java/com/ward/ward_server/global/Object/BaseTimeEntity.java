@@ -1,4 +1,4 @@
-package com.ward.ward_server.global.entity;
+package com.ward.ward_server.global.Object;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;

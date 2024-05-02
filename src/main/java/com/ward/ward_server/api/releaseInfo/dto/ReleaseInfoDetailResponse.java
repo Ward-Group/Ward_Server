@@ -6,11 +6,12 @@ public record ReleaseInfoDetailResponse(
         String itemCode,
         String itemName,
         int price,
-        String drawPlatform,
+        String platformLogoImage,
+        String platformName,
         String siteUrl,
-        LocalDateTime releaseDate,
-        LocalDateTime dueDate,
-        LocalDateTime presentationDate,
+        String releaseDate,
+        String dueDate,
+        String presentationDate,
         String status
 ) {
 }

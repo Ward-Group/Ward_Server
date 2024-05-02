@@ -1,21 +1,22 @@
-package com.ward.ward_server.api.entry.domain;
+package com.ward.ward_server.api.entry.entity;
 
 import com.ward.ward_server.api.releaseInfo.entity.ReleaseInfo;
 import com.ward.ward_server.api.user.entity.User;
-import com.ward.ward_server.api.item.entity.Item;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
+
+import static com.ward.ward_server.global.Object.Constants.FORMAT;
 
 @Entity
 @Getter
-@Table(name = "EntryRecord")
-@NoArgsConstructor(access = AccessLevel.PROTECTED) //JPA 쓰면서 protected 키워드는 생성해서 쓰지말라는 의미
+@Table(name = "entry_record")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EntryRecord {
-    //응모 내역
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,18 +27,23 @@ public class EntryRecord {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "releaseInfo_id")
+    @JoinColumn(name = "release_info_id")
     private ReleaseInfo releaseInfo;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "entry_date")
-    private Date entryDate;
+    private LocalDateTime entryDate;
 
     private String memo;
 
-    public EntryRecord(User user, ReleaseInfo releaseInfo) {
+    public EntryRecord(User user, ReleaseInfo releaseInfo, String memo) {
         this.user = user;
         this.releaseInfo = releaseInfo;
-        this.entryDate = new Date();
+        this.entryDate = LocalDateTime.now();
+        this.memo = memo;
+    }
+
+    public String getEntryDate(){
+        return entryDate.format(FORMAT);
     }
 }
