@@ -5,7 +5,7 @@ import com.ward.ward_server.api.item.entity.enumtype.Category;
 import com.ward.ward_server.api.item.entity.enumtype.converter.BrandConverter;
 import com.ward.ward_server.api.item.entity.enumtype.converter.CategoryConverter;
 import com.ward.ward_server.api.wishlist.domain.Wishlist;
-import com.ward.ward_server.global.entity.BaseTimeEntity;
+import com.ward.ward_server.global.Object.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;

@@ -22,6 +22,14 @@ public enum ApiResponseMessage {
     RELEASE_INFO_CREATE_SUCCESS("발매정보 등록에 성공하였습니다."),
     RELEASE_INFO_LIST_LOAD_SUCCESS("발매정보 목록 조회에 성공하였습니다."),
     RELEASE_INFO_UPDATE_SUCCESS("발매정보 수정에 성공하였습니다."),
-    RELEASE_INFO_DELETE_SUCCESS("발매정보를 삭제했습니다.");
+    RELEASE_INFO_DELETE_SUCCESS("발매정보를 삭제했습니다."),
+    DRAW_PLATFORM_CREATE_SUCCESS("발매플랫폼 등록에 성공하였습니다."),
+    DRAW_PLATFORM_UPDATE_SUCCESS("발매플랫폼 수정에 성공하였습니다."),
+    DRAW_PLATFORM_DELETE_SUCCESS("발매플랫폼 삭제에 성공하였습니다."),
+    //응모
+    ENTRY_RECORD_CREATE_SUCCESS("응모 등록에 성공하였습니다."),
+    ENTRY_RECORD_DELETE_SUCCESS("응모 삭제에 성공하였습니다."),
+    ENTRY_RECORD_BY_ITEM_LOAD_SUCCESS("상품의 발매정보와 응모 조회에 성공하였습니다."),
+    ENTRY_RECORD_BY_USER_LOAD_SUCCESS("회원의 발매정보와 응모 조회에 성공하였습니다.");
     private final String message;
 }

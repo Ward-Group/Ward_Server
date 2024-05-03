@@ -1,30 +1,33 @@
 package com.ward.ward_server.api.releaseInfo.entity;
 
-import com.ward.ward_server.api.entry.domain.EntryRecord;
+import com.ward.ward_server.api.entry.entity.EntryRecord;
 import com.ward.ward_server.api.item.entity.enumtype.Status;
+import com.ward.ward_server.global.Object.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.parameters.P;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.ward.ward_server.global.Object.Constants.FORMAT;
 
 @Entity
 @Getter
 @Table(name = "release_info")
 @NoArgsConstructor
-public class ReleaseInfo {
+public class ReleaseInfo extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private Long itemId;
 
-    private String drawPlatform;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "draw_platform_id")
+    private DrawPlatform drawPlatform;
 
     private String siteUrl;
 
@@ -45,7 +48,7 @@ public class ReleaseInfo {
     private List<EntryRecord> entryRecords = new ArrayList<>();
 
     @Builder
-    public ReleaseInfo(long itemId, String drawPlatform, String siteUrl, LocalDateTime releaseDate, LocalDateTime dueDate, LocalDateTime presentationDate, Status status) {
+    public ReleaseInfo(long itemId, DrawPlatform drawPlatform, String siteUrl, LocalDateTime releaseDate, LocalDateTime dueDate, LocalDateTime presentationDate, Status status) {
         this.itemId = itemId;
         this.drawPlatform = drawPlatform;
         this.siteUrl = siteUrl;
@@ -59,7 +62,7 @@ public class ReleaseInfo {
         this.itemId = itemId;
     }
 
-    public void updateDrawPlatform(String drawPlatform) {
+    public void updateDrawPlatform(DrawPlatform drawPlatform) {
         this.drawPlatform = drawPlatform;
     }
 
@@ -67,15 +70,39 @@ public class ReleaseInfo {
         this.siteUrl = siteUrl;
     }
 
-    public void updateReleaseDate(LocalDateTime releaseDate) {
-        this.releaseDate = releaseDate;
+    public void updateReleaseDate(String releaseDate) {
+        this.releaseDate = LocalDateTime.parse(releaseDate, FORMAT);
     }
 
-    public void updateDueDate(LocalDateTime dueDate) {
-        this.dueDate = dueDate;
+    public void updateDueDate(String dueDate) {
+        this.dueDate = LocalDateTime.parse(dueDate, FORMAT);
     }
 
-    public void updatePresentationDate(LocalDateTime presentationDate) {
-        this.presentationDate = presentationDate;
+    public void updatePresentationDate(String presentationDate) {
+        this.presentationDate = LocalDateTime.parse(presentationDate, FORMAT);
+    }
+
+    public String getReleaseDate() {
+        return releaseDate.format(FORMAT);
+    }
+
+    public String getDueDate() {
+        return dueDate.format(FORMAT);
+    }
+
+    public String getPresentationDate() {
+        return presentationDate.format(FORMAT);
+    }
+
+    public LocalDateTime getReleaseLocalDate() {
+        return releaseDate;
+    }
+
+    public LocalDateTime getDueLocalDate() {
+        return dueDate;
+    }
+
+    public LocalDateTime getPresentationLocalDate() {
+        return presentationDate;
     }
 }
