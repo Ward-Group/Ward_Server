@@ -1,6 +1,6 @@
 package com.ward.ward_server.api.user.entity;
 
-import com.ward.ward_server.api.entry.domain.EntryRecord;
+import com.ward.ward_server.api.entry.entity.EntryRecord;
 import com.ward.ward_server.api.user.entity.enumtype.Role;
 import com.ward.ward_server.api.wishlist.domain.Wishlist;
 import jakarta.persistence.*;
