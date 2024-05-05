@@ -23,8 +23,8 @@ public class JwtIssuer {
                 .withIssuedAt(issuedAt)
                 .withExpiresAt(expiresAt)
 //                .withExpiresAt(Instant.now().plus(Duration.of(1, ChronoUnit.DAYS))) // 보통 duration 짧게 하는데 튜토리얼이니까 1day
-                .withClaim("email", email)
-                .withClaim("role", roles)
+                .withClaim("e", email)
+                .withClaim("r", roles)
                 .sign(Algorithm.HMAC256(properties.getSecretKey()));
     }
 }
