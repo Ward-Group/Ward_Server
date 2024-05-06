@@ -1,10 +1,8 @@
 package com.ward.ward_server.api.item.entity;
 
-import com.ward.ward_server.api.item.entity.enumtype.Brand;
 import com.ward.ward_server.api.item.entity.enumtype.Category;
-import com.ward.ward_server.api.item.entity.enumtype.converter.BrandConverter;
 import com.ward.ward_server.api.item.entity.enumtype.converter.CategoryConverter;
-import com.ward.ward_server.api.wishlist.domain.Wishlist;
+import com.ward.ward_server.api.wishItem.entity.WishItem;
 import com.ward.ward_server.global.Object.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -35,11 +33,11 @@ public class Item extends BaseTimeEntity {
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ItemImage> itemImages = new ArrayList<>();
 
-    @Column(nullable = false)
-    @Convert(converter = BrandConverter.class)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "brand_id")
     private Brand brand;
 
-    private Long viewCount = 0L;
+    private int viewCount = 0;
 
     @Column(nullable = false)
     @Convert(converter = CategoryConverter.class)
@@ -48,7 +46,7 @@ public class Item extends BaseTimeEntity {
     private int price;
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
-    private List<Wishlist> wishlists = new ArrayList<>();
+    private List<WishItem> wishItems = new ArrayList<>();
 
     @Builder
     public Item(String name, String code, Brand brand, Category category, int price) {

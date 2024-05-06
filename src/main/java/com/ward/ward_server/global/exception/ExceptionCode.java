@@ -25,6 +25,9 @@ public enum ExceptionCode {
     ITEM_NOT_FOUND(5300, "상품을 찾을 수 없습니다."),
     DUPLICATE_ITEM_CODE(5309, "이미 등록된 상품코드입니다."),
 
+    BRAND_NOT_FOUND(5350, "브랜드를 찾을 수 없습니다."),
+    DUPLICATE_BRAND(5351, "이미 등록된 브랜드입니다."),
+
     //발매정보
     RELEASE_INFO_NOT_FOUND(5400, "발매정보를 찾을 수 없습니다."),
     DUPLICATE_RELEASE_INFO(5401, "이미 등록된 발매정보입니다."),
@@ -34,7 +37,11 @@ public enum ExceptionCode {
 
     //응모
     DUPLICATE_ENTRY_RECORD(5500, "이미 응모하였습니다."),
-    ENTRY_RECORD_NOT_FOUND(5501, "응모내역이 존재하지 않습니다.");
+    ENTRY_RECORD_NOT_FOUND(5501, "응모내역이 존재하지 않습니다."),
+
+    //관심상품
+    WISH_ITEM_NOT_FOUND(5600, "관심상품을 찾을 수 없습니다."),
+    DUPLICATE_WISH_ITEM(5600, "이미 등록한 관심상품입니다.");
 
     private final int code;
     private final String message;

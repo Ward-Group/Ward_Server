@@ -1,7 +1,6 @@
 package com.ward.ward_server.api.item.webCrawler;
 
 import com.ward.ward_server.api.item.dto.WebProductData;
-import com.ward.ward_server.api.item.entity.enumtype.Brand;
 import com.ward.ward_server.api.item.entity.enumtype.Status;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -108,9 +107,9 @@ public class KasinaWebCrawler {
             // 6.브랜드 KASINA
 
             // 결과 저장
-            results.add(new WebProductData(productName, null, siteUrl,
-                    releaseDate, dueDate, presentationDate,
-                    status, Brand.KASINA));
+//            results.add(new WebProductData(productName, null, siteUrl,
+//                    releaseDate, dueDate, presentationDate,
+//                    status, Brand.KASINA));
         }
         return results;
     }

@@ -23,18 +23,17 @@ import static com.ward.ward_server.global.exception.ExceptionCode.DUPLICATE_BRAN
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class BrandService {
     private final BrandRepository brandRepository;
     private final ItemRepository itemRepository;
 
     public BrandResponse createBrand(BrandRequest request) {
-        if (request.name() == null || request.name().isBlank() || request.logoImage() == null || request.logoImage().isBlank())
+        if (request.brandName() == null || request.brandName().isBlank() || request.brandLogoImage() == null || request.brandLogoImage().isBlank())
             throw new ApiException(ExceptionCode.INVALID_INPUT);
-        if (brandRepository.existsByName(request.name())) throw new ApiException(DUPLICATE_BRAND);
+        if (brandRepository.existsByName(request.brandName())) throw new ApiException(DUPLICATE_BRAND);
         Brand savedBrand = brandRepository.save(Brand.builder()
-                .logoImage(request.logoImage())
-                .name(request.name())
+                .logoImage(request.brandLogoImage())
+                .name(request.brandName())
                 .build());
         return new BrandResponse(savedBrand.getLogoImage(), savedBrand.getName(), savedBrand.getViewCount(), savedBrand.getWishCount());
     }
@@ -47,7 +46,7 @@ public class BrandService {
                         Collectors.toMap(
                                 Brand::getId,
                                 brand -> itemRepository.findBrandItemListTop3(brand.getId()).stream()
-                                        .map(item -> new ItemSimpleResponse(item.getItemImages().get(0).getUrl(), item.getName(), item.getCode()))
+                                        .map(item -> new ItemSimpleResponse(item.getName(), item.getCode(), item.getItemImages().get(0).getUrl(), item.getBrand().getName()))
                                         .toList()
                         ));
         return top10brandList.stream()
@@ -57,12 +56,12 @@ public class BrandService {
 
     @Transactional
     public BrandResponse updateBrand(String originBrandName, BrandRequest request) {
-        if (request.name() == null && request.logoImage() == null) throw new ApiException(ExceptionCode.INVALID_INPUT);
+        if (request.brandName() == null && request.brandLogoImage() == null) throw new ApiException(ExceptionCode.INVALID_INPUT);
         Brand brand = brandRepository.findByName(originBrandName).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
-        if (request.logoImage() != null && !request.logoImage().isBlank()) brand.updateLogoImage(request.logoImage());
-        if (request.name() != null && !request.name().isBlank()) {
-            if (brandRepository.existsByName(request.name())) throw new ApiException(DUPLICATE_BRAND);
-            brand.updateName(request.name());
+        if (request.brandLogoImage() != null && !request.brandLogoImage().isBlank()) brand.updateLogoImage(request.brandLogoImage());
+        if (request.brandName() != null && !request.brandName().isBlank()) {
+            if (brandRepository.existsByName(request.brandName())) throw new ApiException(DUPLICATE_BRAND);
+            brand.updateName(request.brandName());
         }
         return new BrandResponse(brand.getLogoImage(), brand.getName(), brand.getViewCount(), brand.getWishCount());
     }

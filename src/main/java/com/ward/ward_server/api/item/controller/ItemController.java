@@ -24,27 +24,23 @@ public class ItemController {
 
     @PostMapping
     public ApiResponse<ItemDetailResponse> createItem(@RequestBody ItemCreateRequest itemCreateRequest) throws ApiException {
-        ItemDetailResponse response = itemService.createItem(itemCreateRequest);
-        return ApiResponse.ok(ITEM_CREATE_SUCCESS, response);
+        return ApiResponse.ok(ITEM_CREATE_SUCCESS, itemService.createItem(itemCreateRequest));
     }
 
     @GetMapping("/{itemCode}")
     public ApiResponse<ItemDetailResponse> getItem(@PathVariable("itemCode") String itemCode) {
-        ItemDetailResponse response = itemService.getItem(itemCode);
-        return ApiResponse.ok(ITEM_DETAIL_LOAD_SUCCESS, response);
+        return ApiResponse.ok(ITEM_DETAIL_LOAD_SUCCESS, itemService.getItem(itemCode));
     }
 
     @GetMapping
     public ApiResponse<PageResponse<ItemSimpleResponse>> getItemList(@Positive @RequestParam(value = "page", defaultValue = "1") int page,
-                                                                     @Positive @RequestParam(value = "size", defaultValue = "5") int size) {
-        PageResponse<ItemSimpleResponse> response = itemService.getItemList(page - 1, size);
-        return ApiResponse.ok(ITEM_LIST_LOAD_SUCCESS, response);
+                                                                     @Positive @RequestParam(value = "size", defaultValue = "10") int size) {
+        return ApiResponse.ok(ITEM_LIST_LOAD_SUCCESS, itemService.getItemList(page - 1, size));
     }
 
     @PatchMapping("/{itemCode}")
     public ApiResponse<ItemDetailResponse> updateItem(@PathVariable("itemCode") String itemCode, @RequestBody ItemUpdateRequest itemUpdateRequest) {
-        ItemDetailResponse response = itemService.updateItem(itemCode, itemUpdateRequest);
-        return ApiResponse.ok(ITEM_UPDATE_SUCCESS, response);
+        return ApiResponse.ok(ITEM_UPDATE_SUCCESS, itemService.updateItem(itemCode, itemUpdateRequest));
     }
 
     @DeleteMapping("/{itemCode}")
