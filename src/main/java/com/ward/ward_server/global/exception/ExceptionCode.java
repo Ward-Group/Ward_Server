@@ -41,7 +41,11 @@ public enum ExceptionCode {
 
     //관심상품
     WISH_ITEM_NOT_FOUND(5600, "관심상품을 찾을 수 없습니다."),
-    DUPLICATE_WISH_ITEM(5600, "이미 등록한 관심상품입니다.");
+    DUPLICATE_WISH_ITEM(5600, "이미 등록한 관심상품입니다."),
+
+    //관심브랜드
+    WISH_BRAND_NOT_FOUND(5700, "관심브랜드를 찾을 수 없습니다."),
+    DUPLICATE_WISH_BRAND(5701, "이미 등록한 관심브랜드입니다.");
 
     private final int code;
     private final String message;

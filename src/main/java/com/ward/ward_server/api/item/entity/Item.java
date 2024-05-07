@@ -2,7 +2,7 @@ package com.ward.ward_server.api.item.entity;
 
 import com.ward.ward_server.api.item.entity.enumtype.Category;
 import com.ward.ward_server.api.item.entity.enumtype.converter.CategoryConverter;
-import com.ward.ward_server.api.wishItem.entity.WishItem;
+import com.ward.ward_server.api.wishItem.WishItem;
 import com.ward.ward_server.global.Object.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Builder;

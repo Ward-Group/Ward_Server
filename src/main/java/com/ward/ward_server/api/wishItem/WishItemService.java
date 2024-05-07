@@ -1,12 +1,12 @@
-package com.ward.ward_server.api.wishItem.service;
+package com.ward.ward_server.api.wishItem;
 
 import com.ward.ward_server.api.item.entity.Item;
 import com.ward.ward_server.api.item.repository.ItemRepository;
 import com.ward.ward_server.api.user.entity.User;
 import com.ward.ward_server.api.user.repository.UserRepository;
-import com.ward.ward_server.api.wishItem.dto.WishItemResponse;
-import com.ward.ward_server.api.wishItem.entity.WishItem;
-import com.ward.ward_server.api.wishItem.repository.WishItemRepository;
+import com.ward.ward_server.api.wishItem.WishItemResponse;
+import com.ward.ward_server.api.wishItem.WishItem;
+import com.ward.ward_server.api.wishItem.WishItemRepository;
 import com.ward.ward_server.global.Object.PageResponse;
 import com.ward.ward_server.global.exception.ApiException;
 import lombok.RequiredArgsConstructor;

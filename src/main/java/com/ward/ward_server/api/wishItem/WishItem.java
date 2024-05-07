@@ -1,4 +1,4 @@
-package com.ward.ward_server.api.wishItem.entity;
+package com.ward.ward_server.api.wishItem;
 
 import com.ward.ward_server.api.item.entity.Item;
 import com.ward.ward_server.api.user.entity.User;

@@ -1,8 +1,6 @@
-package com.ward.ward_server.api.wishItem.controller;
+package com.ward.ward_server.api.wishItem;
 
 import com.ward.ward_server.api.user.auth.security.CustomUserDetails;
-import com.ward.ward_server.api.wishItem.dto.WishItemResponse;
-import com.ward.ward_server.api.wishItem.service.WishItemService;
 import com.ward.ward_server.global.Object.PageResponse;
 import com.ward.ward_server.global.response.ApiResponse;
 import jakarta.validation.constraints.NotBlank;
@@ -15,7 +13,7 @@ import static com.ward.ward_server.global.response.ApiResponseMessage.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/wishItems")
+@RequestMapping("/wish-items")
 public class WishItemController {
     private final WishItemService wishItemService;
 

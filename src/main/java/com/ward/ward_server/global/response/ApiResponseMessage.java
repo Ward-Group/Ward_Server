@@ -36,9 +36,13 @@ public enum ApiResponseMessage {
     ENTRY_RECORD_DELETE_SUCCESS("응모 삭제에 성공하였습니다."),
     ENTRY_RECORD_BY_ITEM_LOAD_SUCCESS("상품의 발매정보와 응모 조회에 성공하였습니다."),
     ENTRY_RECORD_BY_USER_LOAD_SUCCESS("회원의 발매정보와 응모 조회에 성공하였습니다."),
-    //관심 상품
-    WISH_ITEM_CREATE_SUCCESS("관심 상품 등록에 성공하였습니다"),
-    WISH_ITEM_LOAD_SUCCESS("회원의 관심 상품 목록 조회에 성공하였습니다"),
-    WISH_ITEM_DELETE_SUCCESS("관심 상품 삭제에 성공하였습니다.");
+    //관심상품
+    WISH_ITEM_CREATE_SUCCESS("관심상품 등록에 성공하였습니다"),
+    WISH_ITEM_LOAD_SUCCESS("회원의 관심상품 목록 조회에 성공하였습니다"),
+    WISH_ITEM_DELETE_SUCCESS("관심상품 삭제에 성공하였습니다."),
+    //관심브랜드
+    WISH_BRAND_CREATE_SUCCESS("관심브랜드 등록에 성공하였습니다."),
+    WISH_BRAND_LOAD_SUCCESS("회원의 관심브랜드 목록 조회에 성공하였습니다."),
+    WISH_BRAND_DELETE_SUCCESS("관심브랜드 삭제에 성공하였습니다.");
     private final String message;
 }

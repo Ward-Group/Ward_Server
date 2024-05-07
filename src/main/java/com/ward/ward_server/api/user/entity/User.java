@@ -2,7 +2,7 @@ package com.ward.ward_server.api.user.entity;
 
 import com.ward.ward_server.api.entry.entity.EntryRecord;
 import com.ward.ward_server.api.user.entity.enumtype.Role;
-import com.ward.ward_server.api.wishItem.entity.WishItem;
+import com.ward.ward_server.api.wishItem.WishItem;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

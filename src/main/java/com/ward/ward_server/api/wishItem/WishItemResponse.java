@@ -1,4 +1,4 @@
-package com.ward.ward_server.api.wishItem.dto;
+package com.ward.ward_server.api.wishItem;
 
 public record WishItemResponse(
         String itemImage,
