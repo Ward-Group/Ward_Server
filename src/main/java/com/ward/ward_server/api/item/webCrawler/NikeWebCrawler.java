@@ -23,16 +23,12 @@ import java.util.concurrent.TimeUnit;
 @Component
 @Slf4j
 public class NikeWebCrawler {
-    //FIXME 나중에 사이트별로 웹 크롤러 만들때 다 쓰이니까 전역변수로 만들어줘야 한다.
-    private final String chromeDriverPath;
-//    private String CHROME_DRIVER_PATH = "D:\\chromedriver/chromedriver-win64/chromedriver.exe";
-//    private String CHROME_DRIVER_PATH = "/home/ec2-user/chromedriver-linux64/chromedriver";
 
     private WebDriver driver;
 
     @Autowired
     public NikeWebCrawler(CrawlerProperties crawlerProperties) {
-        this.chromeDriverPath = crawlerProperties.getChromeDriverPath();
+        String chromeDriverPath = crawlerProperties.getChromeDriverPath();
         ChromeOptions chromeOptions = new ChromeOptions();
 //        chromeOptions.setBinary("/usr/bin/google-chrome"); // EC2 쓸 때 해제
         chromeOptions.addArguments("--headless"); //헤드리스 모드로 실행, 실제 창이 표시되지 않는다.
