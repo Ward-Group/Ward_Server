@@ -10,4 +10,6 @@ public interface WishItemRepository extends JpaRepository<WishItem, Long> {
     boolean existsByUserIdAndItemId(long userId, long itemId);
 
     void deleteByUserIdAndItemId(long userId, long itemId);
+
+    Long countAllByItemId(long itemId);
 }

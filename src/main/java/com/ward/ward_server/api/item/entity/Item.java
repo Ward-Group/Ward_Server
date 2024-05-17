@@ -37,7 +37,7 @@ public class Item extends BaseTimeEntity {
     @JoinColumn(name = "brand_id")
     private Brand brand;
 
-    private int viewCount = 0;
+    private Long viewCount = 0L;
 
     @Column(nullable = false)
     @Convert(converter = CategoryConverter.class)

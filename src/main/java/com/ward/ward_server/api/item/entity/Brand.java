@@ -1,12 +1,13 @@
 package com.ward.ward_server.api.item.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Brand {
     @Id
@@ -19,8 +20,7 @@ public class Brand {
     @Column(nullable = false)
     private String name;
 
-    private int viewCount = 0;
-    private int wishCount = 0;
+    private Long viewCount = 0L;
 
     @Builder
     public Brand(String logoImage, String name) {
@@ -34,5 +34,9 @@ public class Brand {
 
     public void updateName(String name) {
         this.name = name;
+    }
+
+    public void increaseViewCount() {
+        viewCount += 1;
     }
 }

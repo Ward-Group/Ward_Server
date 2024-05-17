@@ -23,6 +23,7 @@ public enum ApiResponseMessage {
     BRAND_TOP10_WITH_ITEM_LOAD_SUCCESS("top10 브랜드와 상품 목록 조회에 성공하였습니다."),
     BRAND_UPDATE_SUCCESS("브랜드 수정에 성공하였습니다."),
     BRAND_DELETE_SUCCESS("브랜드 삭제에 성공하였습니다."),
+    BRAND_VIEW_COUNT_UP_SUCCESS("브랜드 조회수 증가에 성공하였습니다."),
     //발매정보
     RELEASE_INFO_CREATE_SUCCESS("발매정보 등록에 성공하였습니다."),
     RELEASE_INFO_LIST_LOAD_SUCCESS("발매정보 목록 조회에 성공하였습니다."),

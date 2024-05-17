@@ -1,6 +1,6 @@
 package com.ward.ward_server.api.item.controller;
 
-import com.ward.ward_server.api.item.dto.BrandItemResponse;
+import com.ward.ward_server.api.item.dto.TopBrandResponse;
 import com.ward.ward_server.api.item.dto.BrandRequest;
 import com.ward.ward_server.api.item.dto.BrandResponse;
 import com.ward.ward_server.api.item.service.BrandService;
@@ -24,7 +24,7 @@ public class BrandController {
     }
 
     @GetMapping("/top10")
-    public ApiResponse<List<BrandItemResponse>> getBrandTop10AndItem3List(){
+    public ApiResponse<List<TopBrandResponse>> getBrandTop10AndItem3List(){
         return ApiResponse.ok(BRAND_TOP10_WITH_ITEM_LOAD_SUCCESS, brandService.getBrandTop10AndItem3List());
     }
 
@@ -33,9 +33,15 @@ public class BrandController {
         return ApiResponse.ok(BRAND_UPDATE_SUCCESS, brandService.updateBrand(brandName, request));
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{brandName}")
     public ApiResponse deleteBrand(@PathVariable("brandName") String brandName){
         brandService.deleteBrand(brandName);
         return ApiResponse.ok(BRAND_DELETE_SUCCESS);
+    }
+
+    @PatchMapping("/{brandName}/view-counts")
+    public ApiResponse increaseBrandViewCount(@PathVariable("brandName") String brandName){
+        brandService.increaseBrandViewCount(brandName);
+        return ApiResponse.ok(BRAND_VIEW_COUNT_UP_SUCCESS);
     }
 }

@@ -10,4 +10,6 @@ public interface WishBrandRepository extends JpaRepository<WishBrand, Long> {
     Page<WishBrand> findAllByUserId(long userId, Pageable pageable);
 
     void deleteByUserIdAndBrandId(long userId, long brandId);
+
+    Long countAllByBrandId(long brandId);
 }

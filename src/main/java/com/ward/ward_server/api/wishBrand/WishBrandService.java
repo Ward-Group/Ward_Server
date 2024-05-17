@@ -39,7 +39,7 @@ public class WishBrandService {
                 .map(wb -> new WishBrandResponse(
                         wb.getBrand().getLogoImage(),
                         wb.getBrand().getName(),
-                        wb.getBrand().getWishCount()))
+                        wb.getWishDate()))
                 .toList();
         return new PageResponse<>(responses, wishBrandPage);
     }
