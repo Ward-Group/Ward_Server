@@ -39,7 +39,8 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
 	//selenium
-	implementation("org.seleniumhq.selenium:selenium-java:4.6.0")
+	implementation("org.seleniumhq.selenium:selenium-java:4.20.0")
+	implementation("org.seleniumhq.selenium:selenium-devtools-v124:4.20.0")
 	implementation("org.jsoup:jsoup:1.17.1")
 	//validation
 	implementation("org.springframework.boot:spring-boot-starter-validation")

@@ -23,19 +23,20 @@ import java.util.concurrent.TimeUnit;
 @Component
 @Slf4j
 public class NikeWebCrawler {
-    //FIXME 나중에 사이트별로 웹 크롤러 만들때 다 쓰이니까 전역변수로 만들어줘야 한다.
-    private String CHROME_DRIVER_PATH = "D:\\chromedriver/chromedriver-win64/chromedriver.exe";
+
     private WebDriver driver;
 
     @Autowired
-    public NikeWebCrawler() {
+    public NikeWebCrawler(CrawlerProperties crawlerProperties) {
+        String chromeDriverPath = crawlerProperties.getChromeDriverPath();
         ChromeOptions chromeOptions = new ChromeOptions();
-        chromeOptions.addArguments("--headless=new"); //헤드리스 모드로 실행, 실제 창이 표시되지 않는다.
+//        chromeOptions.setBinary("/usr/bin/google-chrome"); // EC2 쓸 때 해제
+        chromeOptions.addArguments("--headless"); //헤드리스 모드로 실행, 실제 창이 표시되지 않는다.
         chromeOptions.addArguments("--lang=ko"); //브라우저 언어를 한국어로 설정
         chromeOptions.addArguments("--no-sandbox"); //샌드박스 모드 비활성화
         chromeOptions.addArguments("--disable-dev-shm-usage"); // /dev/shm 사용 비활성화
         chromeOptions.addArguments("--disable-gpu"); //GPU 가속 비활성화
-        System.setProperty("webdriver.chrome.driver", CHROME_DRIVER_PATH);
+        System.setProperty("webdriver.chrome.driver", chromeDriverPath);
         this.driver = new ChromeDriver(chromeOptions);
     }
 
@@ -67,20 +68,20 @@ public class NikeWebCrawler {
             int[] time = Arrays.stream(dates[3].replace("출시", "").split(":"))
                     .mapToInt(Integer::parseInt)
                     .toArray();
-            if(ampm.equals("오후")) time[0] = time[0] + 12;
+            if (ampm.equals("오후")) time[0] = time[0] + 12;
             // 4-1.
-            LocalDateTime releaseDate=LocalDateTime.of(2024, month, day, time[0], time[1]);
+            LocalDateTime releaseDate = LocalDateTime.of(2024, month, day, time[0], time[1]);
 
             // 4-2.마감날짜
-            LocalDateTime dueDate=null;
+            LocalDateTime dueDate = null;
 
             // 4-3.발표날짜
-            LocalDateTime presentationDate=null;
+            LocalDateTime presentationDate = null;
 
             // 5.상태
-            LocalDateTime now=LocalDateTime.now();
+            LocalDateTime now = LocalDateTime.now();
             Status status = Status.IMPOSSIBLE;
-            if(now.isAfter(releaseDate)) status = Status.POSSIBLE;
+            if (now.isAfter(releaseDate)) status = Status.POSSIBLE;
 
             // 6.브랜드 NIKE
 
