@@ -31,19 +31,21 @@ public class EntryRecordController {
 
     @DeleteMapping
     public ApiResponse deleteEntryRecord(@AuthenticationPrincipal CustomUserDetails principal,
-                                         @NotNull @RequestParam(value = "itemCode") String itemCode,
-                                         @NotNull @RequestParam(value = "platformName") String platformName) {
-        entryRecordService.deleteEntryRecord(principal.getUserId(), itemCode, platformName);
+                                         @RequestParam(value = "itemCode") String itemCode,
+                                         @RequestParam(value = "brandName") String brandName,
+                                         @RequestParam(value = "platformName") String platformName) {
+        entryRecordService.deleteEntryRecord(principal.getUserId(), itemCode, brandName, platformName);
         return ApiResponse.ok(ENTRY_RECORD_DELETE_SUCCESS);
     }
 
-    @GetMapping("/items/{itemCode}")
+    @GetMapping("/item")
     public ApiResponse<List<EntryRecordDetailResponse>> getEntryRecordListByItem(@AuthenticationPrincipal CustomUserDetails principal,
-                                                                                 @PathVariable("itemCode") String itemCode) {
-        return ApiResponse.ok(ENTRY_RECORD_BY_ITEM_LOAD_SUCCESS, entryRecordService.getEntryRecordListByItem(principal.getUserId(), itemCode));
+                                                                                 @RequestParam(value = "itemCode") String itemCode,
+                                                                                 @RequestParam(value = "brandName") String brandName) {
+        return ApiResponse.ok(ENTRY_RECORD_BY_ITEM_LOAD_SUCCESS, entryRecordService.getEntryRecordListByItem(principal.getUserId(), itemCode, brandName));
     }
 
-    @GetMapping
+    @GetMapping("/user")
     public ApiResponse<PageResponse<EntryRecordDetailResponse>> getEntryRecordListByUser(@AuthenticationPrincipal CustomUserDetails principal,
                                                                                          @Positive @RequestParam(value = "page", defaultValue = "1") int page,
                                                                                          @Positive @RequestParam(value = "size", defaultValue = "5") int size) {

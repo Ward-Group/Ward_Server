@@ -23,7 +23,7 @@ public enum ExceptionCode {
 
     //아이템
     ITEM_NOT_FOUND(5300, "상품을 찾을 수 없습니다."),
-    DUPLICATE_ITEM_CODE(5309, "이미 등록된 상품코드입니다."),
+    DUPLICATE_ITEM(5309, "이미 등록된 상품입니다."),
 
     BRAND_NOT_FOUND(5350, "브랜드를 찾을 수 없습니다."),
     DUPLICATE_BRAND(5351, "이미 등록된 브랜드입니다."),

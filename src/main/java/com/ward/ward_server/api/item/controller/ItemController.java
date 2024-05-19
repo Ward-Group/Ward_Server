@@ -8,6 +8,7 @@ import com.ward.ward_server.api.item.service.ItemService;
 import com.ward.ward_server.global.Object.PageResponse;
 import com.ward.ward_server.global.exception.ApiException;
 import com.ward.ward_server.global.response.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.index.qual.Positive;
 import org.springframework.web.bind.annotation.*;
@@ -23,29 +24,33 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
-    public ApiResponse<ItemDetailResponse> createItem(@RequestBody ItemCreateRequest itemCreateRequest) throws ApiException {
+    public ApiResponse<ItemDetailResponse> createItem(@Valid @RequestBody ItemCreateRequest itemCreateRequest) throws ApiException {
         return ApiResponse.ok(ITEM_CREATE_SUCCESS, itemService.createItem(itemCreateRequest));
     }
 
-    @GetMapping("/{itemCode}")
-    public ApiResponse<ItemDetailResponse> getItem(@PathVariable("itemCode") String itemCode) {
-        return ApiResponse.ok(ITEM_DETAIL_LOAD_SUCCESS, itemService.getItem(itemCode));
+    @GetMapping
+    public ApiResponse<ItemDetailResponse> getItem(@RequestParam(value = "itemCode") String itemCode,
+                                                   @RequestParam(value = "brandName") String brandName) {
+        return ApiResponse.ok(ITEM_DETAIL_LOAD_SUCCESS, itemService.getItem(itemCode, brandName));
     }
 
-    @GetMapping
+    @GetMapping("/list")
     public ApiResponse<PageResponse<ItemSimpleResponse>> getItemList(@Positive @RequestParam(value = "page", defaultValue = "1") int page,
                                                                      @Positive @RequestParam(value = "size", defaultValue = "10") int size) {
         return ApiResponse.ok(ITEM_LIST_LOAD_SUCCESS, itemService.getItemList(page - 1, size));
     }
 
-    @PatchMapping("/{itemCode}")
-    public ApiResponse<ItemDetailResponse> updateItem(@PathVariable("itemCode") String itemCode, @RequestBody ItemUpdateRequest itemUpdateRequest) {
-        return ApiResponse.ok(ITEM_UPDATE_SUCCESS, itemService.updateItem(itemCode, itemUpdateRequest));
+    @PatchMapping
+    public ApiResponse<ItemDetailResponse> updateItem(@RequestParam(value = "itemCode") String itemCode,
+                                                      @RequestParam(value = "brandName") String brandName,
+                                                      @RequestBody ItemUpdateRequest itemUpdateRequest) {
+        return ApiResponse.ok(ITEM_UPDATE_SUCCESS, itemService.updateItem(itemCode, brandName, itemUpdateRequest));
     }
 
-    @DeleteMapping("/{itemCode}")
-    public ApiResponse deleteItem(@PathVariable("itemCode") String itemCode) {
-        itemService.deleteItem(itemCode);
+    @DeleteMapping
+    public ApiResponse deleteItem(@RequestParam(value = "itemCode") String itemCode,
+                                  @RequestParam(value = "brandName") String brandName) {
+        itemService.deleteItem(itemCode, brandName);
         return ApiResponse.ok(ITEM_DELETE_SUCCESS);
     }
 

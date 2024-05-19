@@ -34,8 +34,9 @@ public class ItemService {
     private final ItemImageRepository itemImageRepository;
 
     public ItemDetailResponse createItem(ItemCreateRequest request) throws ApiException {
-        if (itemRepository.existsByCode(request.itemCode())) throw new ApiException(DUPLICATE_ITEM_CODE);
-        Brand brand= brandRepository.findByName(request.brandName()).orElseThrow(()->new ApiException(BRAND_NOT_FOUND));
+        Brand brand = brandRepository.findByName(request.brandName()).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
+        if (itemRepository.existsByCodeAndBrandId(request.itemCode(), brand.getId()))
+            throw new ApiException(DUPLICATE_ITEM);
         Item savedItem = itemRepository.save(Item.builder()
                 .name(request.itemName())
                 .code(request.itemCode())
@@ -51,11 +52,13 @@ public class ItemService {
     }
 
     @Transactional(readOnly = true)
-    public ItemDetailResponse getItem(String itemCode) {
-        Item item = itemRepository.findByCodeAndDeletedAtIsNull(itemCode).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
+    public ItemDetailResponse getItem(String itemCode, String brandName) {
+        Brand brand = brandRepository.findByName(brandName).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
+        Item item = itemRepository.findByCodeAndBrandIdAndDeletedAtIsNull(itemCode, brand.getId()).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
         item.increaseViewCount();
         return getItemDetailResponse(item);
     }
+
     @Transactional(readOnly = true)
     public PageResponse<ItemSimpleResponse> getItemList(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -68,27 +71,35 @@ public class ItemService {
     }
 
     @Transactional
-    public ItemDetailResponse updateItem(String itemCode, ItemUpdateRequest request) {
-        Item item = itemRepository.findByCodeAndDeletedAtIsNull(itemCode).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
-        if (request.brandName() != null && !request.brandName().isBlank()) {
-            Brand brand = brandRepository.findByName(request.brandName()).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
-            item.updateBrand(brand);
-        }
-        if (request.itemCode() != null && !request.itemCode().isBlank()) {
-            if (itemRepository.existsByCode(request.itemCode())) throw new ApiException(DUPLICATE_ITEM_CODE);
-            item.updateCode(request.itemCode());
+    public ItemDetailResponse updateItem(String itemCode, String brandName, ItemUpdateRequest request) {
+        Brand originBrand = brandRepository.findByName(brandName).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
+        Item originItem = itemRepository.findByCodeAndBrandIdAndDeletedAtIsNull(itemCode, originBrand.getId()).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
+        if (request.itemCode() == null && request.brandName() != null && !request.brandName().isBlank()) {
+            Brand targetBrand = brandRepository.findByName(request.brandName()).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
+            originItem.updateBrand(targetBrand);
+        } else if (request.brandName() == null && request.itemCode() != null && !request.itemCode().isBlank()) {
+            if (itemRepository.existsByCodeAndBrandId(request.itemCode(), originBrand.getId()))
+                throw new ApiException(DUPLICATE_ITEM);
+            originItem.updateCode(request.itemCode());
+        } else if (request.brandName() != null && !request.brandName().isBlank() && request.itemCode() != null && !request.itemCode().isBlank()) {
+            Brand targetBrand = brandRepository.findByName(request.brandName()).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
+            if (itemRepository.existsByCodeAndBrandId(request.itemCode(), targetBrand.getId()))
+                throw new ApiException(DUPLICATE_ITEM);
+            originItem.updateBrand(targetBrand);
+            originItem.updateCode(request.itemCode());
         }
         if (request.category() != null && !request.category().isBlank())
-            item.updateCategory(Category.ofKorean(request.category()));
+            originItem.updateCategory(Category.ofKorean(request.category()));
         if (request.itemName() != null && !request.itemName().isBlank())
-            item.updateName(request.itemName());
-        if (request.price() != 0) item.updatePrice(request.price());
-        return getItemDetailResponse(item);
+            originItem.updateName(request.itemName());
+        if (request.price() != 0) originItem.updatePrice(request.price());
+        return getItemDetailResponse(originItem);
     }
 
     @Transactional
-    public void deleteItem(String itemCode) {
-        Item item = itemRepository.findByCodeAndDeletedAtIsNull(itemCode).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
+    public void deleteItem(String itemCode, String brandName) {
+        Brand brand = brandRepository.findByName(brandName).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
+        Item item = itemRepository.findByCodeAndBrandIdAndDeletedAtIsNull(itemCode, brand.getId()).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
         item.setDeletedAt(LocalDateTime.now());
     }
 

@@ -11,18 +11,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
-    Optional<Item> findByCodeAndDeletedAtIsNull(String code);
+    Optional<Item> findByCodeAndBrandIdAndDeletedAtIsNull(String code, long brandId);
 
     Page<Item> findAllByDeletedAtIsNull(Pageable pageable);
 
-    boolean existsByCode(String code);
+    boolean existsByCodeAndBrandId(String code, long brandId);
 
-    //    @Query(value = "SELECT i.* " +
-//            "FROM item i LEFT JOIN wish_item w ON i.id = w.item_id " +
-//            "WHERE i.brand_id = :brandId " +
-//            "GROUP BY i.id " +
-//            "ORDER BY i.view_count + COUNT(w.id) DESC " +
-//            "LIMIT 3", nativeQuery = true)
     @Query(value = "SELECT i.* " +
             "FROM item i LEFT JOIN wish_item wi ON i.id = wi.item_id " +
             "WHERE i.brand_id = :brandId " +

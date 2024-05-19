@@ -19,8 +19,9 @@ public class WishItemController {
 
     @PostMapping
     public ApiResponse createWishItem(@AuthenticationPrincipal CustomUserDetails principal,
-                                      @NotBlank @RequestParam(value = "itemCode") String itemCode) {
-        wishItemService.createWishItem(principal.getUserId(), itemCode);
+                                      @RequestParam(value = "itemCode") String itemCode,
+                                      @RequestParam(value = "brandName") String brandName) {
+        wishItemService.createWishItem(principal.getUserId(), itemCode, brandName);
         return ApiResponse.ok(WISH_ITEM_CREATE_SUCCESS);
     }
 
@@ -34,8 +35,9 @@ public class WishItemController {
 
     @DeleteMapping
     public ApiResponse deleteWishlist(@AuthenticationPrincipal CustomUserDetails principal,
-                                      @NotBlank @RequestParam(value = "itemCode") String itemCode) {
-        wishItemService.deleteWishItem(principal.getUserId(), itemCode);
+                                      @RequestParam(value = "itemCode") String itemCode,
+                                      @RequestParam(value = "brandName") String brandName) {
+        wishItemService.deleteWishItem(principal.getUserId(), itemCode, brandName);
         return ApiResponse.ok(WISH_ITEM_DELETE_SUCCESS);
     }
 }

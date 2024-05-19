@@ -5,6 +5,7 @@ import org.antlr.v4.runtime.misc.NotNull;
 
 public record ReleaseInfoRequest(
         String itemCode,
+        String brandName,
         String platformName,
         String platformLogoImage,
         String siteUrl,
