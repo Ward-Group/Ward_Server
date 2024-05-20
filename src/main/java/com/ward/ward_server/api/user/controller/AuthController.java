@@ -22,21 +22,21 @@ public class AuthController {
     //TODO 현재 Email 만 같으면 로그인 처리 되게 되어있음.
     // 닉네임 중복 체크
     @PostMapping("/login")
-    public ApiResponse login(@RequestBody @Validated LoginRequest request){
+    public ApiResponse<JwtTokens> login(@RequestBody @Validated LoginRequest request){
         JwtTokens tokens = authService.attemptLogin(request.getProvider(), request.getProviderId(), request.getEmail(), properties.getPassword());
 
         return ApiResponse.ok(tokens);
     }
 
     @PostMapping("/refresh")
-    public ApiResponse refresh(@RequestParam("refreshToken") String refreshToken) {
+    public ApiResponse<JwtTokens> refresh(@RequestParam("refreshToken") String refreshToken) {
         JwtTokens tokens = authService.refresh(refreshToken);
 
         return ApiResponse.ok(tokens);
     }
 
     @PostMapping("/registerUser")
-    public ApiResponse register(@RequestBody @Validated RegisterRequest request) {
+    public ApiResponse<JwtTokens> register(@RequestBody @Validated RegisterRequest request) {
         // 회원가입 메서드에서 JWT 토큰을 반환하도록 수정됨
         JwtTokens tokens = authService.registerUser(request);
         return ApiResponse.ok(tokens);
@@ -44,7 +44,7 @@ public class AuthController {
 
     //관리자 권한 부여
     @PutMapping("/grantAdmin/{userId}")
-    public ApiResponse grantAdminRole(@PathVariable("userId") Long userId) {
+    public ApiResponse<Void> grantAdminRole(@PathVariable("userId") Long userId) {
         userService.grantAdminRole(userId);
         return ApiResponse.ok();
 
@@ -52,7 +52,7 @@ public class AuthController {
 
     //사용자 권한 부여
     @PutMapping("/grantUser/{userId}")
-    public ApiResponse grantUserRole(@PathVariable("userId") Long userId) {
+    public ApiResponse<Void> grantUserRole(@PathVariable("userId") Long userId) {
         userService.grantUserRole(userId);
         return ApiResponse.ok();
 

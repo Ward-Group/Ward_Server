@@ -6,7 +6,6 @@ import com.ward.ward_server.api.user.entity.User;
 import com.ward.ward_server.api.user.entity.enumtype.Role;
 import com.ward.ward_server.api.user.repository.UserRepository;
 import com.ward.ward_server.global.exception.ExceptionCode;
-import com.ward.ward_server.global.util.Constants;
 import com.ward.ward_server.global.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +39,7 @@ public class AuthService {
 
         // 존재하지 않는 이메일
         if (userRepository.findByEmail(email).isEmpty()) {
-            throw new BadCredentialsException(Constants.NON_EXISTENT_EMAIL);
+            throw new BadCredentialsException(ExceptionCode.NON_EXISTENT_EMAIL.getMessage());
         }
 
         try {
@@ -66,10 +65,10 @@ public class AuthService {
             return new JwtTokens(accessToken, refreshToken);
         } catch (BadCredentialsException e) {
             log.error("Login failed: ", e);
-            throw new BadCredentialsException(Constants.INVALID_USERNAME_OR_PASSWORD_MESSAGE);
+            throw new BadCredentialsException(ExceptionCode.INVALID_USERNAME_OR_PASSWORD.getMessage());
         } catch (AuthenticationException e) {
             log.error("Login failed: ", e);
-            throw new RuntimeException(Constants.LOGIN_ERROR_MESSAGE);
+            throw new RuntimeException(ExceptionCode.LOGIN_FAIL.getMessage());
         }
     }
 
@@ -149,9 +148,7 @@ public class AuthService {
 
     // 닉네임 중복 체크
     public boolean checkDuplicateNickname(String nickname) {
-
-        boolean existsByNickname = userRepository.existsByNickname(nickname);
-
-        return existsByNickname;
+        return userRepository.existsByNickname(nickname);
     }
+
 }
