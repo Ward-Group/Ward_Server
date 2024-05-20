@@ -50,10 +50,8 @@
 * [손지민](https://github.com/s0nnyday)
 * [진하늘](https://github.com/mewluee)
 ### iOS
-* [현선](https://github.com/SuniDev)
+* [박현선](https://github.com/SuniDev)
 * [이인규](https://github.com/peppermint100)
-### PM
-* 이태인
 ### 디자이너
 * 이송
 * 김소정
