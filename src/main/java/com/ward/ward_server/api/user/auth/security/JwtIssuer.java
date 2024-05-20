@@ -14,7 +14,8 @@ import java.util.List;
 public class JwtIssuer {
     private final JwtProperties properties;
 
-    public String issue(long userId, String email, List<String> roles) {
+    //TODO access token 기간 정하기
+    public String issueAccessToken(long userId, String email, List<String> roles) {
         Date issuedAt = new Date();
         Date expiresAt = new Date(System.currentTimeMillis() + Duration.ofDays(1).toMillis());
 
@@ -22,7 +23,19 @@ public class JwtIssuer {
                 .withSubject(String.valueOf(userId))
                 .withIssuedAt(issuedAt)
                 .withExpiresAt(expiresAt)
-//                .withExpiresAt(Instant.now().plus(Duration.of(1, ChronoUnit.DAYS))) // 보통 duration 짧게 하는데 튜토리얼이니까 1day
+                .withClaim("e", email)
+                .withClaim("r", roles)
+                .sign(Algorithm.HMAC256(properties.getSecretKey()));
+    }
+
+    public String issueRefreshToken(long userId, String email, List<String> roles) {
+        Date issuedAt = new Date();
+        Date expiresAt = new Date(System.currentTimeMillis() + Duration.ofDays(30).toMillis());
+
+        return JWT.create()
+                .withSubject(String.valueOf(userId))
+                .withIssuedAt(issuedAt)
+                .withExpiresAt(expiresAt)
                 .withClaim("e", email)
                 .withClaim("r", roles)
                 .sign(Algorithm.HMAC256(properties.getSecretKey()));

@@ -2,6 +2,7 @@ package com.ward.ward_server.global.util;
 
 public class Constants {
     //TODO 삭제해야한다.
+
     // 회원 가입 시 메세지
     public static final String EMAIL_ALREADY_EXISTS = "이미 사용 중인 이메일"; //52001
     public static final String SUCCESSFUL_REGISTRATION = "회원 가입 성공"; //0

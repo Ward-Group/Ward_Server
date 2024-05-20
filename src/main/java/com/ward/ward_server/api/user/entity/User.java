@@ -48,6 +48,9 @@ public class User {
     @Column(name = "sns_notification", nullable = false)
     private boolean snsNotification;
 
+    @Column(name = "refresh_token")
+    private String refreshToken; // Refresh Token 필드 추가
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<EntryRecord> entryRecords = new ArrayList<>();
 
@@ -77,4 +80,8 @@ public class User {
         this.role = Role.ROLE_USER;
     }
 
+    // Refresh Token 갱신 메서드 추가
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
 }

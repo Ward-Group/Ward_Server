@@ -10,9 +10,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "spring.jwt")
 public class JwtProperties {
-    /**
-     * Secret key used for issuing JWT
-     */
+    //TODO 토큰 만료 기간 정하기
     private String secretKey;
-    private String password; //영어 소문자/대문자/특수문자/숫자 조합
+    private String password;
+    private long accessTokenValidity; // 예: 1일
+    private long refreshTokenValidity; // 예: 30일
 }
+
