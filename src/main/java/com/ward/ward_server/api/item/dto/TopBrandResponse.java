@@ -5,8 +5,8 @@ import java.util.List;
 public record TopBrandResponse(
         String brandLogoImage,
         String brandName,
-        Long brandViewCount,
-        Long brandWishCount,
+        Integer brandViewCount,
+        Integer brandWishCount,
         List<TopBrandItemResponse> top3itemList
 ) {
 }

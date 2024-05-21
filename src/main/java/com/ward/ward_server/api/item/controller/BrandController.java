@@ -20,7 +20,7 @@ public class BrandController {
 
     @PostMapping
     public ApiResponse<BrandResponse> createBrand(@RequestBody BrandRequest request) {
-        return ApiResponse.ok(BRAND_CREATE_SUCCESS, brandService.createBrand(request));
+        return ApiResponse.ok(BRAND_CREATE_SUCCESS, brandService.createBrand(request.brandName(), request.brandLogoImage()));
     }
 
     @GetMapping("/top10")
@@ -28,9 +28,9 @@ public class BrandController {
         return ApiResponse.ok(BRAND_TOP10_WITH_ITEM_LOAD_SUCCESS, brandService.getBrandTop10AndItem3List());
     }
 
-    @PatchMapping("/{brandName}")
-    public ApiResponse<BrandResponse> updateBrand(@PathVariable("brandName") String brandName, @RequestBody BrandRequest request) {
-        return ApiResponse.ok(BRAND_UPDATE_SUCCESS, brandService.updateBrand(brandName, request));
+    @PatchMapping("/{originBrandName}")
+    public ApiResponse<BrandResponse> updateBrand(@PathVariable("originBrandName") String originBrandName, @RequestBody BrandRequest request) {
+        return ApiResponse.ok(BRAND_UPDATE_SUCCESS, brandService.updateBrand(originBrandName, request.brandName(), request.brandLogoImage()));
     }
 
     @DeleteMapping("/{brandName}")
@@ -40,8 +40,7 @@ public class BrandController {
     }
 
     @PatchMapping("/{brandName}/view-counts")
-    public ApiResponse increaseBrandViewCount(@PathVariable("brandName") String brandName){
-        brandService.increaseBrandViewCount(brandName);
-        return ApiResponse.ok(BRAND_VIEW_COUNT_UP_SUCCESS);
+    public ApiResponse<Integer> increaseBrandViewCount(@PathVariable("brandName") String brandName){
+        return ApiResponse.ok(BRAND_VIEW_COUNT_UP_SUCCESS, brandService.increaseBrandViewCount(brandName));
     }
 }

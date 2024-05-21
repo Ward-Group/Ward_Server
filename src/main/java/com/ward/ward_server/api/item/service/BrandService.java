@@ -29,13 +29,13 @@ public class BrandService {
     private final WishBrandRepository wishBrandRepository;
     private final ItemImageRepository itemImageRepository;
 
-    public BrandResponse createBrand(BrandRequest request) {
-        if (request.brandName() == null || request.brandName().isBlank() || request.brandLogoImage() == null || request.brandLogoImage().isBlank())
+    public BrandResponse createBrand(String brandName, String brandLogoImage) {
+        if (brandName == null || brandName.isBlank() || brandLogoImage == null || brandLogoImage.isBlank())
             throw new ApiException(ExceptionCode.INVALID_INPUT);
-        if (brandRepository.existsByName(request.brandName())) throw new ApiException(DUPLICATE_BRAND);
+        if (brandRepository.existsByName(brandName)) throw new ApiException(DUPLICATE_BRAND);
         Brand savedBrand = brandRepository.save(Brand.builder()
-                .logoImage(request.brandLogoImage())
-                .name(request.brandName())
+                .logoImage(brandLogoImage)
+                .name(brandName)
                 .build());
         return new BrandResponse(savedBrand.getLogoImage(), savedBrand.getName(), savedBrand.getViewCount());
     }
@@ -68,13 +68,13 @@ public class BrandService {
     }
 
     @Transactional
-    public BrandResponse updateBrand(String originBrandName, BrandRequest request) {
-        if (request.brandName() == null && request.brandLogoImage() == null) throw new ApiException(ExceptionCode.INVALID_INPUT);
+    public BrandResponse updateBrand(String originBrandName, String brandName, String brandLogoImage) {
+        if (brandName == null && brandLogoImage == null) throw new ApiException(ExceptionCode.INVALID_INPUT);
         Brand brand = brandRepository.findByName(originBrandName).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
-        if (request.brandLogoImage() != null && !request.brandLogoImage().isBlank()) brand.updateLogoImage(request.brandLogoImage());
-        if (request.brandName() != null && !request.brandName().isBlank()) {
-            if (brandRepository.existsByName(request.brandName())) throw new ApiException(DUPLICATE_BRAND);
-            brand.updateName(request.brandName());
+        if (brandLogoImage != null && !brandLogoImage.isBlank()) brand.updateLogoImage(brandLogoImage);
+        if (brandName != null && !brandName.isBlank()) {
+            if (brandRepository.existsByName(brandName)) throw new ApiException(DUPLICATE_BRAND);
+            brand.updateName(brandName);
         }
         return new BrandResponse(brand.getLogoImage(), brand.getName(), brand.getViewCount());
     }
@@ -86,8 +86,9 @@ public class BrandService {
     }
 
     @Transactional
-    public void increaseBrandViewCount(String brandName){
+    public Integer increaseBrandViewCount(String brandName){
         Brand brand = brandRepository.findByName(brandName).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
         brand.increaseViewCount();
+        return brand.getViewCount();
     }
 }

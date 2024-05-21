@@ -20,7 +20,7 @@ public class Brand {
     @Column(nullable = false)
     private String name;
 
-    private Long viewCount = 0L;
+    private Integer viewCount = 0;
 
     @Builder
     public Brand(String logoImage, String name) {

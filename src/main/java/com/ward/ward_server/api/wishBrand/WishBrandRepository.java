@@ -11,5 +11,5 @@ public interface WishBrandRepository extends JpaRepository<WishBrand, Long> {
 
     void deleteByUserIdAndBrandId(long userId, long brandId);
 
-    Long countAllByBrandId(long brandId);
+    Integer countAllByBrandId(long brandId);
 }
