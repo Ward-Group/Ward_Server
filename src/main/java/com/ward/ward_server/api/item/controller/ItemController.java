@@ -1,9 +1,8 @@
 package com.ward.ward_server.api.item.controller;
 
-import com.ward.ward_server.api.item.dto.ItemCreateRequest;
 import com.ward.ward_server.api.item.dto.ItemDetailResponse;
+import com.ward.ward_server.api.item.dto.ItemRequest;
 import com.ward.ward_server.api.item.dto.ItemSimpleResponse;
-import com.ward.ward_server.api.item.dto.ItemUpdateRequest;
 import com.ward.ward_server.api.item.service.ItemService;
 import com.ward.ward_server.global.Object.PageResponse;
 import com.ward.ward_server.global.exception.ApiException;
@@ -24,8 +23,9 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
-    public ApiResponse<ItemDetailResponse> createItem(@Valid @RequestBody ItemCreateRequest itemCreateRequest) throws ApiException {
-        return ApiResponse.ok(ITEM_CREATE_SUCCESS, itemService.createItem(itemCreateRequest));
+    public ApiResponse<ItemDetailResponse> createItem(@RequestBody ItemRequest request) throws ApiException {
+        return ApiResponse.ok(ITEM_CREATE_SUCCESS, itemService.createItem(request.itemName(), request.itemCode(),
+                request.itemImages(), request.brandName(), request.category(), request.price()));
     }
 
     @GetMapping
@@ -41,10 +41,11 @@ public class ItemController {
     }
 
     @PatchMapping
-    public ApiResponse<ItemDetailResponse> updateItem(@RequestParam(value = "itemCode") String itemCode,
-                                                      @RequestParam(value = "brandName") String brandName,
-                                                      @RequestBody ItemUpdateRequest itemUpdateRequest) {
-        return ApiResponse.ok(ITEM_UPDATE_SUCCESS, itemService.updateItem(itemCode, brandName, itemUpdateRequest));
+    public ApiResponse<ItemDetailResponse> updateItem(@RequestParam(value = "originItemCode") String originItemCode,
+                                                      @RequestParam(value = "originBrandName") String originBrandName,
+                                                      @RequestBody ItemRequest request) {
+        return ApiResponse.ok(ITEM_UPDATE_SUCCESS, itemService.updateItem(originItemCode, originBrandName, request.itemName(),
+                request.itemCode(), request.itemImages(), request.brandName(), request.category(), request.price()));
     }
 
     @DeleteMapping

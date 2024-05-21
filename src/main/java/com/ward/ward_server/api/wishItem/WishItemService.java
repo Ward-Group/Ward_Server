@@ -3,6 +3,7 @@ package com.ward.ward_server.api.wishItem;
 import com.ward.ward_server.api.item.entity.Brand;
 import com.ward.ward_server.api.item.entity.Item;
 import com.ward.ward_server.api.item.repository.BrandRepository;
+import com.ward.ward_server.api.item.repository.ItemImageRepository;
 import com.ward.ward_server.api.item.repository.ItemRepository;
 import com.ward.ward_server.api.user.entity.User;
 import com.ward.ward_server.api.user.repository.UserRepository;
@@ -28,6 +29,7 @@ public class WishItemService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
     private final BrandRepository brandRepository;
+    private final ItemImageRepository itemImageRepository;
 
     public void createWishItem(long userId, String itemCode, String brandName) {
         Brand brand = brandRepository.findByName(brandName).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
@@ -44,7 +46,7 @@ public class WishItemService {
         List<WishItem> contents = wishItemPage.getContent();
         List<WishItemResponse> responses = contents.stream()
                 .map(e -> new WishItemResponse(
-                        e.getItem().getItemImages().get(0).getUrl(),
+                        itemImageRepository.findFirstByItemId(e.getItem().getId()).get().getUrl(),
                         e.getItem().getBrand().getName(),
                         e.getItem().getName(),
                         e.getItem().getCode(),

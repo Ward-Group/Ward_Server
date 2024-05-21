@@ -5,16 +5,13 @@ import com.ward.ward_server.api.item.entity.enumtype.converter.CategoryConverter
 import com.ward.ward_server.api.wishItem.WishItem;
 import com.ward.ward_server.global.Object.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
 @Getter
 public class Item extends BaseTimeEntity {
@@ -29,10 +26,6 @@ public class Item extends BaseTimeEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ItemImage> itemImages = new ArrayList<>();
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brand_id")
     private Brand brand;
@@ -43,7 +36,7 @@ public class Item extends BaseTimeEntity {
     @Convert(converter = CategoryConverter.class)
     private Category category;
 
-    private int price;
+    private Integer price;
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
     private List<WishItem> wishItems = new ArrayList<>();
@@ -56,11 +49,6 @@ public class Item extends BaseTimeEntity {
         this.category = category;
         this.price = price;
     }
-
-    public void addItemImages(List<ItemImage> itemImages) {
-        this.itemImages = itemImages;
-    }
-
     public void increaseViewCount() {
         viewCount += 1;
     }

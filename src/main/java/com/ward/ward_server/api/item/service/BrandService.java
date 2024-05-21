@@ -3,6 +3,7 @@ package com.ward.ward_server.api.item.service;
 import com.ward.ward_server.api.item.dto.*;
 import com.ward.ward_server.api.item.entity.Brand;
 import com.ward.ward_server.api.item.repository.BrandRepository;
+import com.ward.ward_server.api.item.repository.ItemImageRepository;
 import com.ward.ward_server.api.item.repository.ItemRepository;
 import com.ward.ward_server.api.wishBrand.WishBrandRepository;
 import com.ward.ward_server.api.wishItem.WishItemRepository;
@@ -26,6 +27,7 @@ public class BrandService {
     private final ItemRepository itemRepository;
     private final WishItemRepository wishItemRepository;
     private final WishBrandRepository wishBrandRepository;
+    private final ItemImageRepository itemImageRepository;
 
     public BrandResponse createBrand(BrandRequest request) {
         if (request.brandName() == null || request.brandName().isBlank() || request.brandLogoImage() == null || request.brandLogoImage().isBlank())
@@ -50,7 +52,7 @@ public class BrandService {
                                         .map(item -> new TopBrandItemResponse(
                                                 item.getName(),
                                                 item.getCode(),
-                                                item.getItemImages().get(0).getUrl(),
+                                                itemImageRepository.findFirstByItemId(item.getId()).get().getUrl(),
                                                 item.getViewCount(),
                                                 wishItemRepository.countAllByItemId(item.getId())))
                                         .toList()

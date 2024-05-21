@@ -9,9 +9,11 @@ import java.util.Optional;
 
 public interface BrandRepository extends JpaRepository<Brand, Long> {
     boolean existsByName(String name);
+
     Optional<Brand> findByName(String name);
+
     void deleteByName(String name);
-    //@Query(value = "SELECT * FROM brand ORDER BY (view_count + wish_count) DESC LIMIT 10", nativeQuery = true)
+
     @Query(value = "SELECT b.* " +
             "FROM brand b LEFT JOIN wish_brand wb ON b.id = wb.brand_id " +
             "GROUP BY b.id " +
