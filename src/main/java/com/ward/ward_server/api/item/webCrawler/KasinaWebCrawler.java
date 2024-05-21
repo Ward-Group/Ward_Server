@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Component
+//@Component
 @Slf4j
 public class KasinaWebCrawler {
     //TODO 크롬 버전 자동 업데이트를 중지해야 한다.

@@ -24,7 +24,7 @@ public class BrandController {
     }
 
     @GetMapping("/top10")
-    public ApiResponse<List<TopBrandResponse>> getBrandTop10AndItem3List(){
+    public ApiResponse<List<TopBrandResponse>> getBrandTop10AndItem3List() {
         return ApiResponse.ok(BRAND_TOP10_WITH_ITEM_LOAD_SUCCESS, brandService.getBrandTop10AndItem3List());
     }
 
@@ -34,13 +34,13 @@ public class BrandController {
     }
 
     @DeleteMapping("/{brandName}")
-    public ApiResponse deleteBrand(@PathVariable("brandName") String brandName){
+    public ApiResponse<Void> deleteBrand(@PathVariable("brandName") String brandName) {
         brandService.deleteBrand(brandName);
         return ApiResponse.ok(BRAND_DELETE_SUCCESS);
     }
 
     @PatchMapping("/{brandName}/view-counts")
-    public ApiResponse<Integer> increaseBrandViewCount(@PathVariable("brandName") String brandName){
+    public ApiResponse<Integer> increaseBrandViewCount(@PathVariable("brandName") String brandName) {
         return ApiResponse.ok(BRAND_VIEW_COUNT_UP_SUCCESS, brandService.increaseBrandViewCount(brandName));
     }
 }

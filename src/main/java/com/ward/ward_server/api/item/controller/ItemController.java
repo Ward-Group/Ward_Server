@@ -29,8 +29,8 @@ public class ItemController {
     }
 
     @GetMapping
-    public ApiResponse<ItemDetailResponse> getItem(@RequestParam(value = "itemCode") String itemCode,
-                                                   @RequestParam(value = "brandName") String brandName) {
+    public ApiResponse<ItemDetailResponse> getItem(@RequestParam(value = "item-code") String itemCode,
+                                                   @RequestParam(value = "brand-name") String brandName) {
         return ApiResponse.ok(ITEM_DETAIL_LOAD_SUCCESS, itemService.getItem(itemCode, brandName));
     }
 
@@ -41,16 +41,16 @@ public class ItemController {
     }
 
     @PatchMapping
-    public ApiResponse<ItemDetailResponse> updateItem(@RequestParam(value = "originItemCode") String originItemCode,
-                                                      @RequestParam(value = "originBrandName") String originBrandName,
+    public ApiResponse<ItemDetailResponse> updateItem(@RequestParam(value = "origin-item-code") String originItemCode,
+                                                      @RequestParam(value = "origin-brand-name") String originBrandName,
                                                       @RequestBody ItemRequest request) {
         return ApiResponse.ok(ITEM_UPDATE_SUCCESS, itemService.updateItem(originItemCode, originBrandName, request.itemName(),
                 request.itemCode(), request.itemImages(), request.brandName(), request.category(), request.price()));
     }
 
     @DeleteMapping
-    public ApiResponse deleteItem(@RequestParam(value = "itemCode") String itemCode,
-                                  @RequestParam(value = "brandName") String brandName) {
+    public ApiResponse<Void> deleteItem(@RequestParam(value = "item-code") String itemCode,
+                                        @RequestParam(value = "brand-name") String brandName) {
         itemService.deleteItem(itemCode, brandName);
         return ApiResponse.ok(ITEM_DELETE_SUCCESS);
     }
