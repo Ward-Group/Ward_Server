@@ -24,20 +24,21 @@ import java.util.regex.Pattern;
 @Component
 @Slf4j
 public class KasinaWebCrawler {
-    //FIXME 나중에 사이트별로 웹 크롤러 만들때 다 쓰이니까 전역변수로 만들어줘야 한다.
     //TODO 크롬 버전 자동 업데이트를 중지해야 한다.
-    private String CHROME_DRIVER_PATH = "D:\\chromedriver/chromedriver-win64/chromedriver.exe";
+
     private WebDriver driver;
 
     @Autowired
-    public KasinaWebCrawler() {
+    public KasinaWebCrawler(CrawlerProperties crawlerProperties) {
+        String chromeDriverPath = crawlerProperties.getChromeDriverPath();
         ChromeOptions chromeOptions = new ChromeOptions();
-        chromeOptions.addArguments("--headless=new"); //헤드리스 모드로 실행, 실제 창이 표시되지 않는다.
+//        chromeOptions.setBinary("/usr/bin/google-chrome"); // EC2 쓸 때 해제
+        chromeOptions.addArguments("--headless"); //헤드리스 모드로 실행, 실제 창이 표시되지 않는다.
         chromeOptions.addArguments("--lang=ko"); //브라우저 언어를 한국어로 설정
         chromeOptions.addArguments("--no-sandbox"); //샌드박스 모드 비활성화
         chromeOptions.addArguments("--disable-dev-shm-usage"); // /dev/shm 사용 비활성화
         chromeOptions.addArguments("--disable-gpu"); //GPU 가속 비활성화
-        System.setProperty("webdriver.chrome.driver", CHROME_DRIVER_PATH);
+        System.setProperty("webdriver.chrome.driver", chromeDriverPath);
         this.driver = new ChromeDriver(chromeOptions);
     }
 
@@ -72,12 +73,12 @@ public class KasinaWebCrawler {
             System.out.println(productName);
 
             // 2.이미지 URL 추출
-            Set<String> imageUrlList =new HashSet<>();
+            Set<String> imageUrlList = new HashSet<>();
             //String imageUrl = document.select(".c-lazyload c-lazyload--ratio_normal c-lazyload--gray").first().attr("src");
             //String imageUrl = document.select(".c-lazyload c-lazyload--ratio_normal c-lazyload--gray").first().attr("src");
             //String imageUrl = document.select(".c-lazyload c-lazyload--ratio_normal c-lazyload--gray").attr("src");
             //Elements elements=document.select(".c-lazyload c-lazyload--ratio_normal c-lazyload--gray");
-            Elements elements=document.select("div.l-grid img");
+            Elements elements = document.select("div.l-grid img");
             for (Element element : elements) {
                 String imageUrl = element.attr("src");
                 imageUrlList.add(imageUrl);
@@ -91,7 +92,7 @@ public class KasinaWebCrawler {
             // 4.날짜 추출
             String stringDate = document.select(".dtl-raffle__info dd").text();
             log.debug("총 날짜 {}", stringDate);
-            System.out.println("총날짜:"+stringDate);
+            System.out.println("총날짜:" + stringDate);
             List<LocalDateTime> dates = getDates(stringDate);
             if (dates == null) continue;
             LocalDateTime releaseDate = dates.get(0);
@@ -100,9 +101,9 @@ public class KasinaWebCrawler {
             log.debug("응모 {}, 기한 {}, 발표 {}", releaseDate, dueDate, presentationDate);
 
             // 5.상태
-            LocalDateTime now=LocalDateTime.now();
+            LocalDateTime now = LocalDateTime.now();
             Status status = Status.IMPOSSIBLE;
-            if(now.isAfter(releaseDate)) status = Status.POSSIBLE;
+            if (now.isAfter(releaseDate)) status = Status.POSSIBLE;
 
             // 6.브랜드 KASINA
 

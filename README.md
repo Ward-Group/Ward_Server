@@ -19,7 +19,7 @@
 
 ## 🌎Team Role
 ### 🏄‍♂️손지민
-* 기획
+* 기획(기능 정의서, 화면 설계서)
 * DB 설계 및 구축
 * AWS EC2 연결
 * 회원가입/로그인 기능 구현( Spring Security/JWT )
@@ -38,7 +38,8 @@
 ## 📗Architecture
 
 ## 📙DB ERD
-![Ward_v1 1 (3)](https://github.com/Ward-Group/Ward_Server/assets/135934401/7440fe5f-d667-4ef4-b1fc-9ba340e5ae42)
+![Ward_v20240503 (1)](https://github.com/Ward-Group/Ward_Server/assets/135934401/9fb36e78-f1a5-4a15-9a50-87615f0f71e2)
+
 
 ## 📕배포
 * AWS EC2 - 클라우드 컴퓨팅 시스템
@@ -49,10 +50,8 @@
 * [손지민](https://github.com/s0nnyday)
 * [진하늘](https://github.com/mewluee)
 ### iOS
-* [현선](https://github.com/SuniDev)
+* [박현선](https://github.com/SuniDev)
 * [이인규](https://github.com/peppermint100)
-### PM
-* 이태인
 ### 디자이너
 * 이송
 * 김소정
