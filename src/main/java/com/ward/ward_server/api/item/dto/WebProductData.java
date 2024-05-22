@@ -1,6 +1,6 @@
 package com.ward.ward_server.api.item.dto;
 
-import com.ward.ward_server.api.item.entity.enumtype.Brand;
+import com.ward.ward_server.api.item.entity.Brand;
 import com.ward.ward_server.api.item.entity.enumtype.Status;
 
 import java.time.LocalDateTime;

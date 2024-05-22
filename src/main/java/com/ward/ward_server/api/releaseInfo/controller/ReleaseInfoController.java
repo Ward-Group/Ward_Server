@@ -29,22 +29,25 @@ public class ReleaseInfoController {
         return ApiResponse.ok(RELEASE_INFO_CREATE_SUCCESS, releaseInfoService.createReleaseInfo(request));
     }
 
-    @GetMapping("/{itemCode}")
-    public ApiResponse<List<ReleaseInfoSimpleResponse>> getReleaseInfoList(@PathVariable("itemCode") String itemCode) {
-        return ApiResponse.ok(RELEASE_INFO_LIST_LOAD_SUCCESS, releaseInfoService.getReleaseInfoList(itemCode));
+    @GetMapping
+    public ApiResponse<List<ReleaseInfoSimpleResponse>> getReleaseInfoList(@RequestParam(value = "itemCode") String itemCode,
+                                                                           @RequestParam(value = "brandName") String brandName) {
+        return ApiResponse.ok(RELEASE_INFO_LIST_LOAD_SUCCESS, releaseInfoService.getReleaseInfoList(itemCode, brandName));
     }
 
     @PatchMapping
-    public ApiResponse<ReleaseInfoDetailResponse> updateReleaseInfo(@NotNull @RequestParam(value = "itemCode") String itemCode,
-                                                                    @NotNull @RequestParam(value = "platformName") String platformName,
+    public ApiResponse<ReleaseInfoDetailResponse> updateReleaseInfo(@RequestParam(value = "itemCode") String itemCode,
+                                                                    @RequestParam(value = "brandName") String brandName,
+                                                                    @RequestParam(value = "platformName") String platformName,
                                                                     @RequestBody ReleaseInfoRequest request) {
-        return ApiResponse.ok(RELEASE_INFO_UPDATE_SUCCESS, releaseInfoService.updateReleaseInfo(itemCode, platformName, request));
+        return ApiResponse.ok(RELEASE_INFO_UPDATE_SUCCESS, releaseInfoService.updateReleaseInfo(itemCode, brandName, platformName, request));
     }
 
     @DeleteMapping
-    public ApiResponse deleteReleaseInfo(@NotNull @RequestParam(value = "itemCode") String itemCode,
-                                         @NotNull @RequestParam(value = "platformName") String platformName) {
-        releaseInfoService.deleteReleaseInfo(itemCode, platformName);
+    public ApiResponse deleteReleaseInfo(@RequestParam(value = "itemCode") String itemCode,
+                                         @RequestParam(value = "brandName") String brandName,
+                                         @RequestParam(value = "platformName") String platformName) {
+        releaseInfoService.deleteReleaseInfo(itemCode, brandName, platformName);
         return ApiResponse.ok(RELEASE_INFO_DELETE_SUCCESS);
     }
 
