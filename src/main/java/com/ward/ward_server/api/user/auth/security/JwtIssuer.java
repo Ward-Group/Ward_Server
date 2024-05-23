@@ -28,14 +28,14 @@ public class JwtIssuer {
                 .sign(Algorithm.HMAC256(properties.getSecretKey()));
     }
 
-    public String issueRefreshToken(long userId) {
+    public String issueRefreshToken() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expiresAt = now.plusDays(properties.getRefreshTokenValidity());
 
         return JWT.create()
-                .withSubject(String.valueOf(userId))
                 .withIssuedAt(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()))
                 .withExpiresAt(Date.from(expiresAt.atZone(ZoneId.systemDefault()).toInstant()))
                 .sign(Algorithm.HMAC256(properties.getSecretKey()));
     }
+
 }

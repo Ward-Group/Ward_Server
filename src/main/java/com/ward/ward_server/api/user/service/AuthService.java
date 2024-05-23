@@ -32,7 +32,6 @@ public class AuthService {
     private final JwtIssuer jwtIssuer;
     private final AuthenticationManager authenticationManager;
     private final JwtProperties properties;
-    private final JwtDecoder jwtDecoder;
 
     // 로그인
     @Transactional
@@ -57,7 +56,7 @@ public class AuthService {
                     .toList();
 
             var accessToken = jwtIssuer.issueAccessToken(principal.getUserId(), principal.getEmail(), roles);
-            var refreshToken = jwtIssuer.issueRefreshToken(principal.getUserId());
+            var refreshToken = jwtIssuer.issueRefreshToken();
 
             // Refresh Token 저장
             User user = userRepository.findById(principal.getUserId())
@@ -75,21 +74,14 @@ public class AuthService {
         }
     }
 
-    // Refresh Token 갱신
     @Transactional
     public JwtTokens refresh(String refreshToken) {
-        var decodedJWT = jwtDecoder.decode(refreshToken);
-        var userId = Long.valueOf(decodedJWT.getSubject());
-        var user = userRepository.findById(userId)
+        var user = userRepository.findByRefreshToken(refreshToken)
                 .orElseThrow(() -> new BadCredentialsException(ExceptionCode.USER_NOT_FOUND.getMessage()));
 
-        if (!refreshToken.equals(user.getRefreshToken())) {
-            throw new BadCredentialsException(ExceptionCode.INVALID_REFRESH_TOKEN.getMessage());
-        }
-
-        var roles = user.getRole().toString(); // 역할 정보는 데이터베이스에서 가져옴
+        var roles = user.getRole().toString();
         var newAccessToken = jwtIssuer.issueAccessToken(user.getId(), user.getEmail(), List.of(roles));
-        var newRefreshToken = jwtIssuer.issueRefreshToken(user.getId());
+        var newRefreshToken = jwtIssuer.issueRefreshToken();
 
         user.updateRefreshToken(newRefreshToken);
         userRepository.save(user);
@@ -97,7 +89,6 @@ public class AuthService {
         return new JwtTokens(newAccessToken, newRefreshToken);
     }
 
-    // 회원가입
     @Transactional
     public JwtTokens registerUser(RegisterRequest request) {
         try {
@@ -140,7 +131,7 @@ public class AuthService {
             // JWT 토큰 발급
             var roles = List.of(Role.ROLE_USER.toString());
             var accessToken = jwtIssuer.issueAccessToken(newUser.getId(), newUser.getEmail(), roles);
-            var refreshToken = jwtIssuer.issueRefreshToken(newUser.getId());
+            var refreshToken = jwtIssuer.issueRefreshToken();
 
             newUser.updateRefreshToken(refreshToken);
             userRepository.save(newUser);
