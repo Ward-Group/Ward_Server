@@ -1,14 +1,11 @@
 package com.ward.ward_server.api.user.service;
 
-import com.ward.ward_server.api.user.dto.RegisterErrorResponse;
+import com.ward.ward_server.api.user.auth.security.*;
 import com.ward.ward_server.api.user.dto.RegisterRequest;
-import com.ward.ward_server.api.user.dto.RegisterSuccessResponse;
 import com.ward.ward_server.api.user.entity.User;
+import com.ward.ward_server.api.user.entity.enumtype.Role;
 import com.ward.ward_server.api.user.repository.UserRepository;
-import com.ward.ward_server.api.user.auth.security.CustomUserDetails;
-import com.ward.ward_server.api.user.auth.security.JwtIssuer;
-import com.ward.ward_server.api.user.auth.security.JwtProperties;
-import com.ward.ward_server.global.util.Constants;
+import com.ward.ward_server.global.exception.ExceptionCode;
 import com.ward.ward_server.global.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,10 +18,14 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -32,78 +33,87 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtProperties properties;
 
-
     // 로그인
-    public String attemptLogin(String provider, String providerId, String email, String password) {
-
+    @Transactional
+    public JwtTokens attemptLogin(String provider, String providerId, String email, String password) {
         String username = provider + providerId;
         log.info("[Slf4j]Username: " + username);
 
         // 존재하지 않는 이메일
         if (userRepository.findByEmail(email).isEmpty()) {
-            return Constants.NON_EXISTENT_EMAIL;
+            throw new BadCredentialsException(ExceptionCode.NON_EXISTENT_EMAIL.getMessage());
         }
 
-        // 로그인 시작
         try {
             var authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(email, password)
             );
-            SecurityContextHolder.getContext().setAuthentication(authentication); // SecurityContext 에 authenticaiton 저장
+            SecurityContextHolder.getContext().setAuthentication(authentication);
             var principal = (CustomUserDetails) authentication.getPrincipal();
             log.info("[Slf4j]로그인 CustomUserDetails: " + principal.toString());
             var roles = principal.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .toList();
 
-            var token = jwtIssuer.issue(principal.getUserId(), principal.getEmail(), roles);
-            // token 반환
-            return token;
-        }
-        catch (BadCredentialsException e) {
-            // 잘못된 아이디 또는 비밀번호
+            var accessToken = jwtIssuer.issueAccessToken(principal.getUserId(), principal.getEmail(), roles);
+            var refreshToken = jwtIssuer.issueRefreshToken();
+
+            // Refresh Token 저장
+            User user = userRepository.findById(principal.getUserId())
+                    .orElseThrow(() -> new BadCredentialsException(ExceptionCode.USER_NOT_FOUND.getMessage()));
+            user.updateRefreshToken(refreshToken);
+            userRepository.save(user);
+
+            return new JwtTokens(accessToken, refreshToken);
+        } catch (BadCredentialsException e) {
             log.error("Login failed: ", e);
-            return Constants.INVALID_USERNAME_OR_PASSWORD_MESSAGE;
-        }
-        catch (AuthenticationException e) {
-            // 로그인 실패 처리
+            throw new BadCredentialsException(ExceptionCode.INVALID_USERNAME_OR_PASSWORD.getMessage());
+        } catch (AuthenticationException e) {
             log.error("Login failed: ", e);
-            return Constants.LOGIN_ERROR_MESSAGE;
+            throw new RuntimeException(ExceptionCode.LOGIN_FAIL.getMessage());
         }
     }
 
-    // TODO 리턴 타입 수정하기
-    // 회원가입
-    public Object registerUser(RegisterRequest request) {
+    @Transactional
+    public JwtTokens refresh(String refreshToken) {
+        var user = userRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new BadCredentialsException(ExceptionCode.USER_NOT_FOUND.getMessage()));
 
+        var roles = user.getRole().toString();
+        var newAccessToken = jwtIssuer.issueAccessToken(user.getId(), user.getEmail(), List.of(roles));
+        var newRefreshToken = jwtIssuer.issueRefreshToken();
+
+        user.updateRefreshToken(newRefreshToken);
+        userRepository.save(user);
+
+        return new JwtTokens(newAccessToken, newRefreshToken);
+    }
+
+    @Transactional
+    public JwtTokens registerUser(RegisterRequest request) {
         try {
-            //예외 처리
+            // 이메일 유효성 검사
             if (!ValidationUtil.isValidEmail(request.getEmail())) {
-                return RegisterErrorResponse.builder()
-                        .status(400)
-                        .success(false)
-                        .message(Constants.INVALID_EMAIL_FORMAT)
-                        .build();
+                throw new BadCredentialsException(ExceptionCode.INVALID_EMAIL_FORMAT.getMessage());
             }
 
+            // 비밀번호 유효성 검사
             if (!ValidationUtil.isValidPassword(properties.getPassword())) {
-                return RegisterErrorResponse.builder()
-                        .status(400)
-                        .success(false)
-                        .message(Constants.INVALID_PASSWORD_FORMAT)
-                        .build();
+                throw new BadCredentialsException(ExceptionCode.INVALID_PASSWORD_FORMAT.getMessage());
             }
 
+            // 중복된 이메일 체크
             if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-                return RegisterErrorResponse.builder()
-                        .status(400)
-                        .success(false)
-                        .message(Constants.EMAIL_ALREADY_EXISTS)
-                        .build();
+                throw new BadCredentialsException(ExceptionCode.EMAIL_ALREADY_EXISTS.getMessage());
             }
 
-            //회원 등록 시작
-            String username = request.getProvider()+request.getProviderId();
+            // 중복된 닉네임 체크
+            if (checkDuplicateNickname(request.getNickname())) {
+                throw new BadCredentialsException(ExceptionCode.DUPLICATE_NICKNAME.getMessage());
+            }
+
+            // 회원 등록 시작
+            String username = request.getProvider() + request.getProviderId();
             User newUser = new User(
                     username,
                     request.getName(),
@@ -118,33 +128,24 @@ public class AuthService {
             // 회원 정보 저장
             userRepository.save(newUser);
 
-            // TODO 회원가입 성공만 반환하기 or 로그인까지 시키기
-            return RegisterSuccessResponse.builder()
-                    .status(200)
-                    .success(true)
-                    .message(Constants.SUCCESSFUL_REGISTRATION)
-                    .user(RegisterSuccessResponse.UserResponse.builder()
-                            .userId(newUser.getId())
-                            .email(newUser.getEmail())
-                            .role(String.valueOf(newUser.getRole()))
-                            .build())
-                    .build();
+            // JWT 토큰 발급
+            var roles = List.of(Role.ROLE_USER.toString());
+            var accessToken = jwtIssuer.issueAccessToken(newUser.getId(), newUser.getEmail(), roles);
+            var refreshToken = jwtIssuer.issueRefreshToken();
+
+            newUser.updateRefreshToken(refreshToken);
+            userRepository.save(newUser);
+
+            return new JwtTokens(accessToken, refreshToken);
         } catch (DataIntegrityViolationException e) {
             // 데이터베이스 무결성과 관련된 예외 처리
             log.error("Error during user registration:", e);
-            return RegisterErrorResponse.builder()
-                    .status(500)
-                    .success(false)
-                    .message(Constants.REGISTRATION_ERROR_MESSAGE)
-                    .build();
+            throw new RuntimeException(ExceptionCode.REGISTRATION_ERROR_MESSAGE.getMessage());
         }
     }
 
     // 닉네임 중복 체크
     public boolean checkDuplicateNickname(String nickname) {
-
-        boolean existsByNickname = userRepository.existsByNickname(nickname);
-
-        return existsByNickname;
+        return userRepository.existsByNickname(nickname);
     }
 }

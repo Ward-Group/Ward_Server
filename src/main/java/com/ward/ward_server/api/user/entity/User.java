@@ -39,14 +39,17 @@ public class User {
     @Column(unique = true, nullable = false)
     private String nickname;
 
-    @Column(name = "email_notification", nullable = false)
+    @Column(nullable = false)
     private boolean emailNotification;
 
-    @Column(name = "app_push_notification", nullable = false)
+    @Column(nullable = false)
     private boolean appPushNotification;
 
-    @Column(name = "sns_notification", nullable = false)
+    @Column(nullable = false)
     private boolean snsNotification;
+
+    @Column(unique = true, nullable = false)
+    private String refreshToken; // Refresh Token 필드 추가
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<EntryRecord> entryRecords = new ArrayList<>();
@@ -77,4 +80,8 @@ public class User {
         this.role = Role.ROLE_USER;
     }
 
+    // Refresh Token 갱신 메서드 추가
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
 }

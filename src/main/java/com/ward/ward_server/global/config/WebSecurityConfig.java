@@ -3,7 +3,6 @@ package com.ward.ward_server.global.config;
 import com.ward.ward_server.api.user.auth.security.CustomUserDetailService;
 import com.ward.ward_server.api.user.auth.security.JwtAuthenticationFilter;
 import com.ward.ward_server.api.user.auth.security.UnauthorizedHandler;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,52 +33,35 @@ public class WebSecurityConfig {
     public SecurityFilterChain applicationSecurity(HttpSecurity http) throws Exception {
 
         http
-//                .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
-                .securityMatcher("/**") // map current config to given resource path
-
-                .formLogin(AbstractHttpConfigurer::disable)
-                    .exceptionHandling()
-                    .authenticationEntryPoint(unauthorizedHandler)
-                    .and()
-
-                //cors 설정
-                .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
-
-                    @Override
-                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-
-                        CorsConfiguration configuration = new CorsConfiguration();
-
-                        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:8000")); // 프론트 주소(또 바꿔야하는 곳:CorsMvcConfig,CustomSuccessHandler)
-                        configuration.setAllowedMethods(Collections.singletonList("*")); // 모든 요청에 허용
-                        configuration.setAllowCredentials(true); //
-                        configuration.setAllowedHeaders(Collections.singletonList("*")); // 어떤 헤더값 받을지 세팅
-                        configuration.setMaxAge(3600L);
-
-                        configuration.setExposedHeaders(Collections.singletonList("Set-Cookie")); // 서버에서 데이터 준 걸 웹페이지에서 보이게 하려면
-                        configuration.setExposedHeaders(Collections.singletonList("Authorization"));
-
-                        return configuration;
-                    }
-                }))
-
-                //JWTFilter 추가
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/","/auth/**", "/v1/wc/**", "/item/**").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .anyRequest().authenticated()
+                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(unauthorizedHandler)
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-
-                // 세션 관리 정책 설정 - 상태를 유지하지 않는 세션
-                .sessionManagement(sessionManagementConfigurer
-                        -> sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-                // 경로별 인가 작업
-                .authorizeHttpRequests(registry -> registry // 요청에 대한 권한 설정 메서드
-                        //.requestMatchers("/", "/auth/**", "/v1/wc/**", "/item/**").permitAll() // / 경로 요청에 대한 권한을 설정. permitAll() 모든 사용자, 인증되지않은 사용자에게 허용
-                        //.requestMatchers("/admin/**").hasRole("ADMIN") // ROLE_ADMIN 에게만 허용
-                        .requestMatchers("/**").permitAll()
-                        .anyRequest().authenticated() // 다른 나머지 모든 요청에 대한 권한 설정, authenticated()는 인증된 사용자에게만 허용, 로그인해야만 접근 가능
-                );
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:8000"));
+        configuration.setAllowedMethods(Collections.singletonList("*"));
+        configuration.setAllowCredentials(true);
+        configuration.setAllowedHeaders(Collections.singletonList("*"));
+        configuration.setMaxAge(3600L);
+        configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+
+        return request -> configuration;
     }
 
     @Bean
@@ -89,9 +71,8 @@ public class WebSecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        return http.getSharedObject(AuthenticationManagerBuilder.class)
-                .userDetailsService(customUserDetailService)
-                .passwordEncoder(passwordEncoder())
-                .and().build();
+        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        authenticationManagerBuilder.userDetailsService(customUserDetailService).passwordEncoder(passwordEncoder());
+        return authenticationManagerBuilder.build();
     }
 }
