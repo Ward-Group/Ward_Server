@@ -4,9 +4,7 @@ import com.ward.ward_server.api.user.auth.security.JwtProperties;
 import com.ward.ward_server.api.user.auth.security.JwtTokens;
 import com.ward.ward_server.api.user.dto.LoginRequest;
 import com.ward.ward_server.api.user.dto.RegisterRequest;
-import com.ward.ward_server.api.user.dto.RoleChangeRequest;
 import com.ward.ward_server.api.user.service.AuthService;
-import com.ward.ward_server.api.user.service.UserService;
 import com.ward.ward_server.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -17,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 public class AuthController {
     private final AuthService authService;
-    private final UserService userService;
+//    private final UserService userService;
     private final JwtProperties properties;
 
     //TODO 현재 Email 만 같으면 로그인 처리 되게 되어있음.
@@ -40,19 +38,20 @@ public class AuthController {
         return ApiResponse.ok(tokens);
     }
 
+    //TODO 관리자 권한 부여 방식 토의 필요
     // 관리자 권한 부여
-    @PutMapping("/grantAdmin")
-    public ApiResponse<Void> grantAdminRole(@RequestBody @Validated RoleChangeRequest request) {
-        userService.grantAdminRole(request.userId());
-        return ApiResponse.ok();
-    }
-
-    // 사용자 권한 부여
-    @PutMapping("/grantUser")
-    public ApiResponse<Void> grantUserRole(@RequestBody @Validated RoleChangeRequest request) {
-        userService.grantUserRole(request.userId());
-        return ApiResponse.ok();
-    }
+//    @PutMapping("/grantAdmin")
+//    public ApiResponse<Void> grantAdminRole(@RequestBody @Validated RoleChangeRequest request) {
+//        userService.grantAdminRole(request.userId());
+//        return ApiResponse.ok();
+//    }
+//
+//    // 사용자 권한 부여
+//    @PutMapping("/grantUser")
+//    public ApiResponse<Void> grantUserRole(@RequestBody @Validated RoleChangeRequest request) {
+//        userService.grantUserRole(request.userId());
+//        return ApiResponse.ok();
+//    }
 
     // 닉네임 중복 체크
     @GetMapping("/checkNickname")
