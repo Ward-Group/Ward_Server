@@ -39,7 +39,7 @@ public class AuthController {
     }
 
     //TODO 관리자 권한 부여 방식 토의 필요
-    // 관리자 권한 부여
+    //관리자 권한 부여
 //    @PutMapping("/grantAdmin")
 //    public ApiResponse<Void> grantAdminRole(@RequestBody @Validated RoleChangeRequest request) {
 //        userService.grantAdminRole(request.userId());
@@ -53,14 +53,15 @@ public class AuthController {
 //        return ApiResponse.ok();
 //    }
 
-    // 닉네임 중복 체크
     @GetMapping("/checkNickname")
     public ApiResponse<Boolean> checkDuplicateNickname(@RequestParam("nickname") String nickname) {
-
         boolean checkDuplicateNickname = authService.checkDuplicateNickname(nickname);
-
         return ApiResponse.ok(checkDuplicateNickname);
     }
 
-    //TODO 로그아웃하면 토큰 블랙리스트 처리? 혹은 다른 방법
+    @PostMapping("/logout")
+    public ApiResponse<Void> logout(@RequestParam("refreshToken") String refreshToken) {
+        authService.invalidateRefreshToken(refreshToken);
+        return ApiResponse.ok();
+    }
 }

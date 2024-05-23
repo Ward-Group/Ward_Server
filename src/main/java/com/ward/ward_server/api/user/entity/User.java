@@ -14,7 +14,7 @@ import java.util.List;
 @Getter
 @Entity
 @Table(name = "users")
-@NoArgsConstructor(access = AccessLevel.PROTECTED) //JPA 쓰면서 protected 키워드는 생성해서 쓰지말라는 의미
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,8 +48,8 @@ public class User {
     @Column(nullable = false)
     private boolean snsNotification;
 
-    @Column(unique = true, nullable = false)
-    private String refreshToken; // Refresh Token 필드 추가
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RefreshToken> refreshTokens = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<EntryRecord> entryRecords = new ArrayList<>();
@@ -57,7 +57,6 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<WishItem> wishItems = new ArrayList<>();
 
-    //==생성 메서드==//
     public User(String username, String name, String email, String password, String nickname, Boolean emailNotification, Boolean appPushNotification, Boolean snsNotification) {
         this.username = username;
         this.name = name;
@@ -70,18 +69,11 @@ public class User {
         this.snsNotification = snsNotification;
     }
 
-    //==관리자 권한 부여==//
     public void grantAdminRole() {
         this.role = Role.ROLE_ADMIN;
     }
 
-    //==사용자 권한 부여==//
     public void grantUserRole() {
         this.role = Role.ROLE_USER;
-    }
-
-    // Refresh Token 갱신 메서드 추가
-    public void updateRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
     }
 }
