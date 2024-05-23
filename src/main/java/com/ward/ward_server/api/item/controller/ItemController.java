@@ -1,13 +1,13 @@
 package com.ward.ward_server.api.item.controller;
 
-import com.ward.ward_server.api.item.dto.ItemCreateRequest;
 import com.ward.ward_server.api.item.dto.ItemDetailResponse;
+import com.ward.ward_server.api.item.dto.ItemRequest;
 import com.ward.ward_server.api.item.dto.ItemSimpleResponse;
-import com.ward.ward_server.api.item.dto.ItemUpdateRequest;
 import com.ward.ward_server.api.item.service.ItemService;
 import com.ward.ward_server.global.Object.PageResponse;
 import com.ward.ward_server.global.exception.ApiException;
 import com.ward.ward_server.global.response.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.index.qual.Positive;
 import org.springframework.web.bind.annotation.*;
@@ -23,33 +23,35 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
-    public ApiResponse<ItemDetailResponse> createItem(@RequestBody ItemCreateRequest itemCreateRequest) throws ApiException {
-        ItemDetailResponse response = itemService.createItem(itemCreateRequest);
-        return ApiResponse.ok(ITEM_CREATE_SUCCESS, response);
-    }
-
-    @GetMapping("/{itemCode}")
-    public ApiResponse<ItemDetailResponse> getItem(@PathVariable("itemCode") String itemCode) {
-        ItemDetailResponse response = itemService.getItem(itemCode);
-        return ApiResponse.ok(ITEM_DETAIL_LOAD_SUCCESS, response);
+    public ApiResponse<ItemDetailResponse> createItem(@RequestBody ItemRequest request) throws ApiException {
+        return ApiResponse.ok(ITEM_CREATE_SUCCESS, itemService.createItem(request.itemName(), request.itemCode(),
+                request.itemImages(), request.brandName(), request.category(), request.price()));
     }
 
     @GetMapping
+    public ApiResponse<ItemDetailResponse> getItem(@RequestParam(value = "item-code") String itemCode,
+                                                   @RequestParam(value = "brand-name") String brandName) {
+        return ApiResponse.ok(ITEM_DETAIL_LOAD_SUCCESS, itemService.getItem(itemCode, brandName));
+    }
+
+    @GetMapping("/list")
     public ApiResponse<PageResponse<ItemSimpleResponse>> getItemList(@Positive @RequestParam(value = "page", defaultValue = "1") int page,
-                                                                     @Positive @RequestParam(value = "size", defaultValue = "5") int size) {
-        PageResponse<ItemSimpleResponse> response = itemService.getItemList(page - 1, size);
-        return ApiResponse.ok(ITEM_LIST_LOAD_SUCCESS, response);
+                                                                     @Positive @RequestParam(value = "size", defaultValue = "10") int size) {
+        return ApiResponse.ok(ITEM_LIST_LOAD_SUCCESS, itemService.getItemList(page - 1, size));
     }
 
-    @PatchMapping("/{itemCode}")
-    public ApiResponse<ItemDetailResponse> updateItem(@PathVariable("itemCode") String itemCode, @RequestBody ItemUpdateRequest itemUpdateRequest) {
-        ItemDetailResponse response = itemService.updateItem(itemCode, itemUpdateRequest);
-        return ApiResponse.ok(ITEM_UPDATE_SUCCESS, response);
+    @PatchMapping
+    public ApiResponse<ItemDetailResponse> updateItem(@RequestParam(value = "origin-item-code") String originItemCode,
+                                                      @RequestParam(value = "origin-brand-name") String originBrandName,
+                                                      @RequestBody ItemRequest request) {
+        return ApiResponse.ok(ITEM_UPDATE_SUCCESS, itemService.updateItem(originItemCode, originBrandName, request.itemName(),
+                request.itemCode(), request.itemImages(), request.brandName(), request.category(), request.price()));
     }
 
-    @DeleteMapping("/{itemCode}")
-    public ApiResponse deleteItem(@PathVariable("itemCode") String itemCode) {
-        itemService.deleteItem(itemCode);
+    @DeleteMapping
+    public ApiResponse<Void> deleteItem(@RequestParam(value = "item-code") String itemCode,
+                                        @RequestParam(value = "brand-name") String brandName) {
+        itemService.deleteItem(itemCode, brandName);
         return ApiResponse.ok(ITEM_DELETE_SUCCESS);
     }
 

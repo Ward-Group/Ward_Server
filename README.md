@@ -38,7 +38,7 @@
 ## 📗Architecture
 
 ## 📙DB ERD
-![Ward_v20240503 (1)](https://github.com/Ward-Group/Ward_Server/assets/135934401/9fb36e78-f1a5-4a15-9a50-87615f0f71e2)
+![Ward_v20240503](https://github.com/Ward-Group/Ward_Server/assets/135934401/f83e211b-0b70-46c9-84c8-304186f74ae6)
 
 
 ## 📕배포
@@ -50,10 +50,8 @@
 * [손지민](https://github.com/s0nnyday)
 * [진하늘](https://github.com/mewluee)
 ### iOS
-* [현선](https://github.com/SuniDev)
+* [박현선](https://github.com/SuniDev)
 * [이인규](https://github.com/peppermint100)
-### PM
-* 이태인
 ### 디자이너
 * 이송
 * 김소정

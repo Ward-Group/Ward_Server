@@ -5,8 +5,10 @@ import com.ward.ward_server.api.entry.dto.EntryRecordRequest;
 import com.ward.ward_server.api.entry.dto.EntryRecordResponse;
 import com.ward.ward_server.api.entry.entity.EntryRecord;
 import com.ward.ward_server.api.entry.repository.EntryRecordRepository;
+import com.ward.ward_server.api.item.entity.Brand;
 import com.ward.ward_server.api.item.entity.Item;
 import com.ward.ward_server.api.item.entity.enumtype.Status;
+import com.ward.ward_server.api.item.repository.BrandRepository;
 import com.ward.ward_server.api.item.repository.ItemRepository;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoSimpleResponse;
 import com.ward.ward_server.api.releaseInfo.entity.DrawPlatform;
@@ -38,20 +40,21 @@ public class EntryRecordService {
     private final EntryRecordRepository entryRecordRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
+    private final BrandRepository brandRepository;
     private final DrawPlatformRepository drawPlatformRepository;
     private final ReleaseInfoRepository releaseInfoRepository;
 
     public EntryRecordResponse createEntryRecord(Long userId, EntryRecordRequest request) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(USER_NOT_FOUND));
-        Item item = itemRepository.findByCodeAndDeletedAtIsNull(request.itemCode())
+        User user = userRepository.findById(userId).orElseThrow(() -> new ApiException(USER_NOT_FOUND));
+        Brand brand = brandRepository.findByName(request.brandName()).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
+        Item item = itemRepository.findByCodeAndBrandIdAndDeletedAtIsNull(request.itemCode(), brand.getId())
                 .orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
         //FIXME Query 개선필요
         DrawPlatform drawPlatform = drawPlatformRepository.findByName(request.platformName())
                 .orElseThrow(() -> new ApiException(DRAW_PLATFORM_NOT_FOUND));
         ReleaseInfo releaseInfo = releaseInfoRepository.findByItemIdAndDrawPlatform(item.getId(), drawPlatform)
                 .orElseThrow(() -> new ApiException(RELEASE_INFO_NOT_FOUND));
-        if(releaseInfo.getStatus().equals(Status.IMPOSSIBLE)) throw new ApiException(RELEASE_INFO_EXPIRED);
+        if (releaseInfo.getStatus().equals(Status.IMPOSSIBLE)) throw new ApiException(RELEASE_INFO_EXPIRED);
         if (entryRecordRepository.existsByUserIdAndReleaseInfoId(user.getId(), releaseInfo.getId()))
             throw new ApiException(DUPLICATE_ENTRY_RECORD);
         EntryRecord savedEntryRecord = entryRecordRepository.save(new EntryRecord(user, releaseInfo, request.memo()));
@@ -59,9 +62,9 @@ public class EntryRecordService {
     }
 
     @Transactional(readOnly = true)
-    public List<EntryRecordDetailResponse> getEntryRecordListByItem(Long userId, String itemCode) {
-        if (userId == null) throw new ApiException(USER_NOT_FOUND);
-        Item item = itemRepository.findByCodeAndDeletedAtIsNull(itemCode)
+    public List<EntryRecordDetailResponse> getEntryRecordListByItem(Long userId, String itemCode, String brandName) {
+        Brand brand = brandRepository.findByName(brandName).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
+        Item item = itemRepository.findByCodeAndBrandIdAndDeletedAtIsNull(itemCode, brand.getId())
                 .orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
         List<ReleaseInfo> releaseInfos = releaseInfoRepository.findAllByItemId(item.getId());
         if (releaseInfos.isEmpty()) throw new ApiException(RELEASE_INFO_NOT_FOUND);
@@ -92,7 +95,6 @@ public class EntryRecordService {
 
     @Transactional(readOnly = true)
     public PageResponse<EntryRecordDetailResponse> getEntryRecordListByUser(Long userId, int page, int size) {
-        if (userId == null) throw new ApiException(USER_NOT_FOUND);
         Page<EntryRecord> entryRecordPage = entryRecordRepository.findAllByUserId(userId, PageRequest.of(page, size));
         List<EntryRecord> contents = entryRecordPage.getContent();
         List<EntryRecordDetailResponse> responses = contents.stream()
@@ -108,9 +110,9 @@ public class EntryRecordService {
     }
 
     @Transactional
-    public void deleteEntryRecord(Long userId, String itemCode, String platformName) {
-        if (userId == null) throw new ApiException(USER_NOT_FOUND);
-        Item item = itemRepository.findByCodeAndDeletedAtIsNull(itemCode)
+    public void deleteEntryRecord(Long userId, String itemCode, String brandName, String platformName) {
+        Brand brand = brandRepository.findByName(brandName).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
+        Item item = itemRepository.findByCodeAndBrandIdAndDeletedAtIsNull(itemCode, brand.getId())
                 .orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
         DrawPlatform drawPlatform = drawPlatformRepository.findByName(platformName)
                 .orElseThrow(() -> new ApiException(DRAW_PLATFORM_NOT_FOUND));

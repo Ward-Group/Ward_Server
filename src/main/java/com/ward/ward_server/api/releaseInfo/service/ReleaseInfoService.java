@@ -1,7 +1,9 @@
 package com.ward.ward_server.api.releaseInfo.service;
 
+import com.ward.ward_server.api.item.entity.Brand;
 import com.ward.ward_server.api.item.entity.Item;
 import com.ward.ward_server.api.item.entity.enumtype.Status;
+import com.ward.ward_server.api.item.repository.BrandRepository;
 import com.ward.ward_server.api.item.repository.ItemRepository;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoDetailResponse;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoRequest;
@@ -30,9 +32,11 @@ public class ReleaseInfoService {
     private final ReleaseInfoRepository releaseInfoRepository;
     private final DrawPlatformRepository drawPlatformRepository;
     private final ItemRepository itemRepository;
+    private final BrandRepository brandRepository;
 
     public ReleaseInfoDetailResponse createReleaseInfo(ReleaseInfoRequest request) {
-        Item item = itemRepository.findByCodeAndDeletedAtIsNull(request.itemCode()).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
+        Brand brand = brandRepository.findByName(request.brandName()).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
+        Item item = itemRepository.findByCodeAndBrandIdAndDeletedAtIsNull(request.itemCode(), brand.getId()).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
         Optional<DrawPlatform> drawPlatform = drawPlatformRepository.findByName(request.platformName());
         if (drawPlatform.isEmpty() && request.platformLogoImage() != null && !request.platformLogoImage().isBlank()) { //등록되지 않은 발매플랫폼 && 로고이미지가 null도 아니고 공백도 아니라면 -> 지금 등록한다.
             drawPlatform = Optional.of(drawPlatformRepository.save(
@@ -60,21 +64,24 @@ public class ReleaseInfoService {
     }
 
     //FIXME 회원정보를 기반으로 entry 정보 넘겨야한다.
-    public List<ReleaseInfoSimpleResponse> getReleaseInfoList(String itemCode) {
-        Item item = itemRepository.findByCodeAndDeletedAtIsNull(itemCode).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
+    public List<ReleaseInfoSimpleResponse> getReleaseInfoList(String itemCode, String brandName) {
+        Brand brand = brandRepository.findByName(brandName).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
+        Item item = itemRepository.findByCodeAndBrandIdAndDeletedAtIsNull(itemCode, brand.getId()).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
         return releaseInfoRepository.findAllByItemId(item.getId()).stream()
                 .map(e -> new ReleaseInfoSimpleResponse(e.getDrawPlatform().getLogoImage(), e.getDrawPlatform().getName(), e.getSiteUrl(), e.getDueDate(), Status.of(e.getReleaseLocalDate(), e.getDueLocalDate()).toString()))
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public ReleaseInfoDetailResponse updateReleaseInfo(String originItemCode, String originDrawPlatformName, ReleaseInfoRequest request) {
-        Item originItem = itemRepository.findByCodeAndDeletedAtIsNull(originItemCode).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
+    public ReleaseInfoDetailResponse updateReleaseInfo(String itemCode, String brandName, String originDrawPlatformName, ReleaseInfoRequest request) {
+        Brand brand = brandRepository.findByName(brandName).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
+        Item originItem = itemRepository.findByCodeAndBrandIdAndDeletedAtIsNull(itemCode, brand.getId()).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
         DrawPlatform originDrawPlatform = drawPlatformRepository.findByName(originDrawPlatformName).orElseThrow(() -> new ApiException(DRAW_PLATFORM_NOT_FOUND));
         ReleaseInfo releaseInfo = releaseInfoRepository.findByItemIdAndDrawPlatform(originItem.getId(), originDrawPlatform).orElseThrow(() -> new ApiException(RELEASE_INFO_NOT_FOUND));
         Item targetItem = null;
         if (request.itemCode() != null && !request.itemCode().isBlank()) {
-            targetItem = itemRepository.findByCodeAndDeletedAtIsNull(request.itemCode()).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
+            Brand targetBrand = brandRepository.findByName(brandName).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
+            targetItem = itemRepository.findByCodeAndBrandIdAndDeletedAtIsNull(request.itemCode(), targetBrand.getId()).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
             releaseInfo.updateItemId(targetItem.getId());
         }
         if (request.platformName() != null && !request.platformName().isBlank()) {
@@ -103,8 +110,9 @@ public class ReleaseInfoService {
     }
 
     @Transactional
-    public void deleteReleaseInfo(String itemCode, String drawPlatformName) {
-        Item item = itemRepository.findByCodeAndDeletedAtIsNull(itemCode).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
+    public void deleteReleaseInfo(String itemCode, String brandName, String drawPlatformName) {
+        Brand brand = brandRepository.findByName(brandName).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
+        Item item = itemRepository.findByCodeAndBrandIdAndDeletedAtIsNull(itemCode, brand.getId()).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
         DrawPlatform drawPlatform = drawPlatformRepository.findByName(drawPlatformName).orElseThrow(() -> new ApiException(DRAW_PLATFORM_NOT_FOUND));
         releaseInfoRepository.deleteByItemIdAndDrawPlatform(item.getId(), drawPlatform);
     }

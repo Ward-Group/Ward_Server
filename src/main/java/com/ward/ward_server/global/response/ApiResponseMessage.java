@@ -13,11 +13,17 @@ public enum ApiResponseMessage {
     WEBCRAWLING_NIKE_SUCCESS("나이키 데이터 로드에 성공하였습니다."),
     WEBCRAWLING_KASINA_SUCCESS("카시나 데이터 로드에 성공하였습니다."),
     //아이템
-    ITEM_CREATE_SUCCESS("아이템 등록에 성공하였습니다."),
-    ITEM_DETAIL_LOAD_SUCCESS("아이템 상세 정보 조회에 성공하였습니다."),
-    ITEM_LIST_LOAD_SUCCESS("아이템 목록 조회에 성공하였습니다."),
-    ITEM_UPDATE_SUCCESS("아이템 수정에 성공하였습니다."),
-    ITEM_DELETE_SUCCESS("아이템 삭제에 성공하였습니다."),
+    ITEM_CREATE_SUCCESS("상품 등록에 성공하였습니다."),
+    ITEM_DETAIL_LOAD_SUCCESS("상품 상세 정보 조회에 성공하였습니다."),
+    ITEM_LIST_LOAD_SUCCESS("상품 목록 조회에 성공하였습니다."),
+    ITEM_UPDATE_SUCCESS("상품 수정에 성공하였습니다."),
+    ITEM_DELETE_SUCCESS("상품 삭제에 성공하였습니다."),
+
+    BRAND_CREATE_SUCCESS("브랜드 등록에 성공하였습니다."),
+    BRAND_TOP10_WITH_ITEM_LOAD_SUCCESS("top10 브랜드와 상품 목록 조회에 성공하였습니다."),
+    BRAND_UPDATE_SUCCESS("브랜드 수정에 성공하였습니다."),
+    BRAND_DELETE_SUCCESS("브랜드 삭제에 성공하였습니다."),
+    BRAND_VIEW_COUNT_UP_SUCCESS("브랜드 조회수 증가에 성공하였습니다."),
     //발매정보
     RELEASE_INFO_CREATE_SUCCESS("발매정보 등록에 성공하였습니다."),
     RELEASE_INFO_LIST_LOAD_SUCCESS("발매정보 목록 조회에 성공하였습니다."),
@@ -30,6 +36,14 @@ public enum ApiResponseMessage {
     ENTRY_RECORD_CREATE_SUCCESS("응모 등록에 성공하였습니다."),
     ENTRY_RECORD_DELETE_SUCCESS("응모 삭제에 성공하였습니다."),
     ENTRY_RECORD_BY_ITEM_LOAD_SUCCESS("상품의 발매정보와 응모 조회에 성공하였습니다."),
-    ENTRY_RECORD_BY_USER_LOAD_SUCCESS("회원의 발매정보와 응모 조회에 성공하였습니다.");
+    ENTRY_RECORD_BY_USER_LOAD_SUCCESS("회원의 발매정보와 응모 조회에 성공하였습니다."),
+    //관심상품
+    WISH_ITEM_CREATE_SUCCESS("관심상품 등록에 성공하였습니다"),
+    WISH_ITEM_LOAD_SUCCESS("회원의 관심상품 목록 조회에 성공하였습니다"),
+    WISH_ITEM_DELETE_SUCCESS("관심상품 삭제에 성공하였습니다."),
+    //관심브랜드
+    WISH_BRAND_CREATE_SUCCESS("관심브랜드 등록에 성공하였습니다."),
+    WISH_BRAND_LOAD_SUCCESS("회원의 관심브랜드 목록 조회에 성공하였습니다."),
+    WISH_BRAND_DELETE_SUCCESS("관심브랜드 삭제에 성공하였습니다.");
     private final String message;
 }

@@ -1,7 +1,6 @@
 package com.ward.ward_server.api.item.webCrawler;
 
 import com.ward.ward_server.api.item.dto.WebProductData;
-import com.ward.ward_server.api.item.entity.enumtype.Brand;
 import com.ward.ward_server.api.item.entity.enumtype.Status;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -20,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@Component
+//@Component
 @Slf4j
 public class NikeWebCrawler {
 
@@ -86,9 +85,9 @@ public class NikeWebCrawler {
             // 6.브랜드 NIKE
 
             // 결과 저장
-            results.add(new WebProductData(productName, imageUrl, siteUrl,
-                    releaseDate, dueDate, presentationDate,
-                    status, Brand.NIKE));
+//            results.add(new WebProductData(productName, imageUrl, siteUrl,
+//                    releaseDate, dueDate, presentationDate,
+//                    status, Brand.NIKE));
         }
         return results;
     }
