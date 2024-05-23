@@ -5,7 +5,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
@@ -14,30 +15,27 @@ import java.util.List;
 public class JwtIssuer {
     private final JwtProperties properties;
 
-    //TODO access token 기간 정하기
     public String issueAccessToken(long userId, String email, List<String> roles) {
-        Date issuedAt = new Date();
-        Date expiresAt = new Date(System.currentTimeMillis() + Duration.ofDays(1).toMillis());
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime expiresAt = now.plusMinutes(properties.getAccessTokenValidity());
 
         return JWT.create()
                 .withSubject(String.valueOf(userId))
-                .withIssuedAt(issuedAt)
-                .withExpiresAt(expiresAt)
-                .withClaim("e", email)
-                .withClaim("r", roles)
+                .withIssuedAt(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()))
+                .withExpiresAt(Date.from(expiresAt.atZone(ZoneId.systemDefault()).toInstant()))
+                .withClaim("email", email)
+                .withClaim("roles", roles)
                 .sign(Algorithm.HMAC256(properties.getSecretKey()));
     }
 
-    public String issueRefreshToken(long userId, String email, List<String> roles) {
-        Date issuedAt = new Date();
-        Date expiresAt = new Date(System.currentTimeMillis() + Duration.ofDays(30).toMillis());
+    public String issueRefreshToken(long userId) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime expiresAt = now.plusDays(properties.getRefreshTokenValidity());
 
         return JWT.create()
                 .withSubject(String.valueOf(userId))
-                .withIssuedAt(issuedAt)
-                .withExpiresAt(expiresAt)
-                .withClaim("e", email)
-                .withClaim("r", roles)
+                .withIssuedAt(Date.from(now.atZone(ZoneId.systemDefault()).toInstant()))
+                .withExpiresAt(Date.from(expiresAt.atZone(ZoneId.systemDefault()).toInstant()))
                 .sign(Algorithm.HMAC256(properties.getSecretKey()));
     }
 }

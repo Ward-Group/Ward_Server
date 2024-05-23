@@ -18,12 +18,14 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -33,6 +35,7 @@ public class AuthService {
     private final JwtDecoder jwtDecoder;
 
     // 로그인
+    @Transactional
     public JwtTokens attemptLogin(String provider, String providerId, String email, String password) {
         String username = provider + providerId;
         log.info("[Slf4j]Username: " + username);
@@ -46,7 +49,7 @@ public class AuthService {
             var authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(email, password)
             );
-            SecurityContextHolder.getContext().setAuthentication(authentication); // SecurityContext 에 authenticaiton 저장
+            SecurityContextHolder.getContext().setAuthentication(authentication);
             var principal = (CustomUserDetails) authentication.getPrincipal();
             log.info("[Slf4j]로그인 CustomUserDetails: " + principal.toString());
             var roles = principal.getAuthorities().stream()
@@ -54,7 +57,7 @@ public class AuthService {
                     .toList();
 
             var accessToken = jwtIssuer.issueAccessToken(principal.getUserId(), principal.getEmail(), roles);
-            var refreshToken = jwtIssuer.issueRefreshToken(principal.getUserId(), principal.getEmail(), roles);
+            var refreshToken = jwtIssuer.issueRefreshToken(principal.getUserId());
 
             // Refresh Token 저장
             User user = userRepository.findById(principal.getUserId())
@@ -72,8 +75,8 @@ public class AuthService {
         }
     }
 
-
     // Refresh Token 갱신
+    @Transactional
     public JwtTokens refresh(String refreshToken) {
         var decodedJWT = jwtDecoder.decode(refreshToken);
         var userId = Long.valueOf(decodedJWT.getSubject());
@@ -84,9 +87,9 @@ public class AuthService {
             throw new BadCredentialsException(ExceptionCode.INVALID_REFRESH_TOKEN.getMessage());
         }
 
-        var roles = decodedJWT.getClaim("r").asList(String.class);
-        var newAccessToken = jwtIssuer.issueAccessToken(user.getId(), user.getEmail(), roles);
-        var newRefreshToken = jwtIssuer.issueRefreshToken(user.getId(), user.getEmail(), roles);
+        var roles = user.getRole().toString(); // 역할 정보는 데이터베이스에서 가져옴
+        var newAccessToken = jwtIssuer.issueAccessToken(user.getId(), user.getEmail(), List.of(roles));
+        var newRefreshToken = jwtIssuer.issueRefreshToken(user.getId());
 
         user.updateRefreshToken(newRefreshToken);
         userRepository.save(user);
@@ -94,8 +97,8 @@ public class AuthService {
         return new JwtTokens(newAccessToken, newRefreshToken);
     }
 
-    // TODO 리턴 타입 수정하기
     // 회원가입
+    @Transactional
     public JwtTokens registerUser(RegisterRequest request) {
         try {
             // 이메일 유효성 검사
@@ -113,13 +116,18 @@ public class AuthService {
                 throw new BadCredentialsException(ExceptionCode.EMAIL_ALREADY_EXISTS.getMessage());
             }
 
+            // 중복된 닉네임 체크
+            if (checkDuplicateNickname(request.getNickname())) {
+                throw new BadCredentialsException(ExceptionCode.DUPLICATE_NICKNAME.getMessage());
+            }
+
             // 회원 등록 시작
             String username = request.getProvider() + request.getProviderId();
             User newUser = new User(
                     username,
                     request.getName(),
                     request.getEmail(),
-                    passwordEncoder.encode(properties.getPassword()), // 사용자 요청 비밀번호를 인코딩
+                    passwordEncoder.encode(properties.getPassword()),
                     request.getNickname(),
                     request.getEmailNotification(),
                     request.getAppPushNotification(),
@@ -132,7 +140,7 @@ public class AuthService {
             // JWT 토큰 발급
             var roles = List.of(Role.ROLE_USER.toString());
             var accessToken = jwtIssuer.issueAccessToken(newUser.getId(), newUser.getEmail(), roles);
-            var refreshToken = jwtIssuer.issueRefreshToken(newUser.getId(), newUser.getEmail(), roles);
+            var refreshToken = jwtIssuer.issueRefreshToken(newUser.getId());
 
             newUser.updateRefreshToken(refreshToken);
             userRepository.save(newUser);
@@ -145,10 +153,8 @@ public class AuthService {
         }
     }
 
-
     // 닉네임 중복 체크
     public boolean checkDuplicateNickname(String nickname) {
         return userRepository.existsByNickname(nickname);
     }
-
 }
