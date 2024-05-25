@@ -69,7 +69,7 @@ public class AuthService {
             return new JwtTokens(accessToken, refreshToken);
         } catch (BadCredentialsException e) {
             log.error("Login failed: ", e);
-            throw new BadCredentialsException(ExceptionCode.INVALID_USERNAME_OR_PASSWORD.getMessage());
+            throw new BadCredentialsException(e.getMessage());
         } catch (AuthenticationException e) {
             log.error("Login failed: ", e);
             throw new RuntimeException(ExceptionCode.LOGIN_FAIL.getMessage());
