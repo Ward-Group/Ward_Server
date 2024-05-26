@@ -16,9 +16,6 @@ public class RefreshToken {
     @Column(nullable = false)
     private String token;
 
-    @Column(nullable = false)
-    private boolean invalid;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -26,10 +23,5 @@ public class RefreshToken {
     public RefreshToken(String token, User user) {
         this.token = token;
         this.user = user;
-        this.invalid = false;
-    }
-
-    public void invalidate() {
-        this.invalid = true;
     }
 }

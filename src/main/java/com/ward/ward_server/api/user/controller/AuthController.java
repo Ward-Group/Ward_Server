@@ -17,9 +17,8 @@ public class AuthController {
     private final AuthService authService;
     private final JwtProperties properties;
 
-    //TODO 현재 Email 만 같으면 로그인 처리 되게 되어있음.
     @PostMapping("/login")
-    public ApiResponse<JwtTokens> login(@RequestBody @Validated LoginRequest request){
+    public ApiResponse<JwtTokens> login(@RequestBody @Validated LoginRequest request) {
         JwtTokens tokens = authService.attemptLogin(request.getProvider(), request.getProviderId(), request.getEmail(), properties.getPassword());
         return ApiResponse.ok(tokens);
     }
@@ -35,21 +34,6 @@ public class AuthController {
         JwtTokens tokens = authService.registerUser(request);
         return ApiResponse.ok(tokens);
     }
-
-    // TODO 관리자 권한 부여 방식 토의 필요
-    // 관리자 권한 부여
-    // @PutMapping("/grantAdmin")
-    // public ApiResponse<Void> grantAdminRole(@RequestBody @Validated RoleChangeRequest request) {
-    //     userService.grantAdminRole(request.userId());
-    //     return ApiResponse.ok();
-    // }
-
-    // 사용자 권한 부여
-    // @PutMapping("/grantUser")
-    // public ApiResponse<Void> grantUserRole(@RequestBody @Validated RoleChangeRequest request) {
-    //     userService.grantUserRole(request.userId());
-    //     return ApiResponse.ok();
-    // }
 
     @GetMapping("/checkNickname")
     public ApiResponse<Boolean> checkDuplicateNickname(@RequestParam("nickname") String nickname) {

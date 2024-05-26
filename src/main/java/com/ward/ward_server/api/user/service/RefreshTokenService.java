@@ -26,21 +26,19 @@ public class RefreshTokenService {
     public void invalidateRefreshToken(String refreshToken) {
         var token = refreshTokenRepository.findByToken(refreshToken)
                 .orElseThrow(() -> new BadCredentialsException(ExceptionCode.INVALID_REFRESH_TOKEN.getMessage()));
-        token.invalidate();
-        refreshTokenRepository.save(token);
+        refreshTokenRepository.delete(token);
     }
 
     @Transactional
-    public RefreshToken findValidRefreshToken(String token) {
-        return refreshTokenRepository.findByTokenAndInvalidFalse(token)
+    public RefreshToken findRefreshTokenByToken(String token) {
+        return refreshTokenRepository.findByToken(token)
                 .orElseThrow(() -> new BadCredentialsException(ExceptionCode.INVALID_REFRESH_TOKEN.getMessage()));
     }
 
     // 토큰 갱신
     @Transactional
     public void invalidateAndSaveNewToken(RefreshToken oldToken, String newToken) {
-        oldToken.invalidate();
-        refreshTokenRepository.save(oldToken);
+        refreshTokenRepository.delete(oldToken);
         saveRefreshToken(oldToken.getUser(), newToken);
     }
 }

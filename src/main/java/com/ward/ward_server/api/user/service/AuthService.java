@@ -76,7 +76,7 @@ public class AuthService {
 
     @Transactional
     public JwtTokens refresh(String refreshToken) {
-        var refreshTokenEntity = refreshTokenService.findValidRefreshToken(refreshToken);
+        var refreshTokenEntity = refreshTokenService.findRefreshTokenByToken(refreshToken);
         var user = refreshTokenEntity.getUser();
 
         var roles = user.getRole().toString();
