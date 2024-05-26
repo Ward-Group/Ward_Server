@@ -2,7 +2,7 @@
 
 * 프로젝트 기간 : 2023.11~
 
-* [API 문서]([https://github.com/Ward-Group/Ward_Server/wiki](https://www.notion.so/API-3658e5c45f714f32bf39a96c6e4684cb?pvs=4))
+* [API 문서](https://www.notion.so/API-3658e5c45f714f32bf39a96c6e4684cb?pvs=4)
 
 ## 📑프로젝트 설명
 **'신발, 의류 등의 발매 일정을 놓치지 않게 도와주는 발매 정보 제공 플랫폼,' 와드입니다.** 발매 일정을 놓치지 않게 도와주는 발매 알림 기능, 오늘 마감, 오늘 발매 상품 정보 제공 기능이 있습니다. 또한 발매 예정, 발매 확정 상품의 정보도 제공합니다.
