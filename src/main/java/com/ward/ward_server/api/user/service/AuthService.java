@@ -5,10 +5,8 @@ import com.ward.ward_server.api.user.auth.security.JwtIssuer;
 import com.ward.ward_server.api.user.auth.security.JwtProperties;
 import com.ward.ward_server.api.user.auth.security.JwtTokens;
 import com.ward.ward_server.api.user.dto.RegisterRequest;
-import com.ward.ward_server.api.user.entity.RefreshToken;
 import com.ward.ward_server.api.user.entity.User;
 import com.ward.ward_server.api.user.entity.enumtype.Role;
-import com.ward.ward_server.api.user.repository.RefreshTokenRepository;
 import com.ward.ward_server.api.user.repository.UserRepository;
 import com.ward.ward_server.global.exception.ExceptionCode;
 import com.ward.ward_server.global.util.ValidationUtil;
@@ -37,7 +35,7 @@ public class AuthService {
     private final JwtIssuer jwtIssuer;
     private final AuthenticationManager authenticationManager;
     private final JwtProperties properties;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenService refreshTokenService;
 
     @Transactional
     public JwtTokens attemptLogin(String provider, String providerId, String email, String password) {
@@ -64,7 +62,7 @@ public class AuthService {
 
             User user = userRepository.findById(principal.getUserId())
                     .orElseThrow(() -> new BadCredentialsException(ExceptionCode.USER_NOT_FOUND.getMessage()));
-            saveRefreshToken(user, refreshToken);
+            refreshTokenService.saveRefreshToken(user, refreshToken);
 
             return new JwtTokens(accessToken, refreshToken);
         } catch (BadCredentialsException e) {
@@ -78,16 +76,14 @@ public class AuthService {
 
     @Transactional
     public JwtTokens refresh(String refreshToken) {
-        var refreshTokenEntity = refreshTokenRepository.findByTokenAndInvalidFalse(refreshToken)
-                .orElseThrow(() -> new BadCredentialsException(ExceptionCode.INVALID_REFRESH_TOKEN.getMessage()));
+        var refreshTokenEntity = refreshTokenService.findValidRefreshToken(refreshToken);
         var user = refreshTokenEntity.getUser();
 
         var roles = user.getRole().toString();
         var newAccessToken = jwtIssuer.issueAccessToken(user.getId(), user.getEmail(), List.of(roles));
         var newRefreshToken = jwtIssuer.issueRefreshToken();
 
-        refreshTokenEntity.invalidate();
-        refreshTokenRepository.save(new RefreshToken(newRefreshToken, user));
+        refreshTokenService.invalidateAndSaveNewToken(refreshTokenEntity, newRefreshToken);
 
         return new JwtTokens(newAccessToken, newRefreshToken);
     }
@@ -129,7 +125,7 @@ public class AuthService {
             var accessToken = jwtIssuer.issueAccessToken(newUser.getId(), newUser.getEmail(), roles);
             var refreshToken = jwtIssuer.issueRefreshToken();
 
-            saveRefreshToken(newUser, refreshToken);
+            refreshTokenService.saveRefreshToken(newUser, refreshToken);
 
             return new JwtTokens(accessToken, refreshToken);
         } catch (DataIntegrityViolationException e) {
@@ -138,17 +134,9 @@ public class AuthService {
         }
     }
 
-    private void saveRefreshToken(User user, String refreshToken) {
-        var refreshTokenEntity = new RefreshToken(refreshToken, user);
-        refreshTokenRepository.save(refreshTokenEntity);
-    }
-
     @Transactional
     public void invalidateRefreshToken(String refreshToken) {
-        var token = refreshTokenRepository.findByToken(refreshToken)
-                .orElseThrow(() -> new BadCredentialsException(ExceptionCode.INVALID_REFRESH_TOKEN.getMessage()));
-        token.invalidate();
-        refreshTokenRepository.save(token);
+        refreshTokenService.invalidateRefreshToken(refreshToken);
     }
 
     public boolean checkDuplicateNickname(String nickname) {
