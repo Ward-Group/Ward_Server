@@ -22,6 +22,9 @@ public enum ExceptionCode {
     DUPLICATE_WISHLIST(5211, "이미 등록하였습니다."),
     NO_WISHLIST_FOUND(5212, "관심 목록이 존재하지 않습니다."),
     INVALID_REFRESH_TOKEN(5213, "유효하지 않은 리프레시 토큰입니다."),
+    INVALID_EMAIL(5214, "이메일이 일치하지 않습니다."),
+    DUPLICATE_PROVIDER_ID(5215, "이미 사용 중인 소셜 로그인 계정입니다."),
+    EMAIL_MISMATCH_LOGIN_FAILURE(5203, "provider와 providerId가 일치하는 사용자가 있지만 이메일이 다릅니다."),
 
     //아이템
     ITEM_NOT_FOUND(5300, "상품을 찾을 수 없습니다."),

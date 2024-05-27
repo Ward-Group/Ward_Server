@@ -19,7 +19,6 @@ public class LoginRequest {
     @NotBlank(message = "Provider ID cannot be empty")
     private String providerId;
 
-    @NotBlank(message = "Email cannot be empty")
     @Email(message = "Email should be valid")
     private String email;
 }

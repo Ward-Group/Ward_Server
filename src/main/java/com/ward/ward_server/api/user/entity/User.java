@@ -21,9 +21,6 @@ public class User {
     @Column(name = "user_id")
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    private String username; // provider + providerId 정규화
-
     @Column(nullable = false)
     private String name;
 
@@ -54,8 +51,12 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<WishItem> wishItems = new ArrayList<>();
 
-    public User(String username, String name, String email, String password, String nickname, Boolean emailNotification, Boolean appPushNotification, Boolean snsNotification) {
-        this.username = username;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_social_login", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "provider_id")
+    private List<SocialLogin> socialLogins = new ArrayList<>();
+
+    public User(String name, String email, String password, String nickname, Boolean emailNotification, Boolean appPushNotification, Boolean snsNotification) {
         this.name = name;
         this.email = email;
         this.role = Role.ROLE_USER;
@@ -64,6 +65,10 @@ public class User {
         this.emailNotification = emailNotification;
         this.appPushNotification = appPushNotification;
         this.snsNotification = snsNotification;
+    }
+
+    public void addSocialLogin(String provider, String providerId) {
+        this.socialLogins.add(new SocialLogin(provider, providerId));
     }
 
     public void grantAdminRole() {
