@@ -18,8 +18,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Collections;
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -54,15 +55,24 @@ public class WebSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:8000"));
-        configuration.setAllowedMethods(Collections.singletonList("*"));
+        configuration.setAllowedOrigins(Arrays.asList(
+                "http://localhost:3000", // 웹 개발자 로컬 환경
+                "http://localhost:8000", // 기존 설정 유지
+                "https://your-web-domain.com", // 실제 웹 애플리케이션 도메인
+                "capacitor://your-ios-app", // iOS 앱
+                "https://your-android-app" // Android 앱
+        ));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "Accept", "Cache-Control"));
         configuration.setAllowCredentials(true);
-        configuration.setAllowedHeaders(Collections.singletonList("*"));
-        configuration.setMaxAge(3600L);
-        configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+        configuration.setMaxAge(3600L); // Preflight request의 최대 유효 시간
+        configuration.setExposedHeaders(Arrays.asList("Authorization"));
 
-        return request -> configuration;
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {

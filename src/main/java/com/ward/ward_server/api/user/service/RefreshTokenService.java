@@ -3,9 +3,9 @@ package com.ward.ward_server.api.user.service;
 import com.ward.ward_server.api.user.entity.RefreshToken;
 import com.ward.ward_server.api.user.entity.User;
 import com.ward.ward_server.api.user.repository.RefreshTokenRepository;
+import com.ward.ward_server.global.exception.ApiException;
 import com.ward.ward_server.global.exception.ExceptionCode;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,14 +25,14 @@ public class RefreshTokenService {
     @Transactional
     public void invalidateRefreshToken(String refreshToken) {
         var token = refreshTokenRepository.findByToken(refreshToken)
-                .orElseThrow(() -> new BadCredentialsException(ExceptionCode.INVALID_REFRESH_TOKEN.getMessage()));
+                .orElseThrow(() -> new ApiException(ExceptionCode.INVALID_REFRESH_TOKEN));
         refreshTokenRepository.delete(token);
     }
 
     @Transactional
     public RefreshToken findRefreshTokenByToken(String token) {
         return refreshTokenRepository.findByToken(token)
-                .orElseThrow(() -> new BadCredentialsException(ExceptionCode.INVALID_REFRESH_TOKEN.getMessage()));
+                .orElseThrow(() -> new ApiException(ExceptionCode.INVALID_REFRESH_TOKEN));
     }
 
     // 토큰 갱신
