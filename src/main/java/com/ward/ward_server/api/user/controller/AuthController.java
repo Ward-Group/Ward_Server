@@ -15,12 +15,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 public class AuthController {
     private final AuthService authService;
-//    private final UserService userService;
     private final JwtProperties properties;
 
-    //TODO 현재 Email 만 같으면 로그인 처리 되게 되어있음.
     @PostMapping("/login")
-    public ApiResponse<JwtTokens> login(@RequestBody @Validated LoginRequest request){
+    public ApiResponse<JwtTokens> login(@RequestBody @Validated LoginRequest request) {
         JwtTokens tokens = authService.attemptLogin(request.getProvider(), request.getProviderId(), request.getEmail(), properties.getPassword());
         return ApiResponse.ok(tokens);
     }
@@ -31,36 +29,21 @@ public class AuthController {
         return ApiResponse.ok(tokens);
     }
 
-    //TODO 닉네임 중복 에러 반환
     @PostMapping
     public ApiResponse<JwtTokens> register(@RequestBody @Validated RegisterRequest request) {
         JwtTokens tokens = authService.registerUser(request);
         return ApiResponse.ok(tokens);
     }
 
-    //TODO 관리자 권한 부여 방식 토의 필요
-    // 관리자 권한 부여
-//    @PutMapping("/grantAdmin")
-//    public ApiResponse<Void> grantAdminRole(@RequestBody @Validated RoleChangeRequest request) {
-//        userService.grantAdminRole(request.userId());
-//        return ApiResponse.ok();
-//    }
-//
-//    // 사용자 권한 부여
-//    @PutMapping("/grantUser")
-//    public ApiResponse<Void> grantUserRole(@RequestBody @Validated RoleChangeRequest request) {
-//        userService.grantUserRole(request.userId());
-//        return ApiResponse.ok();
-//    }
-
-    // 닉네임 중복 체크
     @GetMapping("/checkNickname")
     public ApiResponse<Boolean> checkDuplicateNickname(@RequestParam("nickname") String nickname) {
-
         boolean checkDuplicateNickname = authService.checkDuplicateNickname(nickname);
-
         return ApiResponse.ok(checkDuplicateNickname);
     }
 
-    //TODO 로그아웃하면 토큰 블랙리스트 처리? 혹은 다른 방법
+    @PostMapping("/logout")
+    public ApiResponse<Void> logout(@RequestParam("refreshToken") String refreshToken) {
+        authService.invalidateRefreshToken(refreshToken);
+        return ApiResponse.ok();
+    }
 }
