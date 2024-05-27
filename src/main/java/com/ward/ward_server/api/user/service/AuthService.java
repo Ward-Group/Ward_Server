@@ -8,13 +8,13 @@ import com.ward.ward_server.api.user.dto.RegisterRequest;
 import com.ward.ward_server.api.user.entity.User;
 import com.ward.ward_server.api.user.entity.enumtype.Role;
 import com.ward.ward_server.api.user.repository.UserRepository;
+import com.ward.ward_server.global.exception.ApiException;
 import com.ward.ward_server.global.exception.ExceptionCode;
 import com.ward.ward_server.global.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
@@ -43,7 +43,7 @@ public class AuthService {
         log.info("[Slf4j]Username: " + username);
 
         if (userRepository.findByEmail(email).isEmpty()) {
-            throw new BadCredentialsException(ExceptionCode.NON_EXISTENT_EMAIL.getMessage());
+            throw new ApiException(ExceptionCode.NON_EXISTENT_EMAIL);
         }
 
         try {
@@ -61,16 +61,13 @@ public class AuthService {
             var refreshToken = jwtIssuer.issueRefreshToken();
 
             User user = userRepository.findById(principal.getUserId())
-                    .orElseThrow(() -> new BadCredentialsException(ExceptionCode.USER_NOT_FOUND.getMessage()));
+                    .orElseThrow(() -> new ApiException(ExceptionCode.USER_NOT_FOUND));
             refreshTokenService.saveRefreshToken(user, refreshToken);
 
             return new JwtTokens(accessToken, refreshToken);
-        } catch (BadCredentialsException e) {
-            log.error("Login failed: ", e);
-            throw new BadCredentialsException(e.getMessage());
         } catch (AuthenticationException e) {
             log.error("Login failed: ", e);
-            throw new RuntimeException(ExceptionCode.LOGIN_FAIL.getMessage());
+            throw new ApiException(ExceptionCode.INVALID_USERNAME_OR_PASSWORD);
         }
     }
 
@@ -92,19 +89,19 @@ public class AuthService {
     public JwtTokens registerUser(RegisterRequest request) {
         try {
             if (!ValidationUtil.isValidEmail(request.getEmail())) {
-                throw new BadCredentialsException(ExceptionCode.INVALID_EMAIL_FORMAT.getMessage());
+                throw new ApiException(ExceptionCode.INVALID_EMAIL_FORMAT);
             }
 
             if (!ValidationUtil.isValidPassword(properties.getPassword())) {
-                throw new BadCredentialsException(ExceptionCode.INVALID_PASSWORD_FORMAT.getMessage());
+                throw new ApiException(ExceptionCode.INVALID_PASSWORD_FORMAT);
             }
 
             if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-                throw new BadCredentialsException(ExceptionCode.EMAIL_ALREADY_EXISTS.getMessage());
+                throw new ApiException(ExceptionCode.EMAIL_ALREADY_EXISTS);
             }
 
             if (checkDuplicateNickname(request.getNickname())) {
-                throw new BadCredentialsException(ExceptionCode.DUPLICATE_NICKNAME.getMessage());
+                throw new ApiException(ExceptionCode.DUPLICATE_NICKNAME);
             }
 
             String username = request.getProvider() + request.getProviderId();
@@ -130,7 +127,7 @@ public class AuthService {
             return new JwtTokens(accessToken, refreshToken);
         } catch (DataIntegrityViolationException e) {
             log.error("Error during user registration:", e);
-            throw new RuntimeException(ExceptionCode.REGISTRATION_ERROR_MESSAGE.getMessage());
+            throw new ApiException(ExceptionCode.REGISTRATION_ERROR_MESSAGE);
         }
     }
 
