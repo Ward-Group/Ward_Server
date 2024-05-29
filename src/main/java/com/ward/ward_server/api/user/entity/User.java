@@ -45,16 +45,14 @@ public class User {
     @Column(nullable = false)
     private boolean snsNotification;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SocialLogin> socialLogins = new ArrayList<>();
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<EntryRecord> entryRecords = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<WishItem> wishItems = new ArrayList<>();
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_social_login", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "provider_id")
-    private List<SocialLogin> socialLogins = new ArrayList<>();
 
     public User(String name, String email, String password, String nickname, Boolean emailNotification, Boolean appPushNotification, Boolean snsNotification) {
         this.name = name;
@@ -67,8 +65,11 @@ public class User {
         this.snsNotification = snsNotification;
     }
 
-    public void addSocialLogin(String provider, String providerId) {
-        this.socialLogins.add(new SocialLogin(provider, providerId));
+    public void addSocialLogin(SocialLogin socialLogin) {
+        if (socialLogin.getUser() != this) {
+            socialLogin.setUser(this);
+        }
+        this.socialLogins.add(socialLogin);
     }
 
     public void grantAdminRole() {

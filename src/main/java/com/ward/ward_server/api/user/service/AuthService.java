@@ -5,6 +5,7 @@ import com.ward.ward_server.api.user.auth.security.JwtIssuer;
 import com.ward.ward_server.api.user.auth.security.JwtProperties;
 import com.ward.ward_server.api.user.auth.security.JwtTokens;
 import com.ward.ward_server.api.user.dto.RegisterRequest;
+import com.ward.ward_server.api.user.entity.SocialLogin;
 import com.ward.ward_server.api.user.entity.User;
 import com.ward.ward_server.api.user.entity.enumtype.Role;
 import com.ward.ward_server.api.user.repository.UserRepository;
@@ -110,7 +111,8 @@ public class AuthService {
                     request.getSnsNotification()
             );
 
-            user.addSocialLogin(request.getProvider(), request.getProviderId());
+            SocialLogin socialLogin = new SocialLogin(request.getProvider(), request.getProviderId());
+            user.addSocialLogin(socialLogin);
 
             userRepository.save(user);
 
