@@ -20,7 +20,7 @@ public class AuthController {
     private final JwtProperties properties;
 
     @PostMapping("/login")
-    public ApiResponse<?> login(@RequestBody @Validated LoginRequest request) {
+    public ApiResponse<JwtTokens> login(@RequestBody @Validated LoginRequest request) {
         if (!authService.isRegisteredUser(request.getProvider(), request.getProviderId(), request.getEmail())) {
             return ApiResponse.failure(ExceptionCode.NON_EXISTENT_USER);
         }
