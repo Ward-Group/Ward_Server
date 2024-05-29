@@ -45,18 +45,22 @@ public class AuthService {
 
     @Transactional
     public JwtTokens attemptLogin(String provider, String providerId, String email, String password) {
-        Optional<User> userOptional = userRepository.findByEmailAndSocialLogins_ProviderAndSocialLogins_ProviderId(email, provider, providerId);
+        Optional<User> userOptional = userRepository.findByEmail(email);
 
         if (userOptional.isEmpty()) {
-            // provider와 providerId가 일치하는 사용자가 있지만 이메일이 다른 경우
-            Optional<User> existingUserByProvider = userRepository.findBySocialLogins_ProviderAndSocialLogins_ProviderId(provider, providerId);
-            if (existingUserByProvider.isPresent()) {
-                throw new ApiException(ExceptionCode.EMAIL_MISMATCH_LOGIN_FAILURE);
-            } else {
-                throw new ApiException(ExceptionCode.NON_EXISTENT_EMAIL);
-            }
+            throw new ApiException(ExceptionCode.NON_EXISTENT_EMAIL);
         }
+
         User user = userOptional.get();
+
+        // 소셜 로그인 정보 확인 및 추가
+        if (user.getSocialLogins().stream().noneMatch(socialLogin ->
+                socialLogin.getProvider().equals(provider) &&
+                        socialLogin.getProviderId().equals(providerId))) {
+
+            SocialLogin socialLogin = new SocialLogin(provider, providerId);
+            user.addSocialLogin(socialLogin);
+        }
 
         try {
             var authentication = authenticationManager.authenticate(
@@ -81,6 +85,7 @@ public class AuthService {
         }
     }
 
+
     @Transactional
     public JwtTokens registerUser(RegisterRequest request) {
         try {
@@ -88,37 +93,39 @@ public class AuthService {
                 throw new ApiException(ExceptionCode.INVALID_EMAIL_FORMAT);
             }
 
-            if (!ValidationUtil.isValidPassword(properties.getPassword())) {
-                throw new ApiException(ExceptionCode.INVALID_PASSWORD_FORMAT);
+            Optional<User> existingUserByEmail = userRepository.findByEmail(request.getEmail());
+
+            User user;
+            if (existingUserByEmail.isPresent()) {
+                user = existingUserByEmail.get();
+                // 중복 소셜 로그인 정보가 없는 경우 provider+providerId 추가
+                if (user.getSocialLogins().stream().noneMatch(socialLogin ->
+                        socialLogin.getProvider().equals(request.getProvider()) &&
+                                socialLogin.getProviderId().equals(request.getProviderId()))) {
+
+                    SocialLogin socialLogin = new SocialLogin(request.getProvider(), request.getProviderId());
+                    user.addSocialLogin(socialLogin);
+                }
+            } else {
+                if (userRepository.existsByNickname(request.getNickname())) {
+                    throw new ApiException(ExceptionCode.DUPLICATE_NICKNAME);
+                }
+
+                user = new User(
+                        request.getName(),
+                        request.getEmail(),
+                        passwordEncoder.encode(properties.getPassword()),
+                        request.getNickname(),
+                        request.getEmailNotification(),
+                        request.getAppPushNotification(),
+                        request.getSnsNotification()
+                );
+
+                SocialLogin socialLogin = new SocialLogin(request.getProvider(), request.getProviderId());
+                user.addSocialLogin(socialLogin);
+
+                userRepository.save(user);
             }
-
-            if (userRepository.existsByEmail(request.getEmail())) {
-                throw new ApiException(ExceptionCode.EMAIL_ALREADY_EXISTS);
-            }
-
-            if (userRepository.existsByNickname(request.getNickname())) {
-                throw new ApiException(ExceptionCode.DUPLICATE_NICKNAME);
-            }
-
-            Optional<User> existingUserByProvider = userRepository.findBySocialLogins_ProviderAndSocialLogins_ProviderId(request.getProvider(), request.getProviderId());
-            if (existingUserByProvider.isPresent()) {
-                throw new ApiException(ExceptionCode.DUPLICATE_PROVIDER_ID);
-            }
-
-            User user = new User(
-                    request.getName(),
-                    request.getEmail(),
-                    passwordEncoder.encode(properties.getPassword()),
-                    request.getNickname(),
-                    request.getEmailNotification(),
-                    request.getAppPushNotification(),
-                    request.getSnsNotification()
-            );
-
-            SocialLogin socialLogin = new SocialLogin(request.getProvider(), request.getProviderId());
-            user.addSocialLogin(socialLogin);
-
-            userRepository.save(user);
 
             var roles = List.of(Role.ROLE_USER.toString());
             var accessToken = jwtIssuer.issueAccessToken(user.getId(), user.getEmail(), roles);
@@ -135,6 +142,7 @@ public class AuthService {
             throw e;
         }
     }
+
 
     @Transactional
     public JwtTokens refresh(String refreshToken) {

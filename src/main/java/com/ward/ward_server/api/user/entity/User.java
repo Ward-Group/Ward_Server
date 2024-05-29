@@ -69,7 +69,11 @@ public class User {
         if (socialLogin.getUser() != this) {
             socialLogin.setUser(this);
         }
-        this.socialLogins.add(socialLogin);
+        if (this.socialLogins.stream().noneMatch(s ->
+                s.getProvider().equals(socialLogin.getProvider()) &&
+                        s.getProviderId().equals(socialLogin.getProviderId()))) {
+            this.socialLogins.add(socialLogin);
+        }
     }
 
     public void grantAdminRole() {
