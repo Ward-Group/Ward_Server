@@ -47,12 +47,51 @@ public class AuthService {
         return userRepository.existsByEmail(email);
     }
 
-    public boolean isRegisteredUser(String provider, String providerId, String email) {
-        return userRepository.existsByEmailAndSocialLogins_ProviderAndSocialLogins_ProviderId(email, provider, providerId);
+    @Transactional
+    public JwtTokens attemptLogin(String provider, String providerId, String email) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+
+        if (userOptional.isEmpty()) {
+            throw new ApiException(ExceptionCode.NON_EXISTENT_EMAIL);
+        }
+
+        // 소셜 로그인 정보 확인 및 추가
+        User user = userOptional.get();
+
+        if (user.getSocialLogins().stream().noneMatch(socialLogin ->
+                socialLogin.getProvider().equals(provider) &&
+                        socialLogin.getProviderId().equals(providerId))) {
+
+            SocialLogin socialLogin = new SocialLogin(provider, providerId);
+            user.addSocialLogin(socialLogin);
+        }
+
+        // 로그인 진행 - jwt 토큰 발급
+        try {
+            var authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(email, properties.getPassword())
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            var principal = (CustomUserDetails) authentication.getPrincipal();
+            log.info("[Slf4j] 로그인 CustomUserDetails: " + principal.toString());
+            var roles = principal.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .toList();
+
+            var accessToken = jwtIssuer.issueAccessToken(principal.getUserId(), principal.getEmail(), roles);
+            var refreshToken = jwtIssuer.issueRefreshToken();
+
+            refreshTokenService.saveRefreshToken(user, refreshToken);
+
+            return new JwtTokens(accessToken, refreshToken);
+        } catch (AuthenticationException e) {
+            log.error("로그인 실패: ", e);
+            throw new ApiException(ExceptionCode.INVALID_USERNAME_OR_PASSWORD);
+        }
     }
 
     @Transactional
-    public JwtTokens attemptLogin(String provider, String providerId, String email, String password) {
+    public JwtTokens addSocialLogin(String provider, String providerId, String email) {
         Optional<User> userOptional = userRepository.findByEmail(email);
 
         if (userOptional.isEmpty()) {
@@ -72,7 +111,7 @@ public class AuthService {
 
         try {
             var authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(email, password)
+                    new UsernamePasswordAuthenticationToken(email, properties.getPassword())
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
             var principal = (CustomUserDetails) authentication.getPrincipal();
