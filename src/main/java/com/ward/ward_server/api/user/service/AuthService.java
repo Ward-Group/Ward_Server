@@ -39,6 +39,10 @@ public class AuthService {
     private final JwtProperties properties;
     private final RefreshTokenService refreshTokenService;
 
+    public boolean isRegisteredUser(String provider, String providerId, String email) {
+        return userRepository.existsByEmailAndSocialLogins_ProviderAndSocialLogins_ProviderId(email, provider, providerId);
+    }
+
     @Transactional
     public JwtTokens attemptLogin(String provider, String providerId, String email, String password) {
         Optional<User> userOptional = userRepository.findByEmailAndSocialLogins_ProviderAndSocialLogins_ProviderId(email, provider, providerId);

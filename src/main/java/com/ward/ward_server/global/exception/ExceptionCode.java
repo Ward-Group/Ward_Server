@@ -25,6 +25,7 @@ public enum ExceptionCode {
     INVALID_EMAIL(5214, "이메일이 일치하지 않습니다."),
     DUPLICATE_PROVIDER_ID(5215, "이미 사용 중인 소셜 로그인 계정입니다."),
     EMAIL_MISMATCH_LOGIN_FAILURE(5203, "provider와 providerId가 일치하는 사용자가 있지만 이메일이 다릅니다."),
+    NON_EXISTENT_USER(5204, "존재하지 않는 회원입니다. 회원가입이 필요합니다."),
 
     //아이템
     ITEM_NOT_FOUND(5300, "상품을 찾을 수 없습니다."),
