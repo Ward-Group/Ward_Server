@@ -39,6 +39,14 @@ public class AuthService {
     private final JwtProperties properties;
     private final RefreshTokenService refreshTokenService;
 
+    public boolean isSameUser(String provider, String providerId) {
+        return userRepository.existsBySocialLogins_ProviderAndSocialLogins_ProviderId(provider, providerId);
+    }
+
+    public boolean isRegisteredUser(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
     public boolean isRegisteredUser(String provider, String providerId, String email) {
         return userRepository.existsByEmailAndSocialLogins_ProviderAndSocialLogins_ProviderId(email, provider, providerId);
     }
