@@ -1,6 +1,5 @@
 package com.ward.ward_server.api.user.controller;
 
-import com.ward.ward_server.api.user.auth.security.JwtProperties;
 import com.ward.ward_server.api.user.auth.security.JwtTokens;
 import com.ward.ward_server.api.user.dto.AddSocialLoginRequest;
 import com.ward.ward_server.api.user.dto.LoginRequest;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 public class AuthController {
     private final AuthService authService;
-    private final JwtProperties properties;
 
     @PostMapping("/login")
     public ApiResponse<JwtTokens> login(@RequestBody @Validated LoginRequest request) {
@@ -46,9 +44,19 @@ public class AuthController {
 
     @PostMapping
     public ApiResponse<JwtTokens> register(@RequestBody @Validated RegisterRequest request) {
-        JwtTokens tokens = authService.registerUser(request);
+        JwtTokens tokens = authService.registerUser(
+                request.getProvider(),
+                request.getProviderId(),
+                request.getName(),
+                request.getEmail(),
+                request.getNickname(),
+                request.getEmailNotification(),
+                request.getAppPushNotification(),
+                request.getSnsNotification()
+        );
         return ApiResponse.ok(ApiResponseMessage.SIGNUP_SUCCESS, tokens);
     }
+
 
     @PostMapping("/refresh")
     public ApiResponse<JwtTokens> refresh(@RequestParam("refreshToken") String refreshToken) {

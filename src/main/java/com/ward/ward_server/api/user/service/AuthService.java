@@ -4,7 +4,6 @@ import com.ward.ward_server.api.user.auth.security.CustomUserDetails;
 import com.ward.ward_server.api.user.auth.security.JwtIssuer;
 import com.ward.ward_server.api.user.auth.security.JwtProperties;
 import com.ward.ward_server.api.user.auth.security.JwtTokens;
-import com.ward.ward_server.api.user.dto.RegisterRequest;
 import com.ward.ward_server.api.user.entity.SocialLogin;
 import com.ward.ward_server.api.user.entity.User;
 import com.ward.ward_server.api.user.repository.SocialLoginRepository;
@@ -82,34 +81,43 @@ public class AuthService {
 
     // 회원가입
     @Transactional
-    public JwtTokens registerUser(RegisterRequest request) {
+    public JwtTokens registerUser(
+            String provider,
+            String providerId,
+            String name,
+            String email,
+            String nickname,
+            Boolean emailNotification,
+            Boolean appPushNotification,
+            Boolean snsNotification
+    ) {
         try {
-            if (!ValidationUtil.isValidEmail(request.getEmail())) {
+            if (!ValidationUtil.isValidEmail(email)) {
                 throw new ApiException(ExceptionCode.INVALID_EMAIL_FORMAT);
             }
 
-            Optional<User> existingUserByEmail = userRepository.findByEmail(request.getEmail());
+            Optional<User> existingUserByEmail = userRepository.findByEmail(email);
 
             User user;
             if (existingUserByEmail.isPresent()) {
                 user = existingUserByEmail.get();
-                updateSocialLogin(user, request.getProvider(), request.getProviderId(), request.getEmail());
+                updateSocialLogin(user, provider, providerId, email);
             } else {
-                if (userRepository.existsByNickname(request.getNickname())) {
+                if (userRepository.existsByNickname(nickname)) {
                     throw new ApiException(ExceptionCode.DUPLICATE_NICKNAME);
                 }
 
                 user = new User(
-                        request.getName(),
-                        request.getEmail(),
+                        name,
+                        email,
                         passwordEncoder.encode(properties.getPassword()),
-                        request.getNickname(),
-                        request.getEmailNotification(),
-                        request.getAppPushNotification(),
-                        request.getSnsNotification()
+                        nickname,
+                        emailNotification,
+                        appPushNotification,
+                        snsNotification
                 );
 
-                SocialLogin socialLogin = new SocialLogin(request.getProvider(), request.getProviderId(), request.getEmail());
+                SocialLogin socialLogin = new SocialLogin(provider, providerId, email);
                 socialLogin.setUser(user);
 
                 socialLoginRepository.save(socialLogin);
@@ -125,6 +133,7 @@ public class AuthService {
             throw e;
         }
     }
+
 
     // Refresh Token 갱신
     @Transactional
