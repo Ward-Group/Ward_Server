@@ -2,6 +2,8 @@ package com.ward.ward_server.api.user.service;
 
 import com.ward.ward_server.api.user.entity.SocialLogin;
 import com.ward.ward_server.api.user.repository.SocialLoginRepository;
+import com.ward.ward_server.global.exception.ApiException;
+import com.ward.ward_server.global.exception.ExceptionCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -53,6 +55,7 @@ public class AppleUserService {
         } else {
             // SocialLogin 정보가 존재하지 않으면 로깅하여 알립니다.
             log.warn("해당 이메일을 가진 사용자를 찾을 수 없습니다: {}", oldEmail);
+            throw new ApiException(ExceptionCode.NON_EXISTENT_EMAIL);
         }
     }
 }
