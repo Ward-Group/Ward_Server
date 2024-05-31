@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface SocialLoginRepository extends JpaRepository<SocialLogin, Long> {
     boolean existsByEmail(String email);
     Optional<SocialLogin> findByProviderAndProviderIdAndEmail(String provider, String providerId, String email);
+
+    boolean existsByProviderAndProviderId(String provider, String providerId);
 }

@@ -36,9 +36,6 @@ public class SocialLogin {
 
     public void setUser(User user) {
         this.user = user;
-        if (!user.getSocialLogins().contains(this)) {
-            user.getSocialLogins().add(this);
-        }
     }
 
     public void updateEmail(String newEmail) {

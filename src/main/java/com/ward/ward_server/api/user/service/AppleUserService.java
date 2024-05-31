@@ -34,6 +34,7 @@ public class AppleUserService {
 
             // 소셜 로그인 정보 이메일 업데이트
             socialLogin.updateEmail(newEmail);
+            log.info("소셜 로그인 정보 업데이트: {}", socialLogin);
         } else {
             // SocialLogin 정보가 존재하지 않으면 로깅하여 알립니다.
             log.warn("해당 이메일을 가진 사용자를 찾을 수 없습니다: {}", oldEmail);

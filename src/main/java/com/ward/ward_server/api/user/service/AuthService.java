@@ -40,16 +40,16 @@ public class AuthService {
     private final JwtProperties properties;
     private final RefreshTokenService refreshTokenService;
 
-    // Check if a user with the same provider and providerId already exists
-    public boolean isSameUser(String provider, String providerId) {
-        return userRepository.existsBySocialLogins_ProviderAndSocialLogins_ProviderId(provider, providerId);
-    }
-
-    // Check if a user with the given email is registered
+    // sociallogin.email 이 있으면 이미 가입한 회원
     public boolean isRegisteredUser(String email) {
         return socialLoginRepository.existsByEmail(email);
     }
 
+    // provider+providerId 까지 동일하면 로그인 시켜야함.
+    // 없으면 소셜 로그인 추가또는 기존 로그인으로 로그인
+    public boolean isSameUser(String provider, String providerId) {
+        return socialLoginRepository.existsByProviderAndProviderId(provider, providerId);
+    }
 
     // 소셜 로그인 정보로 사용자 조회
     @Transactional
@@ -110,8 +110,9 @@ public class AuthService {
                 );
 
                 SocialLogin socialLogin = new SocialLogin(request.getProvider(), request.getProviderId(), request.getEmail());
-                user.addSocialLogin(socialLogin);
+                socialLogin.setUser(user);
 
+                socialLoginRepository.save(socialLogin);
                 userRepository.save(user);
             }
 
@@ -153,11 +154,15 @@ public class AuthService {
 
     // 사용자의 소셜 로그인 정보 업데이트
     private void updateSocialLogin(User user, String provider, String providerId, String email) {
-        if (user.getSocialLogins().stream().noneMatch(socialLogin ->
-                socialLogin.getProvider().equals(provider) &&
-                        socialLogin.getProviderId().equals(providerId))) {
+        Optional<SocialLogin> socialLoginOptional = socialLoginRepository.findByProviderAndProviderIdAndEmail(provider, providerId, email);
+
+        if (socialLoginOptional.isPresent()) {
+            SocialLogin socialLogin = socialLoginOptional.get();
+            socialLogin.setUser(user);
+        } else {
             SocialLogin socialLogin = new SocialLogin(provider, providerId, email);
-            user.addSocialLogin(socialLogin);
+            socialLogin.setUser(user);
+            socialLoginRepository.save(socialLogin);
         }
     }
 

@@ -45,9 +45,6 @@ public class User {
     @Column(nullable = false)
     private boolean snsNotification;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SocialLogin> socialLogins = new ArrayList<>();
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<EntryRecord> entryRecords = new ArrayList<>();
 
@@ -65,20 +62,7 @@ public class User {
         this.snsNotification = snsNotification;
     }
 
-    public void addSocialLogin(SocialLogin socialLogin) {
-        if (socialLogin.getUser() != this) {
-            socialLogin.setUser(this);
-        }
-        if (this.socialLogins.stream().noneMatch(s ->
-                s.getProvider().equals(socialLogin.getProvider()) &&
-                        s.getProviderId().equals(socialLogin.getProviderId()))) {
-            this.socialLogins.add(socialLogin);
-        }
-    }
-
     public void updateEmail(String email) {
-        if (this.email == null) {
-            this.email = email;
-        }
+        this.email = email;
     }
 }
