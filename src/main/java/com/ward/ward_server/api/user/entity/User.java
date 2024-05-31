@@ -76,11 +76,9 @@ public class User {
         }
     }
 
-    public void grantAdminRole() {
-        this.role = Role.ROLE_ADMIN;
-    }
-
-    public void grantUserRole() {
-        this.role = Role.ROLE_USER;
+    public void updateEmail(String email) {
+        if (this.email == null) {
+            this.email = email;
+        }
     }
 }

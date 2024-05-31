@@ -28,12 +28,12 @@ public class AuthController {
             throw new ApiException(ExceptionCode.NON_EXISTENT_USER);
         }
         if (!authService.isSameUser(request.getProvider(),request.getProviderId())) {
-            // provider+providerId 로 기존 소셜 계정인지, 다른 계정인지 판별
+            // provider+providerId 로 로그인 시도 중인 소셜 계정이 기존 소셜 계정이면 로그인, 다른 소셜 계정이면 소셜 계정 추가 판별
             // 다른 소셜 로그인 진행 시 통합 진행. 프론트로 통합하시겠습니까? 기존 소셜 계정으로 로그인 하시겠습니까? 물어보고 돌아오기
             //TODO 기존 계정이 뭔지 표시하기
             throw new ApiException(ExceptionCode.EXISTENT_USER);
         }
-        //로그인 진행
+        //로그인 진행 - provider+providerId 까지 일치
         JwtTokens tokens = authService.attemptLogin(request.getProvider(), request.getProviderId(), request.getEmail());
         return ApiResponse.ok(ApiResponseMessage.LOGIN_SUCCESS, tokens);
     }

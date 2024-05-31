@@ -7,7 +7,7 @@ import com.ward.ward_server.api.user.auth.security.JwtTokens;
 import com.ward.ward_server.api.user.dto.RegisterRequest;
 import com.ward.ward_server.api.user.entity.SocialLogin;
 import com.ward.ward_server.api.user.entity.User;
-import com.ward.ward_server.api.user.entity.enumtype.Role;
+import com.ward.ward_server.api.user.repository.SocialLoginRepository;
 import com.ward.ward_server.api.user.repository.UserRepository;
 import com.ward.ward_server.global.exception.ApiException;
 import com.ward.ward_server.global.exception.ExceptionCode;
@@ -33,63 +33,39 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class AuthService {
     private final UserRepository userRepository;
+    private final SocialLoginRepository socialLoginRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtIssuer jwtIssuer;
     private final AuthenticationManager authenticationManager;
     private final JwtProperties properties;
     private final RefreshTokenService refreshTokenService;
 
+    // Check if a user with the same provider and providerId already exists
     public boolean isSameUser(String provider, String providerId) {
         return userRepository.existsBySocialLogins_ProviderAndSocialLogins_ProviderId(provider, providerId);
     }
 
+    // Check if a user with the given email is registered
     public boolean isRegisteredUser(String email) {
-        return userRepository.existsByEmail(email);
+        return socialLoginRepository.existsByEmail(email);
     }
 
+
+    // 소셜 로그인 정보로 사용자 조회
     @Transactional
     public JwtTokens attemptLogin(String provider, String providerId, String email) {
-        Optional<User> userOptional = userRepository.findByEmail(email);
+        Optional<SocialLogin> socialLoginOptional = socialLoginRepository.findByProviderAndProviderIdAndEmail(provider, providerId, email);
 
-        if (userOptional.isEmpty()) {
+        if (socialLoginOptional.isEmpty()) {
             throw new ApiException(ExceptionCode.NON_EXISTENT_EMAIL);
         }
 
-        // 소셜 로그인 정보 확인 및 추가
-        User user = userOptional.get();
+        User user = socialLoginOptional.get().getUser();
 
-        if (user.getSocialLogins().stream().noneMatch(socialLogin ->
-                socialLogin.getProvider().equals(provider) &&
-                        socialLogin.getProviderId().equals(providerId))) {
-
-            SocialLogin socialLogin = new SocialLogin(provider, providerId);
-            user.addSocialLogin(socialLogin);
-        }
-
-        // 로그인 진행 - jwt 토큰 발급
-        try {
-            var authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(email, properties.getPassword())
-            );
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            var principal = (CustomUserDetails) authentication.getPrincipal();
-            log.info("[Slf4j] 로그인 CustomUserDetails: " + principal.toString());
-            var roles = principal.getAuthorities().stream()
-                    .map(GrantedAuthority::getAuthority)
-                    .toList();
-
-            var accessToken = jwtIssuer.issueAccessToken(principal.getUserId(), principal.getEmail(), roles);
-            var refreshToken = jwtIssuer.issueRefreshToken();
-
-            refreshTokenService.saveRefreshToken(user, refreshToken);
-
-            return new JwtTokens(accessToken, refreshToken);
-        } catch (AuthenticationException e) {
-            log.error("로그인 실패: ", e);
-            throw new ApiException(ExceptionCode.INVALID_USERNAME_OR_PASSWORD);
-        }
+        return generateJwtTokens(user);
     }
 
+    // 새로운 소셜 로그인 추가
     @Transactional
     public JwtTokens addSocialLogin(String provider, String providerId, String email) {
         Optional<User> userOptional = userRepository.findByEmail(email);
@@ -99,40 +75,12 @@ public class AuthService {
         }
 
         User user = userOptional.get();
+        updateSocialLogin(user, provider, providerId, email);
 
-        // 소셜 로그인 정보 확인 및 추가
-        if (user.getSocialLogins().stream().noneMatch(socialLogin ->
-                socialLogin.getProvider().equals(provider) &&
-                        socialLogin.getProviderId().equals(providerId))) {
-
-            SocialLogin socialLogin = new SocialLogin(provider, providerId);
-            user.addSocialLogin(socialLogin);
-        }
-
-        try {
-            var authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(email, properties.getPassword())
-            );
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            var principal = (CustomUserDetails) authentication.getPrincipal();
-            log.info("[Slf4j] 로그인 CustomUserDetails: " + principal.toString());
-            var roles = principal.getAuthorities().stream()
-                    .map(GrantedAuthority::getAuthority)
-                    .toList();
-
-            var accessToken = jwtIssuer.issueAccessToken(principal.getUserId(), principal.getEmail(), roles);
-            var refreshToken = jwtIssuer.issueRefreshToken();
-
-            refreshTokenService.saveRefreshToken(user, refreshToken);
-
-            return new JwtTokens(accessToken, refreshToken);
-        } catch (AuthenticationException e) {
-            log.error("로그인 실패: ", e);
-            throw new ApiException(ExceptionCode.INVALID_USERNAME_OR_PASSWORD);
-        }
+        return generateJwtTokens(user);
     }
 
-
+    // 회원가입
     @Transactional
     public JwtTokens registerUser(RegisterRequest request) {
         try {
@@ -145,14 +93,7 @@ public class AuthService {
             User user;
             if (existingUserByEmail.isPresent()) {
                 user = existingUserByEmail.get();
-                // 중복 소셜 로그인 정보가 없는 경우 provider+providerId 추가
-                if (user.getSocialLogins().stream().noneMatch(socialLogin ->
-                        socialLogin.getProvider().equals(request.getProvider()) &&
-                                socialLogin.getProviderId().equals(request.getProviderId()))) {
-
-                    SocialLogin socialLogin = new SocialLogin(request.getProvider(), request.getProviderId());
-                    user.addSocialLogin(socialLogin);
-                }
+                updateSocialLogin(user, request.getProvider(), request.getProviderId(), request.getEmail());
             } else {
                 if (userRepository.existsByNickname(request.getNickname())) {
                     throw new ApiException(ExceptionCode.DUPLICATE_NICKNAME);
@@ -168,19 +109,13 @@ public class AuthService {
                         request.getSnsNotification()
                 );
 
-                SocialLogin socialLogin = new SocialLogin(request.getProvider(), request.getProviderId());
+                SocialLogin socialLogin = new SocialLogin(request.getProvider(), request.getProviderId(), request.getEmail());
                 user.addSocialLogin(socialLogin);
 
                 userRepository.save(user);
             }
 
-            var roles = List.of(Role.ROLE_USER.toString());
-            var accessToken = jwtIssuer.issueAccessToken(user.getId(), user.getEmail(), roles);
-            var refreshToken = jwtIssuer.issueRefreshToken();
-
-            refreshTokenService.saveRefreshToken(user, refreshToken);
-
-            return new JwtTokens(accessToken, refreshToken);
+            return generateJwtTokens(user);
         } catch (DataIntegrityViolationException e) {
             log.error("회원 가입 중 데이터 무결성 위반 에러: ", e);
             throw new ApiException(ExceptionCode.REGISTRATION_ERROR_MESSAGE);
@@ -190,7 +125,7 @@ public class AuthService {
         }
     }
 
-
+    // Refresh Token 갱신
     @Transactional
     public JwtTokens refresh(String refreshToken) {
         var refreshTokenEntity = refreshTokenService.findRefreshTokenByToken(refreshToken);
@@ -205,12 +140,49 @@ public class AuthService {
         return new JwtTokens(newAccessToken, newRefreshToken);
     }
 
+    // RefreshToken 무효화 - 로그아웃 or 보안 상
     @Transactional
     public void invalidateRefreshToken(String refreshToken) {
         refreshTokenService.invalidateRefreshToken(refreshToken);
     }
 
+    // 닉네임 중복 검사
     public boolean checkDuplicateNickname(String nickname) {
         return userRepository.existsByNickname(nickname);
+    }
+
+    // 사용자의 소셜 로그인 정보 업데이트
+    private void updateSocialLogin(User user, String provider, String providerId, String email) {
+        if (user.getSocialLogins().stream().noneMatch(socialLogin ->
+                socialLogin.getProvider().equals(provider) &&
+                        socialLogin.getProviderId().equals(providerId))) {
+            SocialLogin socialLogin = new SocialLogin(provider, providerId, email);
+            user.addSocialLogin(socialLogin);
+        }
+    }
+
+    // JWT 토큰 생성
+    private JwtTokens generateJwtTokens(User user) {
+        try {
+            var authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(user.getEmail(), properties.getPassword())
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            var principal = (CustomUserDetails) authentication.getPrincipal();
+            log.info("[Slf4j] 로그인 CustomUserDetails: " + principal.toString());
+            var roles = principal.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .toList();
+
+            var accessToken = jwtIssuer.issueAccessToken(principal.getUserId(), principal.getEmail(), roles);
+            var refreshToken = jwtIssuer.issueRefreshToken();
+
+            refreshTokenService.saveRefreshToken(user, refreshToken);
+
+            return new JwtTokens(accessToken, refreshToken);
+        } catch (AuthenticationException e) {
+            log.error("로그인 실패: ", e);
+            throw new ApiException(ExceptionCode.INVALID_USERNAME_OR_PASSWORD);
+        }
     }
 }
