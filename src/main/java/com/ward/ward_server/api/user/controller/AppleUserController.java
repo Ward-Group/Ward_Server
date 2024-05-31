@@ -17,6 +17,7 @@ public class AppleUserController {
 
     private final AppleUserService appleUserService;
 
+    //todo 실패 시 에러 메세지 추가
     @PostMapping("/updateUserInfo")
     public ApiResponse<Void> updateUserInfo(@RequestBody UserInfoUpdateRequest request) {
         appleUserService.updateUserInfo(request.getProvider(), request.getProviderId(), request.getOldEmail(), request.getNewEmail());
