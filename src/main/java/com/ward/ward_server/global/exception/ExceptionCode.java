@@ -10,18 +10,15 @@ public enum ExceptionCode {
     INVALID_INPUT(5000, "부적절한 입력입니다."),
 
     //유저 회원가입 및 로그인
-    EMAIL_ALREADY_EXISTS(5201, "이미 사용 중인 이메일입니다."),
-    NON_EXISTENT_EMAIL(5202, "존재하지 않는 이메일입니다"),
-    INVALID_EMAIL_FORMAT(5203, "유효하지 않은 이메일 형식입니다."),
-    INVALID_PASSWORD_FORMAT(5204, "유효하지 않은 비밀번호 형식입니다."),
-    LOGIN_FAIL(5205, "로그인에 실패하였습니다."),
-    INVALID_USERNAME_OR_PASSWORD(5206, "잘못된 아이디 또는 비밀번호입니다."),
-    REGISTRATION_ERROR_MESSAGE(5207, "회원 가입 중 오류가 발생했습니다. 나중에 다시 시도해주세요."),
-    USER_NOT_FOUND(5208, "사용자를 찾을 수 없습니다."),
-    DUPLICATE_NICKNAME(5209, "이미 사용 중인 닉네임입니다."),
-    DUPLICATE_WISHLIST(5211, "이미 등록하였습니다."),
-    NO_WISHLIST_FOUND(5212, "관심 목록이 존재하지 않습니다."),
-    INVALID_REFRESH_TOKEN(5213, "유효하지 않은 리프레시 토큰입니다."),
+    NON_EXISTENT_EMAIL(5201, "존재하지 않는 이메일입니다"),
+    INVALID_EMAIL_FORMAT(5202, "유효하지 않은 이메일 형식입니다."),
+    INVALID_USERNAME_OR_PASSWORD(5203, "잘못된 아이디 또는 비밀번호입니다."),
+    REGISTRATION_ERROR_MESSAGE(5204, "회원 가입 중 오류가 발생했습니다. 나중에 다시 시도해주세요."),
+    USER_NOT_FOUND(5205, "사용자를 찾을 수 없습니다."),
+    DUPLICATE_NICKNAME(5206, "이미 사용 중인 닉네임입니다."),
+    INVALID_REFRESH_TOKEN(5207, "유효하지 않은 리프레시 토큰입니다."),
+    NON_EXISTENT_USER(5208, "존재하지 않는 회원입니다. 회원가입이 필요합니다."),
+    EXISTENT_USER(5209,"해당 이메일은 다른 소셜 로그인으로 가입한 내역이 존재합니다. 계정 통합 의사를 확인 후 기존 소셜로그인 진행 후 통합합니다."),
 
     //아이템
     ITEM_NOT_FOUND(5300, "상품을 찾을 수 없습니다."),

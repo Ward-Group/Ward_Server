@@ -11,8 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginRequest {
-
+public class UserInfoUpdateRequest {
     @NotBlank(message = "Provider cannot be empty")
     private String provider;
 
@@ -20,5 +19,8 @@ public class LoginRequest {
     private String providerId;
 
     @Email(message = "Email should be valid")
-    private String email;
+    private String oldEmail;
+
+    @Email(message = "Email should be valid")
+    private String newEmail;
 }

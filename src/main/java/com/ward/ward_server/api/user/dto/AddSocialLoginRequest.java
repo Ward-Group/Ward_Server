@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginRequest {
+public class AddSocialLoginRequest {
 
     @NotBlank(message = "Provider cannot be empty")
     private String provider;
