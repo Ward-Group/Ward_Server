@@ -65,4 +65,8 @@ public class User {
     public void updateEmail(String email) {
         this.email = email;
     }
+
+    public void setNickname(String newNickname) {
+        this.nickname = newNickname;
+    }
 }

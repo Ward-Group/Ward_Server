@@ -76,7 +76,20 @@ public class AuthController {
         return ApiResponse.ok(ApiResponseMessage.LOGOUT_SUCCESS);
     }
 
+    //TODO 회원탈퇴
+//    @PostMapping("/deleteAccount")
+//    public ApiResponse<Void> deleteAccount(@RequestParam("userId") String userId) {
+//        authService.deleteAccount(userId);
+//        return ApiResponse.ok(ApiResponseMessage.ACCOUNT_DELETION_SUCCESS);
+//    }
+//
+//    //TODO 연동 해제
+//    @PostMapping("/disconnectSocialLogin")
+//    public ApiResponse<Void> disconnectSocialLogin(@RequestParam("userId") String userId, @RequestParam("provider") String provider, @RequestParam("providerId") String providerId) {
+//        authService.disconnectSocialLogin(userId, provider, providerId);
+//        return ApiResponse.ok(ApiResponseMessage.SOCIAL_LOGIN_DISCONNECT_SUCCESS);
+//    }
+
     //TODO 소셜 계정 이메일 정보 변경 시 정보 받을 경로
 
-    //TODO 회원탈퇴, 연동 해제
 }
