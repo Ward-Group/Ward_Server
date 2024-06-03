@@ -5,8 +5,6 @@ import com.ward.ward_server.api.user.dto.AddSocialLoginRequest;
 import com.ward.ward_server.api.user.dto.LoginRequest;
 import com.ward.ward_server.api.user.dto.RegisterRequest;
 import com.ward.ward_server.api.user.service.AuthService;
-import com.ward.ward_server.global.exception.ApiException;
-import com.ward.ward_server.global.exception.ExceptionCode;
 import com.ward.ward_server.global.response.ApiResponse;
 import com.ward.ward_server.global.response.ApiResponseMessage;
 import lombok.RequiredArgsConstructor;
@@ -21,18 +19,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ApiResponse<JwtTokens> login(@RequestBody @Validated LoginRequest request) {
-        if (!authService.isRegisteredUser(request.getEmail())) {
-            // 이메일로 기존 회원 유무 판별
-            throw new ApiException(ExceptionCode.NON_EXISTENT_USER);
-        }
-        if (!authService.isSameUser(request.getProvider(),request.getProviderId())) {
-            // provider+providerId 로 로그인 시도 중인 소셜 계정이 기존 소셜 계정이면 로그인, 다른 소셜 계정이면 소셜 계정 추가 판별
-            // 다른 소셜 로그인 진행 시 통합 진행. 프론트로 통합하시겠습니까? 기존 소셜 계정으로 로그인 하시겠습니까? 물어보고 돌아오기
-            //TODO 기존 계정이 뭔지 표시하기
-            throw new ApiException(ExceptionCode.EXISTENT_USER);
-        }
-        //로그인 진행 - provider+providerId 까지 일치
-        JwtTokens tokens = authService.attemptLogin(request.getProvider(), request.getProviderId(), request.getEmail());
+        JwtTokens tokens = authService.login(request);
         return ApiResponse.ok(ApiResponseMessage.LOGIN_SUCCESS, tokens);
     }
 

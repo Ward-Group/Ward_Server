@@ -4,6 +4,7 @@ import com.ward.ward_server.api.user.auth.security.CustomUserDetails;
 import com.ward.ward_server.api.user.auth.security.JwtIssuer;
 import com.ward.ward_server.api.user.auth.security.JwtProperties;
 import com.ward.ward_server.api.user.auth.security.JwtTokens;
+import com.ward.ward_server.api.user.dto.LoginRequest;
 import com.ward.ward_server.api.user.entity.SocialLogin;
 import com.ward.ward_server.api.user.entity.User;
 import com.ward.ward_server.api.user.repository.SocialLoginRepository;
@@ -52,15 +53,21 @@ public class AuthService {
 
     // 소셜 로그인 정보로 사용자 조회
     @Transactional
-    public JwtTokens attemptLogin(String provider, String providerId, String email) {
-        Optional<SocialLogin> socialLoginOptional = socialLoginRepository.findByProviderAndProviderIdAndEmail(provider, providerId, email);
+    public JwtTokens login(LoginRequest request) {
+        if (!isRegisteredUser(request.getEmail())) {
+            throw new ApiException(ExceptionCode.NON_EXISTENT_USER);
+        }
 
+        if (!isSameUser(request.getProvider(), request.getProviderId())) {
+            throw new ApiException(ExceptionCode.EXISTENT_USER);
+        }
+
+        Optional<SocialLogin> socialLoginOptional = socialLoginRepository.findByProviderAndProviderIdAndEmail(request.getProvider(), request.getProviderId(), request.getEmail());
         if (socialLoginOptional.isEmpty()) {
             throw new ApiException(ExceptionCode.NON_EXISTENT_EMAIL);
         }
 
         User user = socialLoginOptional.get().getUser();
-
         return generateJwtTokens(user);
     }
 
