@@ -18,9 +18,8 @@ public class UserService {
     private final UserRepository userRepository;
 
     public String getNickname(Long userId) {
-        User user = userRepository.findById(userId)
+        return userRepository.findNicknameById(userId)
                 .orElseThrow(() -> new ApiException(ExceptionCode.USER_NOT_FOUND));
-        return user.getNickname();
     }
 
     @Transactional
@@ -31,7 +30,7 @@ public class UserService {
             throw new ApiException(ExceptionCode.DUPLICATE_NICKNAME);
         }
 
-        user.setNickname(newNickname);
+        user.updateNickname(newNickname);
         userRepository.save(user);
     }
 }
