@@ -7,12 +7,10 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "social_logins")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SocialLogin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "social_login_id")
     private Long id;
 
     @Column(nullable = false)
