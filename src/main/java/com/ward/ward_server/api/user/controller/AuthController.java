@@ -5,8 +5,6 @@ import com.ward.ward_server.api.user.dto.AddSocialLoginRequest;
 import com.ward.ward_server.api.user.dto.LoginRequest;
 import com.ward.ward_server.api.user.dto.RegisterRequest;
 import com.ward.ward_server.api.user.service.AuthService;
-import com.ward.ward_server.global.exception.ApiException;
-import com.ward.ward_server.global.exception.ExceptionCode;
 import com.ward.ward_server.global.response.ApiResponse;
 import com.ward.ward_server.global.response.ApiResponseMessage;
 import lombok.RequiredArgsConstructor;
