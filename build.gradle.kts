@@ -44,6 +44,11 @@ dependencies {
 	implementation("org.jsoup:jsoup:1.17.1")
 	//validation
 	implementation("org.springframework.boot:spring-boot-starter-validation")
+	//Querydsl
+	implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
+	annotationProcessor("com.querydsl:querydsl-apt:${dependencyManagement.importedProperties["querydsl.version"]}:jakarta")
+	annotationProcessor("jakarta.annotation:jakarta.annotation-api")
+	annotationProcessor("jakarta.persistence:jakarta.persistence-api")
 }
 
 tasks.withType<Test> {

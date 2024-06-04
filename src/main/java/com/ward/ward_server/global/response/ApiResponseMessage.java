@@ -20,9 +20,10 @@ public enum ApiResponseMessage {
     //아이템
     ITEM_CREATE_SUCCESS("상품 등록에 성공하였습니다."),
     ITEM_DETAIL_LOAD_SUCCESS("상품 상세 정보 조회에 성공하였습니다."),
-    ITEM_LIST_LOAD_SUCCESS("상품 목록 조회에 성공하였습니다."),
     ITEM_UPDATE_SUCCESS("상품 수정에 성공하였습니다."),
     ITEM_DELETE_SUCCESS("상품 삭제에 성공하였습니다."),
+    ITEM_LIST_LOAD_SUCCESS("상품 목록 조회에 성공하였습니다."),
+    ITEM_PAGE_LOAD_SUCCESS("상품 페이지 조회에 성공하였습니다."),
     //브랜드
     BRAND_CREATE_SUCCESS("브랜드 등록에 성공하였습니다."),
     BRAND_TOP10_WITH_ITEM_LOAD_SUCCESS("top10 브랜드와 상품 목록 조회에 성공하였습니다."),
@@ -50,6 +51,5 @@ public enum ApiResponseMessage {
     WISH_BRAND_CREATE_SUCCESS("관심브랜드 등록에 성공하였습니다."),
     WISH_BRAND_LOAD_SUCCESS("회원의 관심브랜드 목록 조회에 성공하였습니다."),
     WISH_BRAND_DELETE_SUCCESS("관심브랜드 삭제에 성공하였습니다.");
-
     private final String message;
 }

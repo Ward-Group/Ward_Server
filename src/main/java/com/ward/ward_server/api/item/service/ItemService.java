@@ -7,12 +7,14 @@ import com.ward.ward_server.api.item.entity.Brand;
 import com.ward.ward_server.api.item.entity.Item;
 import com.ward.ward_server.api.item.entity.ItemImage;
 import com.ward.ward_server.api.item.entity.enumtype.Category;
+import com.ward.ward_server.api.item.entity.enumtype.ItemSort;
 import com.ward.ward_server.api.item.repository.BrandRepository;
 import com.ward.ward_server.api.item.repository.ItemImageRepository;
 import com.ward.ward_server.api.item.repository.ItemRepository;
 import com.ward.ward_server.global.Object.PageResponse;
 import com.ward.ward_server.global.exception.ApiException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +28,7 @@ import static com.ward.ward_server.global.exception.ExceptionCode.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ItemService {
     private final ItemRepository itemRepository;
     private final BrandRepository brandRepository;
@@ -59,8 +62,9 @@ public class ItemService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<ItemSimpleResponse> getItemList(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public List<ItemSimpleResponse> getItemTop10List(ItemSort sort) {
+        log.info("item sort:{}",sort.toString());
+        Pageable pageable = PageRequest.of(1,10);
         Page<Item> itemPage = itemRepository.findAllByDeletedAtIsNull(pageable);
         List<Item> contents = itemPage.getContent();
         List<ItemSimpleResponse> responses = contents.stream()
@@ -70,7 +74,11 @@ public class ItemService {
                         itemImageRepository.findAllByItemId(e.getId()).get(0).getUrl(),
                         e.getBrand().getName()))
                 .toList();
-        return new PageResponse<>(responses, itemPage);
+        return responses;
+    }
+
+    public PageResponse<ItemSimpleResponse> getItemPageOrdered(int page, int size){
+        return null;
     }
 
     @Transactional
