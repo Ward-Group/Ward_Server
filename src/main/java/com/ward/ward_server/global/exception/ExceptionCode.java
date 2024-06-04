@@ -19,6 +19,9 @@ public enum ExceptionCode {
     INVALID_REFRESH_TOKEN(5207, "유효하지 않은 리프레시 토큰입니다."),
     NON_EXISTENT_USER(5208, "존재하지 않는 회원입니다. 회원가입이 필요합니다."),
     EXISTENT_USER(5209,"해당 이메일은 다른 소셜 로그인으로 가입한 내역이 존재합니다. 계정 통합 의사를 확인 후 기존 소셜로그인 진행 후 통합합니다."),
+    EXISTENT_USER_AT_REGISTER(5210,"해당 이메일로 가입한 내역이 존재합니다. 가입한 이메일로 로그인을 진행해야합니다."),
+    EXISTENT_USER_AT_REGISTER_WITH_PROVIDER_PID(5211,"해당 provider+providerId에 해당하는 회원이 존재합니다. 로그인을 진행해야합니다."),
+    EXISTENT_USER_AT_ADD_SOCIAL_ACCOUNT(5212,"해당 provider+providerId에 해당하는 회원이 존재합니다. 기존 연동된 계정에서 해제 후 다시 연동 시도바랍니다."),
 
     //아이템
     ITEM_NOT_FOUND(5300, "상품을 찾을 수 없습니다."),
