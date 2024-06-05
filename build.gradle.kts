@@ -34,6 +34,8 @@ dependencies {
 	implementation("commons-validator:commons-validator:1.8.0")
 	implementation ("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.1") // 쿼리 파라미터 로그 남기기, 배포용엔 제외
 	compileOnly("org.projectlombok:lombok")
+	testCompileOnly ("org.projectlombok:lombok")
+	testAnnotationProcessor ("org.projectlombok:lombok")
 	runtimeOnly("com.mysql:mysql-connector-j")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
