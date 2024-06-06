@@ -38,7 +38,7 @@ public class ItemController {
     }
 
     @GetMapping("/top10")
-    public ApiResponse<List<ItemSimpleResponse>> getItemTop10List(@RequestParam ItemSort sort) {
+    public ApiResponse<List<ItemSimpleResponse>> getHomeItem10List(@RequestParam ItemSort sort) {
         return ApiResponse.ok(ITEM_LIST_LOAD_SUCCESS, itemService.getItemTop10List(sort));
     }
 
