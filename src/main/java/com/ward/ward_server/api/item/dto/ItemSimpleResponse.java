@@ -6,6 +6,7 @@ public record ItemSimpleResponse(
         String itemName,
         String itemCode,
         String itemImage,
-        String brandName
+        String brandName,
+        boolean wished
 ) {
 }

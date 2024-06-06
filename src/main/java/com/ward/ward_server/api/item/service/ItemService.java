@@ -1,7 +1,6 @@
 package com.ward.ward_server.api.item.service;
 
 import com.ward.ward_server.api.item.dto.ItemDetailResponse;
-import com.ward.ward_server.api.item.dto.ItemRequest;
 import com.ward.ward_server.api.item.dto.ItemSimpleResponse;
 import com.ward.ward_server.api.item.entity.Brand;
 import com.ward.ward_server.api.item.entity.Item;
@@ -15,11 +14,9 @@ import com.ward.ward_server.global.Object.PageResponse;
 import com.ward.ward_server.global.exception.ApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,15 +31,15 @@ public class ItemService {
     private final BrandRepository brandRepository;
     private final ItemImageRepository itemImageRepository;
 
-    public ItemDetailResponse createItem(String itemName, String itemCode, List<String> itemImages, String brandName, String category, Integer price) throws ApiException {
-        if (itemName == null || itemName.isBlank() || itemCode == null || itemCode.isBlank() ||
-                itemImages == null || itemImages.isEmpty() || brandName == null || brandName.isBlank() ||
-                category == null || category.isBlank()) throw new ApiException(INVALID_INPUT);
+    @Transactional
+    public ItemDetailResponse createItem(String koreanName, String englishName, String itemCode, List<String> itemImages, String brandName, String category, Integer price) throws ApiException {
+        if (!StringUtils.hasText(koreanName))
+            throw new ApiException(INVALID_INPUT);
         Brand brand = brandRepository.findByName(brandName).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
         if (itemRepository.existsByCodeAndBrandId(itemCode, brand.getId()))
             throw new ApiException(DUPLICATE_ITEM);
         Item savedItem = itemRepository.save(Item.builder()
-                .name(itemName)
+                .koreanName(koreanName)
                 .code(itemCode)
                 .brand(brand)
                 .category(Category.ofKorean(category))
@@ -62,22 +59,19 @@ public class ItemService {
     }
 
     @Transactional(readOnly = true)
-    public List<ItemSimpleResponse> getItemTop10List(ItemSort sort) {
-        log.info("item sort:{}",sort.toString());
-        Pageable pageable = PageRequest.of(1,10);
-        Page<Item> itemPage = itemRepository.findAllByDeletedAtIsNull(pageable);
-        List<Item> contents = itemPage.getContent();
-        List<ItemSimpleResponse> responses = contents.stream()
-                .map(e -> new ItemSimpleResponse(
-                        e.getName(),
-                        e.getCode(),
-                        itemImageRepository.findAllByItemId(e.getId()).get(0).getUrl(),
-                        e.getBrand().getName()))
-                .toList();
-        return responses;
+    public List<ItemSimpleResponse> getItem10List(Long userId, ItemSort sort) {
+        log.info("item sort:{}", sort.toString());
+        LocalDateTime now = LocalDateTime.now();
+        return switch (sort) {
+            case RELEASE_TODAY -> itemRepository.getReleaseTodayItem10Ordered(userId, now);
+            case WISH_RELEASE -> itemRepository.getReleaseWishItem10Ordered(userId, now);
+            case CONFIRM_RELEASE -> itemRepository.getNotReleaseItem10Ordered(userId, now);
+            case REGISTER_TODAY -> itemRepository.getRegisterTodayItem10Ordered(userId, now);
+            default -> itemRepository.getDueTodayItem10Ordered(userId, now);
+        };
     }
 
-    public PageResponse<ItemSimpleResponse> getItemPageOrdered(int page, int size){
+    public PageResponse<ItemSimpleResponse> getItemPageOrdered(int page, int size) {
         return null;
     }
 

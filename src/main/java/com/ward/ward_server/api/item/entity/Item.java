@@ -24,7 +24,10 @@ public class Item extends BaseTimeEntity {
     private String code;
 
     @Column(nullable = false)
-    private String name;
+    private String koreanName;
+
+    @Column(nullable = false)
+    private String englishName;
 
     private String mainImage;
 
@@ -32,7 +35,7 @@ public class Item extends BaseTimeEntity {
     @JoinColumn(name = "brand_id")
     private Brand brand;
 
-    private Long viewCount = 0L;
+    private Integer viewCount = 0;
 
     @Column(nullable = false)
     @Convert(converter = CategoryConverter.class)
@@ -44,13 +47,16 @@ public class Item extends BaseTimeEntity {
     private List<WishItem> wishItems = new ArrayList<>();
 
     @Builder
-    public Item(String name, String code, Brand brand, Category category, int price) {
-        this.name = name;
+    public Item(String koreanName, String englishName, String mainImage, String code, Brand brand, Category category, int price) {
+        this.koreanName = koreanName;
+        this.englishName = englishName;
+        this.mainImage = mainImage;
         this.code = code;
         this.brand = brand;
         this.category = category;
         this.price = price;
     }
+
     public void increaseViewCount() {
         viewCount += 1;
     }
@@ -59,8 +65,16 @@ public class Item extends BaseTimeEntity {
         this.brand = brand;
     }
 
-    public void updateName(String name) {
-        this.name = name;
+    public void updateKoreanName(String koreanName) {
+        this.koreanName = koreanName;
+    }
+
+    public void updateEnglishName(String englishName) {
+        this.englishName = englishName;
+    }
+
+    public void updateMainImage(String mainImage) {
+        this.mainImage = mainImage;
     }
 
     public void updateCode(String code) {

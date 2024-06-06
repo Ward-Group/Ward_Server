@@ -18,22 +18,30 @@ public class Brand {
     private String logoImage;
 
     @Column(nullable = false)
-    private String name;
+    private String koreanName;
+
+    @Column(nullable = false)
+    private String englishName;
 
     private Integer viewCount = 0;
 
     @Builder
-    public Brand(String logoImage, String name) {
+    public Brand(String logoImage, String koreanName, String englishName) {
         this.logoImage = logoImage;
-        this.name = name;
+        this.koreanName = koreanName;
+        this.englishName = englishName;
     }
 
     public void updateLogoImage(String logoImage) {
         this.logoImage = logoImage;
     }
 
-    public void updateName(String name) {
-        this.name = name;
+    public void updateKoreanName(String koreanName) {
+        this.koreanName = koreanName;
+    }
+
+    public void updateEnglishName(String englishName) {
+        this.englishName = englishName;
     }
 
     public void increaseViewCount() {

@@ -5,12 +5,13 @@ import com.ward.ward_server.api.item.dto.ItemRequest;
 import com.ward.ward_server.api.item.dto.ItemSimpleResponse;
 import com.ward.ward_server.api.item.entity.enumtype.ItemSort;
 import com.ward.ward_server.api.item.service.ItemService;
+import com.ward.ward_server.api.user.auth.security.CustomUserDetails;
 import com.ward.ward_server.global.Object.PageResponse;
 import com.ward.ward_server.global.exception.ApiException;
 import com.ward.ward_server.global.response.ApiResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.index.qual.Positive;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,8 +39,9 @@ public class ItemController {
     }
 
     @GetMapping("/top10")
-    public ApiResponse<List<ItemSimpleResponse>> getHomeItem10List(@RequestParam ItemSort sort) {
-        return ApiResponse.ok(ITEM_LIST_LOAD_SUCCESS, itemService.getItemTop10List(sort));
+    public ApiResponse<List<ItemSimpleResponse>> getItem10List(@AuthenticationPrincipal CustomUserDetails principal,
+                                                               @RequestParam ItemSort sort) {
+        return ApiResponse.ok(ITEM_LIST_LOAD_SUCCESS, itemService.getItem10List(principal.getUserId(), sort));
     }
 
     @GetMapping("/page")
