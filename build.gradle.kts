@@ -51,6 +51,9 @@ dependencies {
 	annotationProcessor("com.querydsl:querydsl-apt:${dependencyManagement.importedProperties["querydsl.version"]}:jakarta")
 	annotationProcessor("jakarta.annotation:jakarta.annotation-api")
 	annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+	//test
+	testImplementation ("org.springframework.boot:spring-boot-starter-test")
+	testRuntimeOnly ("com.h2database:h2")
 }
 
 tasks.withType<Test> {

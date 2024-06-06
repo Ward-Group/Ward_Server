@@ -34,7 +34,6 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
      * from -> where -> select 한국시간 */
     public List<ItemSimpleResponse> getDueTodayItem10Ordered(LocalDateTime now) {
         DateTimeTemplate<LocalDateTime> nowDateTime = Expressions.dateTimeTemplate(LocalDateTime.class, "{0}", now);
-        log.info("지금!!!:"+nowDateTime.toString());
         //마감일 = 오늘, 발매일 < 지금 < 마감일, 정렬은 마감일 오름차순
         return queryFactory.select(
                         Projections.constructor(ItemSimpleResponse.class,
@@ -45,7 +44,7 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
                         )).from(releaseInfo)
                 .leftJoin(item).on(releaseInfo.itemId.eq(item.id))
                 .leftJoin(item.brand, brand)
-                .where(isToday(nowDateTime, releaseInfo.dueDate), nowDateTime.between(releaseInfo.releaseDate, releaseInfo.dueDate))
+                .where(isSameDay(nowDateTime, releaseInfo.dueDate), nowDateTime.between(releaseInfo.releaseDate, releaseInfo.dueDate))
                 .orderBy(releaseInfo.dueDate.asc())
                 .limit(10)
                 .fetch();
@@ -116,12 +115,12 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
                                 brand.name
                         )).from(item)
                 .leftJoin(item.brand, brand)
-                .where(isToday(nowDateTime, item.createdAt))
+                .where(isSameDay(nowDateTime, item.createdAt))
                 .orderBy(item.createdAt.asc())
                 .limit(10)
                 .fetch();
     }
-    private BooleanExpression isToday(DateTimeTemplate<LocalDateTime> now,DateTimePath<LocalDateTime> date) {
+    private BooleanExpression isSameDay(DateTimeTemplate<LocalDateTime> now,DateTimePath<LocalDateTime> date) {
         return dateTemplate(Long.class, "datediff({0}, {1})", now, date).eq(0L);
     }
 }
