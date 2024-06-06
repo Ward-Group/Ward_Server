@@ -13,6 +13,7 @@ public enum ApiResponseMessage {
     UPDATE_SOCIALLOGIN_SUCCESS("소셜 로그인 변경에 성공하였습니다."),
     TOKEN_REFRESH_SUCCESS("토큰 갱신에 성공하였습니다."),
     NICKNAME_CHECK_SUCCESS("닉네임 중복 체크에 성공하였습니다."),
+    UPDATE_NICKNAME_SUCCESS("닉네임 수정에 성공하였습니다."),
     LOGOUT_SUCCESS("로그아웃에 성공하였습니다."),
     //웹 크롤러
     WEBCRAWLING_NIKE_SUCCESS("나이키 데이터 로드에 성공하였습니다."),

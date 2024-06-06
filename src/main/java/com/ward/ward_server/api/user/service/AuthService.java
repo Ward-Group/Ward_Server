@@ -4,6 +4,7 @@ import com.ward.ward_server.api.user.auth.security.CustomUserDetails;
 import com.ward.ward_server.api.user.auth.security.JwtIssuer;
 import com.ward.ward_server.api.user.auth.security.JwtProperties;
 import com.ward.ward_server.api.user.auth.security.JwtTokens;
+import com.ward.ward_server.api.user.dto.LoginRequest;
 import com.ward.ward_server.api.user.entity.SocialLogin;
 import com.ward.ward_server.api.user.entity.User;
 import com.ward.ward_server.api.user.repository.SocialLoginRepository;
@@ -52,25 +53,40 @@ public class AuthService {
 
     // 소셜 로그인 정보로 사용자 조회
     @Transactional
-    public JwtTokens attemptLogin(String provider, String providerId, String email) {
-        Optional<SocialLogin> socialLoginOptional = socialLoginRepository.findByProviderAndProviderIdAndEmail(provider, providerId, email);
+    public JwtTokens login(LoginRequest request) {
+        if (!isRegisteredUser(request.getEmail())) {
+            throw new ApiException(ExceptionCode.NON_EXISTENT_USER);
+        }
 
+        if (!isSameUser(request.getProvider(), request.getProviderId())) {
+            throw new ApiException(ExceptionCode.EXISTENT_USER);
+        }
+
+        Optional<SocialLogin> socialLoginOptional = socialLoginRepository.findByProviderAndProviderIdAndEmail(request.getProvider(), request.getProviderId(), request.getEmail());
         if (socialLoginOptional.isEmpty()) {
             throw new ApiException(ExceptionCode.NON_EXISTENT_EMAIL);
         }
 
         User user = socialLoginOptional.get().getUser();
-
         return generateJwtTokens(user);
     }
 
-    // 새로운 소셜 로그인 추가
+    // 새로운 소셜 로그인 추가: 로그인 시 email 같고 provider+providerId 없는 경우
     @Transactional
     public JwtTokens addSocialLogin(String provider, String providerId, String email) {
+
+        if (!ValidationUtil.isValidEmail(email)) {
+            throw new ApiException(ExceptionCode.INVALID_EMAIL_FORMAT);
+        }
+
         Optional<User> userOptional = userRepository.findByEmail(email);
 
         if (userOptional.isEmpty()) {
             throw new ApiException(ExceptionCode.NON_EXISTENT_EMAIL);
+        }
+
+        if (isSameUser(provider, providerId)) {
+            throw new ApiException(ExceptionCode.EXISTENT_USER_AT_ADD_SOCIAL_ACCOUNT);
         }
 
         User user = userOptional.get();
@@ -96,33 +112,33 @@ public class AuthService {
                 throw new ApiException(ExceptionCode.INVALID_EMAIL_FORMAT);
             }
 
-            Optional<User> existingUserByEmail = userRepository.findByEmail(email);
-
-            User user;
-            if (existingUserByEmail.isPresent()) {
-                user = existingUserByEmail.get();
-                updateSocialLogin(user, provider, providerId, email);
-            } else {
-                if (userRepository.existsByNickname(nickname)) {
-                    throw new ApiException(ExceptionCode.DUPLICATE_NICKNAME);
-                }
-
-                user = new User(
-                        name,
-                        email,
-                        passwordEncoder.encode(properties.getPassword()),
-                        nickname,
-                        emailNotification,
-                        appPushNotification,
-                        snsNotification
-                );
-
-                SocialLogin socialLogin = new SocialLogin(provider, providerId, email);
-                socialLogin.setUser(user);
-
-                socialLoginRepository.save(socialLogin);
-                userRepository.save(user);
+            if (isRegisteredUser(email)) {
+                throw new ApiException(ExceptionCode.EXISTENT_USER_AT_REGISTER);
             }
+
+            if (isSameUser(provider, providerId)) {
+                throw new ApiException(ExceptionCode.EXISTENT_USER_AT_REGISTER_WITH_PROVIDER_PID);
+            }
+
+            if (userRepository.existsByNickname(nickname)) {
+                throw new ApiException(ExceptionCode.DUPLICATE_NICKNAME);
+            }
+
+            User user = new User(
+                    name,
+                    email,
+                    passwordEncoder.encode(properties.getPassword()),
+                    nickname,
+                    emailNotification,
+                    appPushNotification,
+                    snsNotification
+            );
+
+            SocialLogin socialLogin = new SocialLogin(provider, providerId, email);
+            socialLogin.setUser(user);
+
+            socialLoginRepository.save(socialLogin);
+            userRepository.save(user);
 
             return generateJwtTokens(user);
         } catch (DataIntegrityViolationException e) {
@@ -133,7 +149,6 @@ public class AuthService {
             throw e;
         }
     }
-
 
     // Refresh Token 갱신
     @Transactional
