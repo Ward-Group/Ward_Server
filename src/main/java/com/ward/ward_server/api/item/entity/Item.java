@@ -1,7 +1,6 @@
 package com.ward.ward_server.api.item.entity;
 
 import com.ward.ward_server.api.item.entity.enumtype.Category;
-import com.ward.ward_server.api.item.entity.enumtype.converter.CategoryConverter;
 import com.ward.ward_server.api.wishItem.WishItem;
 import com.ward.ward_server.global.Object.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -23,10 +22,8 @@ public class Item extends BaseTimeEntity {
     @Column(nullable = false)
     private String code;
 
-    @Column(nullable = false)
     private String koreanName;
 
-    @Column(nullable = false)
     private String englishName;
 
     private String mainImage;
@@ -37,21 +34,18 @@ public class Item extends BaseTimeEntity {
 
     private Integer viewCount = 0;
 
-    @Column(nullable = false)
-    @Convert(converter = CategoryConverter.class)
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "char(20)")
     private Category category;
 
     private Integer price;
 
-    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
-    private List<WishItem> wishItems = new ArrayList<>();
-
     @Builder
-    public Item(String koreanName, String englishName, String mainImage, String code, Brand brand, Category category, int price) {
+    public Item(String koreanName, String englishName, String code, String mainImage, Brand brand, Category category, int price) {
         this.koreanName = koreanName;
         this.englishName = englishName;
-        this.mainImage = mainImage;
         this.code = code;
+        this.mainImage = mainImage;
         this.brand = brand;
         this.category = category;
         this.price = price;

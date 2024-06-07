@@ -29,25 +29,19 @@ public class ItemController {
     @PostMapping
     public ApiResponse<ItemDetailResponse> createItem(@RequestBody ItemRequest request) throws ApiException {
         return ApiResponse.ok(ITEM_CREATE_SUCCESS,
-                itemService.createItem(request.itemName(), request.itemCode(), request.itemImages(), request.brandName(), request.category(), request.price()));
+                itemService.createItem(request.koreanName(), request.englishName(), request.itemCode(), request.mainImage(), request.itemImages(), request.brandName(), request.category(), request.price()));
     }
 
-    @GetMapping
+    @GetMapping("/details")
     public ApiResponse<ItemDetailResponse> getItem(@RequestParam(value = "item-code") String itemCode,
                                                    @RequestParam(value = "brand-name") String brandName) {
         return ApiResponse.ok(ITEM_DETAIL_LOAD_SUCCESS, itemService.getItem(itemCode, brandName));
     }
 
-    @GetMapping("/top10")
+    @GetMapping
     public ApiResponse<List<ItemSimpleResponse>> getItem10List(@AuthenticationPrincipal CustomUserDetails principal,
                                                                @RequestParam ItemSort sort) {
         return ApiResponse.ok(ITEM_LIST_LOAD_SUCCESS, itemService.getItem10List(principal.getUserId(), sort));
-    }
-
-    @GetMapping("/page")
-    public ApiResponse<PageResponse<ItemSimpleResponse>> getItemPageOrdered(@Positive @RequestParam(value = "page", defaultValue = "1") int page,
-                                                                            @Positive @RequestParam(value = "size", defaultValue = "10") int size) {
-        return ApiResponse.ok(ITEM_PAGE_LOAD_SUCCESS, itemService.getItemPageOrdered(page - 1, size));
     }
 
     @PatchMapping
@@ -55,7 +49,7 @@ public class ItemController {
                                                       @RequestParam(value = "origin-brand-name") String originBrandName,
                                                       @RequestBody ItemRequest request) {
         return ApiResponse.ok(ITEM_UPDATE_SUCCESS,
-                itemService.updateItem(originItemCode, originBrandName, request.itemName(), request.itemCode(), request.itemImages(), request.brandName(), request.category(), request.price()));
+                itemService.updateItem(originItemCode, originBrandName, request.koreanName(), request.englishName(), request.itemCode(), request.itemImages(), request.brandName(), request.category(), request.price()));
     }
 
     @DeleteMapping

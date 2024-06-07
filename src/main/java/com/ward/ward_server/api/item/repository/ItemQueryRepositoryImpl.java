@@ -30,10 +30,12 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
         DateTimeTemplate<LocalDateTime> nowDateTime = Expressions.dateTimeTemplate(LocalDateTime.class, "{0}", now);
         //마감일 = 오늘, 발매일 < 지금 < 마감일, 정렬은 마감일 오름차순
         List<Tuple> result = queryFactory.select(
-                        item.name,
+                        item.koreanName,
+                        item.englishName,
                         item.code,
                         item.mainImage,
-                        brand.name,
+                        brand.koreanName,
+                        brand.englishName,
                         item.id)
                 .from(releaseInfo)
                 .leftJoin(item).on(releaseInfo.itemId.eq(item.id))
@@ -49,10 +51,12 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
         DateTimeTemplate<LocalDateTime> nowDateTime = Expressions.dateTimeTemplate(LocalDateTime.class, "{0}", now);
         //발매일 < 지금 < 마감일, 정렬은 마감일 오름차순
         List<Tuple> result = queryFactory.select(
-                        item.name,
+                        item.koreanName,
+                        item.englishName,
                         item.code,
                         item.mainImage,
-                        brand.name,
+                        brand.koreanName,
+                        brand.englishName,
                         item.id
                 ).from(releaseInfo)
                 .leftJoin(item).on(releaseInfo.itemId.eq(item.id))
@@ -68,10 +72,12 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
         DateTimeTemplate<LocalDateTime> nowDateTime = Expressions.dateTimeTemplate(LocalDateTime.class, "{0}", now);
         //발매일 < 지금 < 마감일, 사용자의 관심 상품, 정렬은 마감일 오름차순
         List<Tuple> result = queryFactory.select(
-                        item.name,
+                        item.koreanName,
+                        item.englishName,
                         item.code,
                         item.mainImage,
-                        brand.name,
+                        brand.koreanName,
+                        brand.englishName,
                         item.id
                 ).from(releaseInfo)
                 .leftJoin(item).on(releaseInfo.itemId.eq(item.id))
@@ -88,10 +94,12 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
         DateTimeTemplate<LocalDateTime> nowDateTime = Expressions.dateTimeTemplate(LocalDateTime.class, "{0}", now);
         //지금 < 발매일, 정렬은 발매일 오름차순
         List<Tuple> result = queryFactory.select(
-                        item.name,
+                        item.koreanName,
+                        item.englishName,
                         item.code,
                         item.mainImage,
-                        brand.name,
+                        brand.koreanName,
+                        brand.englishName,
                         item.id
                 ).from(releaseInfo)
                 .leftJoin(item).on(releaseInfo.itemId.eq(item.id))
@@ -106,10 +114,12 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
     public List<ItemSimpleResponse> getRegisterTodayItem10Ordered(long userId, LocalDateTime now) {
         //생성일 = 지금, 발매일 = null, 정렬은 생성일 오름차순
         List<Tuple> result = queryFactory.select(
-                        item.name,
+                        item.koreanName,
+                        item.englishName,
                         item.code,
                         item.mainImage,
-                        brand.name,
+                        brand.koreanName,
+                        brand.englishName,
                         item.id
                 ).from(item)
                 .leftJoin(item.brand, brand)
@@ -137,10 +147,12 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
         final Set<Long> wishItemIdList = wishItemIdListByUser(userId);
         return tuples.stream()
                 .map(e -> new ItemSimpleResponse(
-                        e.get(item.name),
+                        e.get(item.koreanName),
+                        e.get(item.englishName),
                         e.get(item.code),
                         e.get(item.mainImage),
-                        e.get(brand.name),
+                        e.get(brand.koreanName),
+                        e.get(brand.englishName),
                         wishItemIdList.contains(e.get(item.id))))
                 .toList();
     }

@@ -38,7 +38,7 @@ public class WishBrandService {
         List<WishBrandResponse> responses = contents.stream()
                 .map(wb -> new WishBrandResponse(
                         wb.getBrand().getLogoImage(),
-                        wb.getBrand().getName(),
+                        wb.getBrand().getKoreanName(),
                         wb.getWishDate()))
                 .toList();
         return new PageResponse<>(responses, wishBrandPage);

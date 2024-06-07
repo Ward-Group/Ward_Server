@@ -8,25 +8,16 @@ import java.util.Arrays;
 @Getter
 @AllArgsConstructor
 public enum Category {
-    CLOTHING("옷", 500),
-    FOOTWEAR("신발", 501),
-    ACCESSORY("악세서리", 502),
-    OTHER("기타", 503);
+    CLOTHING("옷"),
+    FOOTWEAR("신발"),
+    ACCESSORY("악세서리"),
+    OTHER("기타");
+    private String desc;
 
-    private String korean;
-    private int code;
-
-    public static Category ofCode(Integer dbData){
+    public static Category ofText(String text){
         return Arrays.stream(Category.values())
-                .filter(e->e.getCode()==dbData)
+                .filter(e -> e.toString().toLowerCase().equals(text))
                 .findAny()
-                .orElseThrow(()->new IllegalArgumentException(String.format("brand code %d not exists.",dbData)));
-    }
-
-    public static Category ofKorean(String korean){
-        return Arrays.stream(Category.values())
-                .filter(e->e.getKorean().equals(korean))
-                .findAny()
-                .orElseThrow(()->new IllegalArgumentException(String.format("brand code %s not exists.",korean)));
+                .orElseThrow(() -> new IllegalArgumentException(String.format("category %s not exists.", text)));
     }
 }

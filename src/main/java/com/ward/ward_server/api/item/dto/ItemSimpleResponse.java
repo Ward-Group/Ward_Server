@@ -3,10 +3,12 @@ package com.ward.ward_server.api.item.dto;
 import java.util.List;
 
 public record ItemSimpleResponse(
-        String itemName,
+        String itemKoreanName,
+        String itemEnglishName,
         String itemCode,
-        String itemImage,
-        String brandName,
+        String itemMainImage,
+        String brandKoreanName,
+        String brandEnglishName,
         boolean wished
 ) {
 }

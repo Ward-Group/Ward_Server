@@ -47,8 +47,8 @@ public class WishItemService {
         List<WishItemResponse> responses = contents.stream()
                 .map(e -> new WishItemResponse(
                         itemImageRepository.findFirstByItemId(e.getItem().getId()).get().getUrl(),
-                        e.getItem().getBrand().getName(),
-                        e.getItem().getName(),
+                        e.getItem().getBrand().getKoreanName(),
+                        e.getItem().getKoreanName(),
                         e.getItem().getCode(),
                         e.getItem().getPrice()))
                 .toList();

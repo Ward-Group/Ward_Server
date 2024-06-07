@@ -2,11 +2,12 @@ package com.ward.ward_server.api.item.dto;
 
 import java.util.List;
 
-public record TopBrandResponse(
+public record BrandInfoResponse(
         String brandLogoImage,
-        String brandName,
+        String brandKoreanName,
+        String brandEnglishName,
         Integer brandViewCount,
         Integer brandWishCount,
-        List<TopBrandItemResponse> top3itemList
+        List<BrandItemResponse> itemList
 ) {
 }

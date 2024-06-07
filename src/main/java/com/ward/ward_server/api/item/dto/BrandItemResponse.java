@@ -1,9 +1,10 @@
 package com.ward.ward_server.api.item.dto;
 
-public record TopBrandItemResponse(
-        String itemName,
+public record BrandItemResponse(
+        String itemKoreanName,
+        String itemEnglishName,
         String itemCode,
-        String itemImage,
+        String itemMainImage,
         Long itemViewCount,
         Long itemWishCount) {
 }

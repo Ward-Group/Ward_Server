@@ -118,7 +118,8 @@ public class ReleaseInfoService {
     }
 
     private ReleaseInfoDetailResponse getDetailResponse(Item item, ReleaseInfo info) {
-        return new ReleaseInfoDetailResponse(item.getCode(), item.getName(), item.getPrice(),
+        return new ReleaseInfoDetailResponse(
+                item.getCode(), item.getKoreanName(), item.getPrice(),
                 info.getDrawPlatform().getLogoImage(),
                 info.getDrawPlatform().getName(),
                 info.getSiteUrl(),

@@ -10,7 +10,6 @@ import com.ward.ward_server.api.item.entity.enumtype.ItemSort;
 import com.ward.ward_server.api.item.repository.BrandRepository;
 import com.ward.ward_server.api.item.repository.ItemImageRepository;
 import com.ward.ward_server.api.item.repository.ItemRepository;
-import com.ward.ward_server.global.Object.PageResponse;
 import com.ward.ward_server.global.exception.ApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,17 +31,19 @@ public class ItemService {
     private final ItemImageRepository itemImageRepository;
 
     @Transactional
-    public ItemDetailResponse createItem(String koreanName, String englishName, String itemCode, List<String> itemImages, String brandName, String category, Integer price) throws ApiException {
-        if (!StringUtils.hasText(koreanName))
+    public ItemDetailResponse createItem(String koreanName, String englishName, String mainImage, String itemCode, List<String> itemImages, String brandName, String category, Integer price) throws ApiException {
+        if ((!StringUtils.hasText(koreanName) && !StringUtils.hasText(englishName)) || !StringUtils.hasText(itemCode) || !StringUtils.hasText(brandName) || !StringUtils.hasText(category))
             throw new ApiException(INVALID_INPUT);
         Brand brand = brandRepository.findByName(brandName).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
-        if (itemRepository.existsByCodeAndBrandId(itemCode, brand.getId()))
-            throw new ApiException(DUPLICATE_ITEM);
+        if (itemRepository.existsByCodeAndBrandId(itemCode, brand.getId())) throw new ApiException(DUPLICATE_ITEM);
         Item savedItem = itemRepository.save(Item.builder()
                 .koreanName(koreanName)
+                .englishName(englishName)
+                .mainImage(mainImage)
                 .code(itemCode)
                 .brand(brand)
-                .category(Category.ofKorean(category))
+                .category(Category.ofText(category))
+                .price(price)
                 .build());
         itemImages.stream()
                 .map(e -> ItemImage.builder().item(savedItem).url(e).build())
@@ -71,30 +72,25 @@ public class ItemService {
         };
     }
 
-    public PageResponse<ItemSimpleResponse> getItemPageOrdered(int page, int size) {
-        return null;
-    }
-
     @Transactional
     public ItemDetailResponse updateItem(String originItemCode, String originBrandName,
-                                         String itemName, String itemCode, List<String> itemImages, String brandName, String category, Integer price) {
-        if (itemName == null && itemCode == null && itemImages == null && brandName == null && category == null && price == null)
+                                         String koreanName, String englishName, String itemCode, List<String> itemImages, String brandName, String category, Integer price) {
+        if (koreanName == null && englishName == null && itemCode == null && itemImages == null && brandName == null && category == null && price == null)
             throw new ApiException(INVALID_INPUT);
         Brand originBrand = brandRepository.findByName(originBrandName).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
         Item originItem = itemRepository.findByCodeAndBrandIdAndDeletedAtIsNull(originItemCode, originBrand.getId()).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
-        if (itemCode == null && brandName != null && !brandName.isBlank()) {
+        if (itemCode == null && StringUtils.hasText(brandName)) {
             Brand brand = brandRepository.findByName(brandName).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
             if (itemRepository.existsByCodeAndBrandId(originItemCode, brand.getId()))
                 throw new ApiException(DUPLICATE_ITEM);
             originItem.updateBrand(brand);
-        } else if (brandName == null && itemCode != null && !itemCode.isBlank()) {
+        } else if (brandName == null && StringUtils.hasText(itemCode)) {
             if (itemRepository.existsByCodeAndBrandId(itemCode, originBrand.getId()))
                 throw new ApiException(DUPLICATE_ITEM);
             originItem.updateCode(itemCode);
-        } else if (brandName != null && !brandName.isBlank() && !itemCode.isBlank()) {
+        } else if (StringUtils.hasText(brandName) && StringUtils.hasText(itemCode)) {
             Brand brand = brandRepository.findByName(brandName).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
-            if (itemRepository.existsByCodeAndBrandId(itemCode, brand.getId()))
-                throw new ApiException(DUPLICATE_ITEM);
+            if (itemRepository.existsByCodeAndBrandId(itemCode, brand.getId())) throw new ApiException(DUPLICATE_ITEM);
             originItem.updateBrand(brand);
             originItem.updateCode(itemCode);
         }
@@ -104,10 +100,9 @@ public class ItemService {
                     .map(e -> ItemImage.builder().item(originItem).url(e).build())
                     .forEach(itemImageRepository::save);
         }
-        if (category != null && !category.isBlank())
-            originItem.updateCategory(Category.ofKorean(category));
-        if (itemName != null && !itemName.isBlank())
-            originItem.updateName(itemName);
+        if (StringUtils.hasText(category)) originItem.updateCategory(Category.ofText(category));
+        if (StringUtils.hasText(koreanName)) originItem.updateKoreanName(koreanName);
+        if (StringUtils.hasText(englishName)) originItem.updateKoreanName(englishName);
         if (price != null) originItem.updatePrice(price);
         return getItemDetailResponse(originItem);
     }
@@ -120,12 +115,15 @@ public class ItemService {
     }
 
     private ItemDetailResponse getItemDetailResponse(Item item) {
-        return new ItemDetailResponse(item.getName(),
+        return new ItemDetailResponse(
+                item.getKoreanName(),
+                item.getEnglishName(),
                 item.getCode(),
                 itemImageRepository.findAllByItemId(item.getId()).stream().map(ItemImage::getUrl).toList(),
-                item.getBrand().getName(),
+                item.getBrand().getKoreanName(),
+                item.getBrand().getEnglishName(),
                 item.getViewCount(),
-                item.getCategory().getKorean(),
+                item.getCategory().getDesc(),
                 item.getPrice());
     }
 }

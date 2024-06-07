@@ -19,6 +19,6 @@ public enum ItemSort {
         return Arrays.stream(ItemSort.values())
                 .filter(e -> e.toString().toLowerCase().equals(text))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("item-sort text %s not exists.", text)));
+                .orElseThrow(() -> new IllegalArgumentException(String.format("item-sort %s not exists.", text)));
     }
 }
