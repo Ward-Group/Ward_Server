@@ -147,22 +147,33 @@ public class AuthService {
         } catch (ApiException e) {
             log.error("회원 가입 중 에러: {}", e.getMessage());
             throw e;
+        } catch (Exception e) {
+            log.error("회원 가입 중 예상치 못한 오류 발생", e);
+            throw new ApiException(ExceptionCode.SERVER_ERROR);
         }
     }
 
     // Refresh Token 갱신
     @Transactional
     public JwtTokens refresh(String refreshToken) {
-        var refreshTokenEntity = refreshTokenService.findRefreshTokenByToken(refreshToken);
-        var user = refreshTokenEntity.getUser();
+        try {
+            var refreshTokenEntity = refreshTokenService.findRefreshTokenByToken(refreshToken);
+            if (refreshTokenEntity == null) {
+                throw new ApiException(ExceptionCode.INVALID_REFRESH_TOKEN);
+            }
+            var user = refreshTokenEntity.getUser();
 
-        var roles = user.getRole().toString();
-        var newAccessToken = jwtIssuer.issueAccessToken(user.getId(), user.getEmail(), List.of(roles));
-        var newRefreshToken = jwtIssuer.issueRefreshToken();
+            var roles = user.getRole().toString();
+            var newAccessToken = jwtIssuer.issueAccessToken(user.getId(), user.getEmail(), List.of(roles));
+            var newRefreshToken = jwtIssuer.issueRefreshToken();
 
-        refreshTokenService.invalidateAndSaveNewToken(refreshTokenEntity, newRefreshToken);
+            refreshTokenService.invalidateAndSaveNewToken(refreshTokenEntity, newRefreshToken);
 
-        return new JwtTokens(newAccessToken, newRefreshToken);
+            return new JwtTokens(newAccessToken, newRefreshToken);
+        } catch (Exception e) {
+            log.error("토큰 갱신 중 예상 치 못한 오류 발생", e);
+            throw new ApiException(ExceptionCode.SERVER_ERROR);
+        }
     }
 
     // RefreshToken 무효화 - 로그아웃 or 보안 상
