@@ -6,6 +6,7 @@ import com.ward.ward_server.api.user.auth.security.UnauthorizedHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -36,7 +37,9 @@ public class WebSecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/","/auth/**", "/v1/wc/**", "/items/**","/releaseInfos/**").permitAll()
+                        .requestMatchers("/","/auth/**", "/v1/wc/**","/releaseInfos/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/items").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/items/**").hasRole("ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

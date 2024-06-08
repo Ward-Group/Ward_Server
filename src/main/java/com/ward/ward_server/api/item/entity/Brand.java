@@ -1,6 +1,9 @@
 package com.ward.ward_server.api.item.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,13 +17,10 @@ public class Brand {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private String logoImage;
 
-    @Column(nullable = false)
     private String koreanName;
 
-    @Column(nullable = false)
     private String englishName;
 
     private Integer viewCount = 0;

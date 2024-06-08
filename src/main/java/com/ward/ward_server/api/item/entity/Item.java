@@ -1,13 +1,9 @@
 package com.ward.ward_server.api.item.entity;
 
 import com.ward.ward_server.api.item.entity.enumtype.Category;
-import com.ward.ward_server.api.wishItem.WishItem;
 import com.ward.ward_server.global.Object.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -29,7 +25,7 @@ public class Item extends BaseTimeEntity {
     private String mainImage;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "brand_id")
+    @JoinColumn(name = "brand_id", nullable = false)
     private Brand brand;
 
     private Integer viewCount = 0;
@@ -41,14 +37,14 @@ public class Item extends BaseTimeEntity {
     private Integer price;
 
     @Builder
-    public Item(String koreanName, String englishName, String code, String mainImage, Brand brand, Category category, int price) {
+    public Item(String code, String koreanName, String englishName, String mainImage, Brand brand, Category category, Integer price) {
+        this.code = code;
         this.koreanName = koreanName;
         this.englishName = englishName;
-        this.code = code;
         this.mainImage = mainImage;
         this.brand = brand;
         this.category = category;
-        this.price = price;
+        this.price = price == null ? 0 : price;
     }
 
     public void increaseViewCount() {

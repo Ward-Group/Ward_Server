@@ -26,7 +26,7 @@ import static com.ward.ward_server.api.wishItem.QWishItem.wishItem;
 public class ItemQueryRepositoryImpl implements ItemQueryRepository {
     private final JPAQueryFactory queryFactory;
 
-    public List<ItemSimpleResponse> getDueTodayItem10Ordered(long userId, LocalDateTime now) {
+    public List<ItemSimpleResponse> getDueTodayItemOrdered(long userId, LocalDateTime now) {
         DateTimeTemplate<LocalDateTime> nowDateTime = Expressions.dateTimeTemplate(LocalDateTime.class, "{0}", now);
         //마감일 = 오늘, 발매일 < 지금 < 마감일, 정렬은 마감일 오름차순
         List<Tuple> result = queryFactory.select(
@@ -47,7 +47,7 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
         return itemSimpleResponseList(userId, result);
     }
 
-    public List<ItemSimpleResponse> getReleaseTodayItem10Ordered(long userId, LocalDateTime now) {
+    public List<ItemSimpleResponse> getReleaseTodayItemOrdered(long userId, LocalDateTime now) {
         DateTimeTemplate<LocalDateTime> nowDateTime = Expressions.dateTimeTemplate(LocalDateTime.class, "{0}", now);
         //발매일 < 지금 < 마감일, 정렬은 마감일 오름차순
         List<Tuple> result = queryFactory.select(
@@ -68,7 +68,7 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
         return itemSimpleResponseList(userId, result);
     }
 
-    public List<ItemSimpleResponse> getReleaseWishItem10Ordered(long userId, LocalDateTime now) {
+    public List<ItemSimpleResponse> getReleaseWishItemOrdered(long userId, LocalDateTime now) {
         DateTimeTemplate<LocalDateTime> nowDateTime = Expressions.dateTimeTemplate(LocalDateTime.class, "{0}", now);
         //발매일 < 지금 < 마감일, 사용자의 관심 상품, 정렬은 마감일 오름차순
         List<Tuple> result = queryFactory.select(
@@ -90,7 +90,7 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
         return itemSimpleResponseList(userId, result);
     }
 
-    public List<ItemSimpleResponse> getNotReleaseItem10Ordered(long userId, LocalDateTime now) {
+    public List<ItemSimpleResponse> getJustConfirmReleaseItemOrdered(long userId, LocalDateTime now) {
         DateTimeTemplate<LocalDateTime> nowDateTime = Expressions.dateTimeTemplate(LocalDateTime.class, "{0}", now);
         //지금 < 발매일, 정렬은 발매일 오름차순
         List<Tuple> result = queryFactory.select(
@@ -111,7 +111,10 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
         return itemSimpleResponseList(userId, result);
     }
 
-    public List<ItemSimpleResponse> getRegisterTodayItem10Ordered(long userId, LocalDateTime now) {
+    public List<ItemSimpleResponse> getRegisterTodayItemOrdered(long userId, LocalDateTime now) {
+        log.info("register\n" +
+                "app now : {}\n" +
+                "UTC : {}", now, now.minusHours(9));
         //생성일 = 지금, 발매일 = null, 정렬은 생성일 오름차순
         List<Tuple> result = queryFactory.select(
                         item.koreanName,
@@ -130,10 +133,11 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
         return itemSimpleResponseList(userId, result);
     }
 
-    private BooleanExpression isSameDay(LocalDateTime now, DateTimePath<LocalDateTime> datePath) {
-        return Expressions.numberTemplate(Integer.class, "YEAR({0})", datePath).eq(now.getYear())
-                .and(Expressions.numberTemplate(Integer.class, "MONTH({0})", datePath).eq(now.getMonthValue()))
-                .and(Expressions.numberTemplate(Integer.class, "DAY({0})", datePath).eq(now.getDayOfMonth()));
+    private BooleanExpression isSameDay(LocalDateTime dateTime, DateTimePath<LocalDateTime> datePath) {
+        log.info("datePath : {}", datePath);
+        return Expressions.numberTemplate(Integer.class, "YEAR({0})", datePath).eq(dateTime.getYear())
+                .and(Expressions.numberTemplate(Integer.class, "MONTH({0})", datePath).eq(dateTime.getMonthValue()))
+                .and(Expressions.numberTemplate(Integer.class, "DAY({0})", datePath).eq(dateTime.getDayOfMonth()));
     }
 
     private Set<Long> wishItemIdListByUser(long userId) {
@@ -144,6 +148,7 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
     }
 
     private List<ItemSimpleResponse> itemSimpleResponseList(long userId, List<Tuple> tuples) {
+        log.info("response list 메서드, tuple 개수 {} ", tuples.size());
         final Set<Long> wishItemIdList = wishItemIdListByUser(userId);
         return tuples.stream()
                 .map(e -> new ItemSimpleResponse(

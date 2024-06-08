@@ -12,11 +12,13 @@ import com.ward.ward_server.api.wishItem.WishItem;
 import com.ward.ward_server.global.config.QuerydslConfig;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.Commit;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,11 +31,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Import(QuerydslConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Slf4j
+@Commit
 class ItemRepositoryTest {
     @Autowired
     EntityManager em;
     @Autowired
     ItemRepository itemRepository;
+    User user;
+
+    @BeforeEach
+    public void before() {
+        user = new User("이름", "이메일", "비밀번호", "닉네임", true, true, true);
+        em.persist(user);
+    }
 
     @Test
     public void 오늘_마감인_상품_조회() {
@@ -41,7 +51,7 @@ class ItemRepositoryTest {
         LocalDateTime now = LocalDateTime.of(2024, 7, 3, 13, 30);
         DrawPlatform drawPlatform = new DrawPlatform("테스트플랫폼", "플랫폼이미지");
         em.persist(drawPlatform);
-        for (int itemId = 1; itemId <= 10; itemId++) { // 발매일 release / 마감일 due / 발표일 presentation
+        for (int itemId = 1; itemId <= 10; itemId++) {
             // 마감일 = 오늘, 발매일 < 지금 < 마감일 < 발표일
             em.persist(new ReleaseInfo(itemId, drawPlatform, "주소" + itemId, now.minusDays(3), now.plusMinutes(itemId), now.plusDays(3), Status.POSSIBLE));
             // 마감일 = 오늘, 발매일 < 지금 < 마감일 < 발표일, 정렬 확인용
@@ -53,7 +63,7 @@ class ItemRepositoryTest {
         em.clear();
 
         //when
-        List<ItemSimpleResponse> result = itemRepository.getDueTodayItem10Ordered(now);
+        List<ItemSimpleResponse> result = itemRepository.getDueTodayItemOrdered(user.getId(), now);
 
         //then
         log.debug("\n결과: {}", result.stream()
@@ -61,7 +71,7 @@ class ItemRepositoryTest {
                 .collect(Collectors.joining("\n")));
 
         assertThat(result.size()).isEqualTo(10);
-        assertThat(result).extracting("itemName").doesNotContain(
+        assertThat(result).extracting("itemKoreanName").doesNotContain(
                 IntStream.rangeClosed(1, 30)
                         .boxed()
                         .filter(e -> (6 <= e && e < 11) || 16 <= e)
@@ -75,7 +85,7 @@ class ItemRepositoryTest {
         LocalDateTime now = LocalDateTime.of(2024, 7, 3, 13, 30);
         DrawPlatform drawPlatform = new DrawPlatform("테스트플랫폼", "플랫폼이미지");
         em.persist(drawPlatform);
-        for (int itemId = 1; itemId <= 5; itemId++) { // 발매일 release / 마감일 due / 발표일 presentation
+        for (int itemId = 1; itemId <= 5; itemId++) {
             // 지금 < 발매일 < 마감일 < 발표일
             em.persist(new ReleaseInfo(itemId, drawPlatform, "주소" + itemId, now.plusDays(itemId), now.plusDays(itemId + 3), now.plusDays(itemId + 5), Status.POSSIBLE));
             // 발매일 < 마감일 < 지금 < 발표일
@@ -89,7 +99,7 @@ class ItemRepositoryTest {
         em.clear();
 
         //when
-        List<ItemSimpleResponse> result = itemRepository.getReleaseTodayItem10Ordered(now);
+        List<ItemSimpleResponse> result = itemRepository.getReleaseTodayItemOrdered(user.getId(), now);
 
         //then
         log.debug("\n결과: {}", result.stream()
@@ -97,7 +107,7 @@ class ItemRepositoryTest {
                 .collect(Collectors.joining("\n")));
 
         assertThat(result.size()).isEqualTo(10);
-        assertThat(result).extracting("itemName").contains(
+        assertThat(result).extracting("itemKoreanName").contains(
                 IntStream.rangeClosed(11, 20)
                         .boxed()
                         .map(e -> "상품이름" + e)
@@ -110,11 +120,10 @@ class ItemRepositoryTest {
         LocalDateTime now = LocalDateTime.of(2024, 7, 3, 13, 30);
         DrawPlatform drawPlatform = new DrawPlatform("테스트플랫폼", "플랫폼이미지");
         em.persist(drawPlatform);
-        User user = new User("이름", "이메일", "비밀번호", "닉네임", true, true, true);
-        em.persist(user);
+
         for (long itemId = 5; itemId <= 15; itemId++)
             em.persist(new WishItem(user, itemRepository.findById(itemId).get()));
-        for (int itemId = 1; itemId <= 5; itemId++) { // 발매일 release / 마감일 due / 발표일 presentation
+        for (int itemId = 1; itemId <= 5; itemId++) {
             // 지금 < 발매일 < 마감일 < 발표일
             em.persist(new ReleaseInfo(itemId, drawPlatform, "주소" + itemId, now.plusDays(itemId), now.plusDays(itemId + 3), now.plusDays(itemId + 5), Status.POSSIBLE));
             // 발매일 < 마감일 < 지금 < 발표일
@@ -128,7 +137,7 @@ class ItemRepositoryTest {
         em.clear();
 
         //when
-        List<ItemSimpleResponse> result = itemRepository.getReleaseWishItem10Ordered(user.getId(), now);
+        List<ItemSimpleResponse> result = itemRepository.getReleaseWishItemOrdered(user.getId(), now);
 
         //then
         log.debug("\n결과: {}", result.stream()
@@ -136,7 +145,7 @@ class ItemRepositoryTest {
                 .collect(Collectors.joining("\n")));
 
         assertThat(result.size()).isEqualTo(5);
-        assertThat(result).extracting("itemName").contains(
+        assertThat(result).extracting("itemKoreanName").contains(
                 IntStream.rangeClosed(11, 15)
                         .boxed()
                         .map(e -> "상품이름" + e)
@@ -149,7 +158,7 @@ class ItemRepositoryTest {
         LocalDateTime now = LocalDateTime.of(2024, 7, 3, 13, 30);
         DrawPlatform drawPlatform = new DrawPlatform("테스트플랫폼", "플랫폼이미지");
         em.persist(drawPlatform);
-        for (int itemId = 1; itemId <= 10; itemId++) { // 발매일 release / 마감일 due / 발표일 presentation
+        for (int itemId = 1; itemId <= 10; itemId++) {
             // 지금 < 발매일 < 마감일 < 발표일
             em.persist(new ReleaseInfo(itemId, drawPlatform, "주소" + itemId, now.plusDays(itemId), now.plusDays(itemId + 3), now.plusDays(itemId + 5), Status.POSSIBLE));
             // 지금 < 발매일 < 마감일 < 발표일, 정렬 확인용
@@ -161,7 +170,7 @@ class ItemRepositoryTest {
         em.clear();
 
         //when
-        List<ItemSimpleResponse> result = itemRepository.getNotReleaseItem10Ordered(now);
+        List<ItemSimpleResponse> result = itemRepository.getJustConfirmReleaseItemOrdered(user.getId(), now);
 
         //then
         log.debug("\n결과: {}", result.stream()
@@ -169,7 +178,7 @@ class ItemRepositoryTest {
                 .collect(Collectors.joining("\n")));
 
         assertThat(result.size()).isEqualTo(10);
-        assertThat(result).extracting("itemName").doesNotContain(
+        assertThat(result).extracting("itemKoreanName").doesNotContain(
                 IntStream.rangeClosed(1, 30)
                         .boxed()
                         .filter(e -> (6 <= e && e < 11) || 16 <= e)
@@ -180,18 +189,33 @@ class ItemRepositoryTest {
     @Test
     public void 오늘_등록하고_미발매인_상품_조회() {
         //given
-        Brand brand = new Brand("로고", "브랜드");
+        Brand brand = new Brand("로고", "브랜드", "brand");
         em.persist(brand);
         for (int itemId = 1; itemId <= 10; itemId++) {
-            em.persist(new Item("상품이름" + itemId, "상품코드" + itemId, brand, Category.FOOTWEAR, 10000));
+            em.persist(Item.builder()
+                    .koreanName("상품이름" + itemId)
+                    .code("상품코드" + itemId)
+                    .brand(brand)
+                    .category(Category.FOOTWEAR).build());
             //정렬 확인용
-            em.persist(new Item("상품이름" + (itemId + 10), "상품코드" + (itemId + 10), brand, Category.FOOTWEAR, 10000));
+//            em.persist(Item.builder()
+//                    .koreanName("상품이름" + (itemId + 10))
+//                    .code("상품코드" + (itemId + 10))
+//                    .brand(brand)
+//                    .category(Category.FOOTWEAR).build());
+            Item item=Item.builder()
+                    .koreanName("상품이름" + (itemId + 10))
+                    .code("상품코드" + (itemId + 10))
+                    .brand(brand)
+                    .category(Category.FOOTWEAR).build();
+            em.persist(item);
+            log.info("item 생성날짜 {}:\n",item.getCreatedAt());
         }
         em.flush();
         em.clear();
 
         //when
-        List<ItemSimpleResponse> result = itemRepository.getRegisterTodayItem10Ordered(LocalDateTime.now());
+        List<ItemSimpleResponse> result = itemRepository.getRegisterTodayItemOrdered(user.getId(), LocalDateTime.now());
 
         //then
         log.debug("\n결과: {}", result.stream()
@@ -199,7 +223,7 @@ class ItemRepositoryTest {
                 .collect(Collectors.joining("\n")));
 
         assertThat(result.size()).isEqualTo(10);
-        assertThat(result).extracting("itemName").doesNotContain(
+        assertThat(result).extracting("itemKoreanName").doesNotContain(
                 IntStream.rangeClosed(1, 20)
                         .boxed()
                         .filter(e -> (6 <= e && e < 11) || 16 <= e)

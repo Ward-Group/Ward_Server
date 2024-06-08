@@ -31,16 +31,16 @@ public class ItemService {
     private final ItemImageRepository itemImageRepository;
 
     @Transactional
-    public ItemDetailResponse createItem(String koreanName, String englishName, String mainImage, String itemCode, List<String> itemImages, String brandName, String category, Integer price) throws ApiException {
+    public ItemDetailResponse createItem(String itemCode, String koreanName, String englishName, String mainImage, List<String> itemImages, String brandName, String category, Integer price) throws ApiException {
         if ((!StringUtils.hasText(koreanName) && !StringUtils.hasText(englishName)) || !StringUtils.hasText(itemCode) || !StringUtils.hasText(brandName) || !StringUtils.hasText(category))
             throw new ApiException(INVALID_INPUT);
         Brand brand = brandRepository.findByName(brandName).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
         if (itemRepository.existsByCodeAndBrandId(itemCode, brand.getId())) throw new ApiException(DUPLICATE_ITEM);
         Item savedItem = itemRepository.save(Item.builder()
+                .code(itemCode)
                 .koreanName(koreanName)
                 .englishName(englishName)
                 .mainImage(mainImage)
-                .code(itemCode)
                 .brand(brand)
                 .category(Category.ofText(category))
                 .price(price)
@@ -61,20 +61,20 @@ public class ItemService {
 
     @Transactional(readOnly = true)
     public List<ItemSimpleResponse> getItem10List(Long userId, ItemSort sort) {
-        log.info("item sort:{}", sort.toString());
+        log.debug("item sort:{}", sort.toString());
         LocalDateTime now = LocalDateTime.now();
         return switch (sort) {
-            case RELEASE_TODAY -> itemRepository.getReleaseTodayItem10Ordered(userId, now);
-            case WISH_RELEASE -> itemRepository.getReleaseWishItem10Ordered(userId, now);
-            case CONFIRM_RELEASE -> itemRepository.getNotReleaseItem10Ordered(userId, now);
-            case REGISTER_TODAY -> itemRepository.getRegisterTodayItem10Ordered(userId, now);
-            default -> itemRepository.getDueTodayItem10Ordered(userId, now);
+            case RELEASE_NOW -> itemRepository.getReleaseTodayItemOrdered(userId, now);
+            case RELEASE_WISH -> itemRepository.getReleaseWishItemOrdered(userId, now);
+            case RELEASE_CONFIRM -> itemRepository.getJustConfirmReleaseItemOrdered(userId, now);
+            case REGISTER_TODAY -> itemRepository.getRegisterTodayItemOrdered(userId, now);
+            default -> itemRepository.getDueTodayItemOrdered(userId, now);
         };
     }
 
     @Transactional
     public ItemDetailResponse updateItem(String originItemCode, String originBrandName,
-                                         String koreanName, String englishName, String itemCode, List<String> itemImages, String brandName, String category, Integer price) {
+                                         String koreanName, String englishName, String itemCode, String mainImage, List<String> itemImages, String brandName, String category, Integer price) {
         if (koreanName == null && englishName == null && itemCode == null && itemImages == null && brandName == null && category == null && price == null)
             throw new ApiException(INVALID_INPUT);
         Brand originBrand = brandRepository.findByName(originBrandName).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
@@ -94,6 +94,7 @@ public class ItemService {
             originItem.updateBrand(brand);
             originItem.updateCode(itemCode);
         }
+        if (StringUtils.hasText(mainImage)) originItem.updateMainImage(mainImage);
         if (itemImages != null && !itemImages.isEmpty()) {
             itemImageRepository.deleteAllByItemId(originItem.getId());
             itemImages.stream()
@@ -102,7 +103,7 @@ public class ItemService {
         }
         if (StringUtils.hasText(category)) originItem.updateCategory(Category.ofText(category));
         if (StringUtils.hasText(koreanName)) originItem.updateKoreanName(koreanName);
-        if (StringUtils.hasText(englishName)) originItem.updateKoreanName(englishName);
+        if (StringUtils.hasText(englishName)) originItem.updateEnglishName(englishName);
         if (price != null) originItem.updatePrice(price);
         return getItemDetailResponse(originItem);
     }

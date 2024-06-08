@@ -31,7 +31,7 @@ public class ReleaseInfo extends BaseTimeEntity {
 
     private String siteUrl;
 
-    @Column(nullable = false)
+    @Column
     private LocalDateTime releaseDate;
 
     @Column
