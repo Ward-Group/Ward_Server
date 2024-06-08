@@ -8,6 +8,7 @@ import lombok.Getter;
 public enum ExceptionCode {
     //공통
     INVALID_INPUT(5000, "부적절한 입력입니다."),
+    SERVER_ERROR(5001, "서버에서 오류가 발생했습니다."),
 
     //유저 회원가입 및 로그인
     NON_EXISTENT_EMAIL(5201, "존재하지 않는 이메일입니다"),
@@ -22,6 +23,7 @@ public enum ExceptionCode {
     EXISTENT_USER_AT_REGISTER(5210,"해당 이메일로 가입한 내역이 존재합니다. 가입한 이메일로 로그인을 진행해야합니다."),
     EXISTENT_USER_AT_REGISTER_WITH_PROVIDER_PID(5211,"해당 provider+providerId에 해당하는 회원이 존재합니다. 로그인을 진행해야합니다."),
     EXISTENT_USER_AT_ADD_SOCIAL_ACCOUNT(5212,"해당 provider+providerId에 해당하는 회원이 존재합니다. 기존 연동된 계정에서 해제 후 다시 연동 시도바랍니다."),
+    TOKEN_REFRESH_FAILURE(5213, "토큰 갱신에 실패하였습니다."),
 
     //아이템
     ITEM_NOT_FOUND(5300, "상품을 찾을 수 없습니다."),
