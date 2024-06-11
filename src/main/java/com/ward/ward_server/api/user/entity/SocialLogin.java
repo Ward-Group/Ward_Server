@@ -16,7 +16,7 @@ public class SocialLogin {
     @Column(nullable = false)
     private String provider;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1000)
     private String providerId;
 
     @Column(nullable = false)
