@@ -19,7 +19,7 @@ public class AppleUserController {
 
     @PostMapping("/updateUserInfo")
     public ApiResponse<Void> updateUserInfo(@RequestBody UserInfoUpdateRequest request) {
-        appleUserService.updateUserInfo(request.getProvider(), request.getProviderId(), request.getOldEmail(), request.getNewEmail());
+        appleUserService.updateUserInfo(request.provider(), request.providerId(), request.oldEmail(), request.newEmail());
         return ApiResponse.ok(ApiResponseMessage.UPDATE_SOCIALLOGIN_SUCCESS);
     }
 }
