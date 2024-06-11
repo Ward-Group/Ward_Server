@@ -19,6 +19,7 @@ import static com.ward.ward_server.api.item.entity.QBrand.brand;
 import static com.ward.ward_server.api.item.entity.QItem.item;
 import static com.ward.ward_server.api.releaseInfo.entity.QReleaseInfo.releaseInfo;
 import static com.ward.ward_server.api.wishItem.QWishItem.wishItem;
+import static com.ward.ward_server.global.Object.Constants.HOME_PAGE_SIZE;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -41,7 +42,7 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
                 .leftJoin(item.brand, brand)
                 .where(isSameDay(now, releaseInfo.dueDate), nowDateTime.between(releaseInfo.releaseDate, releaseInfo.dueDate))
                 .orderBy(releaseInfo.dueDate.asc())
-                .limit(10)
+                .limit(HOME_PAGE_SIZE)
                 .fetch();
         return itemSimpleResponseList(userId, result);
     }
@@ -62,7 +63,7 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
                 .leftJoin(item.brand, brand)
                 .where(nowDateTime.between(releaseInfo.releaseDate, releaseInfo.dueDate))
                 .orderBy(releaseInfo.dueDate.asc())
-                .limit(10)
+                .limit(HOME_PAGE_SIZE)
                 .fetch();
         return itemSimpleResponseList(userId, result);
     }
@@ -84,7 +85,7 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
                 .where(item.id.in(wishItemIdListByUser(userId)),
                         nowDateTime.between(releaseInfo.releaseDate, releaseInfo.dueDate))
                 .orderBy(releaseInfo.dueDate.asc())
-                .limit(10)
+                .limit(HOME_PAGE_SIZE)
                 .fetch();
         return itemSimpleResponseList(userId, result);
     }
@@ -105,7 +106,7 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
                 .leftJoin(item.brand, brand)
                 .where(nowDateTime.before(releaseInfo.releaseDate))
                 .orderBy(releaseInfo.releaseDate.asc())
-                .limit(10)
+                .limit(HOME_PAGE_SIZE)
                 .fetch();
         return itemSimpleResponseList(userId, result);
     }
@@ -127,7 +128,7 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
                 .leftJoin(item.brand, brand)
                 .where(isSameDay(now, item.createdAt))
                 .orderBy(item.createdAt.asc())
-                .limit(10)
+                .limit(HOME_PAGE_SIZE)
                 .fetch();
         return itemSimpleResponseList(userId, result);
     }

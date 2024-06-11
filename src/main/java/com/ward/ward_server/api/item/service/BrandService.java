@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import static com.ward.ward_server.global.Object.Constants.HOME_PAGE_SIZE;
 import static com.ward.ward_server.global.exception.ExceptionCode.BRAND_NOT_FOUND;
 import static com.ward.ward_server.global.exception.ExceptionCode.DUPLICATE_BRAND;
 
@@ -37,8 +38,8 @@ public class BrandService {
     }
 
     @Transactional(readOnly = true)
-    public Page<BrandInfoResponse> getBrandItemPage(int page, int size) {
-        return brandRepository.getBrandItemPage(PageRequest.of(page, size));
+    public Page<BrandInfoResponse> getBrandItemPage(int page) {
+        return brandRepository.getBrandItemPage(PageRequest.of(page, HOME_PAGE_SIZE));
     }
 
     @Transactional

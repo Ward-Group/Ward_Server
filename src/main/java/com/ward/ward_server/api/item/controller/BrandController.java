@@ -10,8 +10,6 @@ import org.checkerframework.checker.index.qual.Positive;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 import static com.ward.ward_server.global.response.ApiResponseMessage.*;
 
 @RestController
@@ -26,9 +24,8 @@ public class BrandController {
     }
 
     @GetMapping("/top10")
-    public ApiResponse<Page<BrandInfoResponse>> getBrandItemPage(@Positive @RequestParam(value = "page", defaultValue = "1") int page,
-                                                                 @Positive @RequestParam(value = "size", defaultValue = "10") int size) {
-        return ApiResponse.ok(BRAND_TOP10_WITH_ITEM_LOAD_SUCCESS, brandService.getBrandItemPage(page - 1, size));
+    public ApiResponse<Page<BrandInfoResponse>> getBrandItemPage(@Positive @RequestParam(value = "page", defaultValue = "1") int page) {
+        return ApiResponse.ok(BRAND_TOP10_WITH_ITEM_LOAD_SUCCESS, brandService.getBrandItemPage(page - 1));
     }
 
     @PatchMapping("/{originBrandName}")
