@@ -1,14 +1,9 @@
 package com.ward.ward_server.api.item.entity;
 
 import com.ward.ward_server.api.item.entity.enumtype.Category;
-import com.ward.ward_server.api.item.entity.enumtype.converter.CategoryConverter;
-import com.ward.ward_server.api.wishItem.WishItem;
 import com.ward.ward_server.global.Object.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,32 +18,35 @@ public class Item extends BaseTimeEntity {
     @Column(nullable = false)
     private String code;
 
-    @Column(nullable = false)
-    private String name;
+    private String koreanName;
+
+    private String englishName;
+
+    private String mainImage;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "brand_id")
+    @JoinColumn(name = "brand_id", nullable = false)
     private Brand brand;
 
     private Long viewCount = 0L;
 
-    @Column(nullable = false)
-    @Convert(converter = CategoryConverter.class)
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "char(20)")
     private Category category;
 
     private Integer price;
 
-    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
-    private List<WishItem> wishItems = new ArrayList<>();
-
     @Builder
-    public Item(String name, String code, Brand brand, Category category, int price) {
-        this.name = name;
+    public Item(String code, String koreanName, String englishName, String mainImage, Brand brand, Category category, Integer price) {
         this.code = code;
+        this.koreanName = koreanName;
+        this.englishName = englishName;
+        this.mainImage = mainImage;
         this.brand = brand;
         this.category = category;
-        this.price = price;
+        this.price = price == null ? 0 : price;
     }
+
     public void increaseViewCount() {
         viewCount += 1;
     }
@@ -57,8 +55,16 @@ public class Item extends BaseTimeEntity {
         this.brand = brand;
     }
 
-    public void updateName(String name) {
-        this.name = name;
+    public void updateKoreanName(String koreanName) {
+        this.koreanName = koreanName;
+    }
+
+    public void updateEnglishName(String englishName) {
+        this.englishName = englishName;
+    }
+
+    public void updateMainImage(String mainImage) {
+        this.mainImage = mainImage;
     }
 
     public void updateCode(String code) {

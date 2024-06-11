@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface ItemRepository extends JpaRepository<Item, Long> {
+public interface ItemRepository extends JpaRepository<Item, Long>, ItemQueryRepository{
     Optional<Item> findByCodeAndBrandIdAndDeletedAtIsNull(String code, long brandId);
 
     Page<Item> findAllByDeletedAtIsNull(Pageable pageable);

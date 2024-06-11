@@ -34,6 +34,8 @@ dependencies {
 	implementation("commons-validator:commons-validator:1.8.0")
 	implementation ("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.1") // 쿼리 파라미터 로그 남기기, 배포용엔 제외
 	compileOnly("org.projectlombok:lombok")
+	testCompileOnly ("org.projectlombok:lombok")
+	testAnnotationProcessor ("org.projectlombok:lombok")
 	runtimeOnly("com.mysql:mysql-connector-j")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -44,6 +46,14 @@ dependencies {
 	implementation("org.jsoup:jsoup:1.17.1")
 	//validation
 	implementation("org.springframework.boot:spring-boot-starter-validation")
+	//Querydsl
+	implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
+	annotationProcessor("com.querydsl:querydsl-apt:${dependencyManagement.importedProperties["querydsl.version"]}:jakarta")
+	annotationProcessor("jakarta.annotation:jakarta.annotation-api")
+	annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+	//test
+	testImplementation ("org.springframework.boot:spring-boot-starter-test")
+	testRuntimeOnly ("com.h2database:h2")
 }
 
 tasks.withType<Test> {
