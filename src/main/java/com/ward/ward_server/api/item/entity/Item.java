@@ -28,7 +28,7 @@ public class Item extends BaseTimeEntity {
     @JoinColumn(name = "brand_id", nullable = false)
     private Brand brand;
 
-    private Integer viewCount = 0;
+    private Long viewCount = 0L;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "char(20)")

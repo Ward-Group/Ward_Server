@@ -6,8 +6,8 @@ public record BrandInfoResponse(
         String brandLogoImage,
         String brandKoreanName,
         String brandEnglishName,
-        Integer brandViewCount,
-        Integer brandWishCount,
+        long brandViewCount,
+        long brandWishCount,
         List<BrandItemResponse> itemList
 ) {
 }

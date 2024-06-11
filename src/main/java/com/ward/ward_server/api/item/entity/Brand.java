@@ -23,7 +23,7 @@ public class Brand {
 
     private String englishName;
 
-    private Integer viewCount = 0;
+    private Long viewCount = 0L;
 
     @Builder
     public Brand(String logoImage, String koreanName, String englishName) {

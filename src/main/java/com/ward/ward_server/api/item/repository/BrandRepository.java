@@ -10,16 +10,26 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 public interface BrandRepository extends JpaRepository<Brand, Long>, BrandQueryRepository {
-    @Query("SELECT COUNT(b) > 0 FROM Brand b WHERE b.englishName = :name OR b.koreanName = :name")
+    @Query("SELECT COUNT(b) > 0 " +
+            "FROM Brand b " +
+            "WHERE b.englishName = :name OR b.koreanName = :name")
     boolean existsByName(@Param("name") String name);
 
-    boolean existsByKoreanNameOrEnglishName(String koreanName, String englishName);
+    @Query("SELECT COUNT(b) > 0 " +
+            "FROM Brand b " +
+            "WHERE (:koreanName IS NULL OR b.koreanName = :koreanName) " +
+            "AND (:englishName IS NULL OR b.englishName = :englishName)")
+    boolean existsByKoreanNameOrEnglishName(@Param("koreanName") String koreanName, @Param("englishName") String englishName);
 
-    @Query("SELECT b FROM Brand b WHERE b.englishName = :name OR b.koreanName = :name")
+    @Query("SELECT b " +
+            "FROM Brand b " +
+            "WHERE b.englishName = :name OR b.koreanName = :name")
     Optional<Brand> findByName(@Param("name") String name);
 
     @Modifying
     @Transactional
-    @Query("DELETE FROM Brand b WHERE b.englishName = :name OR b.koreanName = :name")
+    @Query("DELETE " +
+            "FROM Brand b " +
+            "WHERE b.englishName = :name OR b.koreanName = :name")
     void deleteByName(@Param("name") String name);
 }

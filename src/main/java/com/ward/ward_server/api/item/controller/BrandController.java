@@ -25,7 +25,7 @@ public class BrandController {
         return ApiResponse.ok(BRAND_CREATE_SUCCESS, brandService.createBrand(request.koreanName(), request.englishName(), request.brandLogoImage()));
     }
 
-    @GetMapping("/infos")
+    @GetMapping("/top10")
     public ApiResponse<Page<BrandInfoResponse>> getBrandItemPage(@Positive @RequestParam(value = "page", defaultValue = "1") int page,
                                                                  @Positive @RequestParam(value = "size", defaultValue = "10") int size) {
         return ApiResponse.ok(BRAND_TOP10_WITH_ITEM_LOAD_SUCCESS, brandService.getBrandItemPage(page - 1, size));
@@ -43,7 +43,7 @@ public class BrandController {
     }
 
     @PatchMapping("/{brandName}/view-counts")
-    public ApiResponse<Integer> increaseBrandViewCount(@PathVariable("brandName") String brandName) {
+    public ApiResponse<Long> increaseBrandViewCount(@PathVariable("brandName") String brandName) {
         return ApiResponse.ok(BRAND_VIEW_COUNT_UP_SUCCESS, brandService.increaseBrandViewCount(brandName));
     }
 }

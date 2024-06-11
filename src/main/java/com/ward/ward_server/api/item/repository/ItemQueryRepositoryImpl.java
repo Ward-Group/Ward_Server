@@ -1,7 +1,6 @@
 package com.ward.ward_server.api.item.repository;
 
 import com.querydsl.core.Tuple;
-import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.DateTimePath;
 import com.querydsl.core.types.dsl.DateTimeTemplate;
@@ -112,7 +111,7 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
     }
 
     public List<ItemSimpleResponse> getRegisterTodayItemOrdered(long userId, LocalDateTime now) {
-        log.info("register\n" +
+        log.debug("register\n" +
                 "app now : {}\n" +
                 "UTC : {}", now, now.minusHours(9));
         //생성일 = 지금, 발매일 = null, 정렬은 생성일 오름차순
@@ -134,7 +133,7 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
     }
 
     private BooleanExpression isSameDay(LocalDateTime dateTime, DateTimePath<LocalDateTime> datePath) {
-        log.info("datePath : {}", datePath);
+        log.debug("datePath : {}", datePath);
         return Expressions.numberTemplate(Integer.class, "YEAR({0})", datePath).eq(dateTime.getYear())
                 .and(Expressions.numberTemplate(Integer.class, "MONTH({0})", datePath).eq(dateTime.getMonthValue()))
                 .and(Expressions.numberTemplate(Integer.class, "DAY({0})", datePath).eq(dateTime.getDayOfMonth()));
@@ -148,7 +147,7 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
     }
 
     private List<ItemSimpleResponse> itemSimpleResponseList(long userId, List<Tuple> tuples) {
-        log.info("response list 메서드, tuple 개수 {} ", tuples.size());
+        log.debug("response list 메서드, tuple 개수 {} ", tuples.size());
         final Set<Long> wishItemIdList = wishItemIdListByUser(userId);
         return tuples.stream()
                 .map(e -> new ItemSimpleResponse(

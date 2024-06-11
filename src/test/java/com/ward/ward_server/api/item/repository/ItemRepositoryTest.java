@@ -31,7 +31,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Import(QuerydslConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Slf4j
-@Commit
 class ItemRepositoryTest {
     @Autowired
     EntityManager em;
@@ -198,18 +197,11 @@ class ItemRepositoryTest {
                     .brand(brand)
                     .category(Category.FOOTWEAR).build());
             //정렬 확인용
-//            em.persist(Item.builder()
-//                    .koreanName("상품이름" + (itemId + 10))
-//                    .code("상품코드" + (itemId + 10))
-//                    .brand(brand)
-//                    .category(Category.FOOTWEAR).build());
-            Item item=Item.builder()
+            em.persist(Item.builder()
                     .koreanName("상품이름" + (itemId + 10))
                     .code("상품코드" + (itemId + 10))
                     .brand(brand)
-                    .category(Category.FOOTWEAR).build();
-            em.persist(item);
-            log.info("item 생성날짜 {}:\n",item.getCreatedAt());
+                    .category(Category.FOOTWEAR).build());
         }
         em.flush();
         em.clear();

@@ -5,6 +5,6 @@ public record BrandItemResponse(
         String itemEnglishName,
         String itemCode,
         String itemMainImage,
-        Long itemViewCount,
-        Long itemWishCount) {
+        long itemViewCount,
+        long itemWishCount) {
 }
