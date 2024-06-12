@@ -25,21 +25,21 @@ public class AuthController {
 
     @PostMapping("/addSocialLogin")
     public ApiResponse<JwtTokens> addSocialLogin(@RequestBody @Validated AddSocialLoginRequest request) {
-        JwtTokens tokens = authService.addSocialLogin(request.getProvider(), request.getProviderId(), request.getEmail());
+        JwtTokens tokens = authService.addSocialLogin(request.provider(), request.providerId(), request.email());
         return ApiResponse.ok(ApiResponseMessage.ADD_SOCIALLOGIN_SUCCESS, tokens);
     }
 
     @PostMapping
     public ApiResponse<JwtTokens> register(@RequestBody @Validated RegisterRequest request) {
         JwtTokens tokens = authService.registerUser(
-                request.getProvider(),
-                request.getProviderId(),
-                request.getName(),
-                request.getEmail(),
-                request.getNickname(),
-                request.getEmailNotification(),
-                request.getAppPushNotification(),
-                request.getSnsNotification()
+                request.provider(),
+                request.providerId(),
+                request.name(),
+                request.email(),
+                request.nickname(),
+                request.emailNotification(),
+                request.appPushNotification(),
+                request.snsNotification()
         );
         return ApiResponse.ok(ApiResponseMessage.SIGNUP_SUCCESS, tokens);
     }

@@ -54,15 +54,15 @@ public class AuthService {
     // 소셜 로그인 정보로 사용자 조회
     @Transactional
     public JwtTokens login(LoginRequest request) {
-        if (!isRegisteredUser(request.getEmail())) {
+        if (!isRegisteredUser(request.email())) {
             throw new ApiException(ExceptionCode.NON_EXISTENT_USER);
         }
 
-        if (!isSameUser(request.getProvider(), request.getProviderId())) {
+        if (!isSameUser(request.provider(), request.providerId())) {
             throw new ApiException(ExceptionCode.EXISTENT_USER);
         }
 
-        Optional<SocialLogin> socialLoginOptional = socialLoginRepository.findByProviderAndProviderIdAndEmail(request.getProvider(), request.getProviderId(), request.getEmail());
+        Optional<SocialLogin> socialLoginOptional = socialLoginRepository.findByProviderAndProviderIdAndEmail(request.provider(), request.providerId(), request.email());
         if (socialLoginOptional.isEmpty()) {
             throw new ApiException(ExceptionCode.NON_EXISTENT_EMAIL);
         }
