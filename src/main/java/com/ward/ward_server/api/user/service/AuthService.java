@@ -40,41 +40,52 @@ public class AuthService {
     private final JwtProperties properties;
     private final RefreshTokenService refreshTokenService;
 
-    // sociallogin.email 이 있으면 이미 가입한 회원
     public boolean isRegisteredUser(String email) {
         return socialLoginRepository.existsByEmail(email);
     }
 
-    // provider+providerId 까지 동일하면 로그인 시켜야함.
-    // 없으면 소셜 로그인 추가또는 기존 로그인으로 로그인
+    public Optional<SocialLogin> getSocialLoginByEmail(String email) {
+        return socialLoginRepository.findByEmail(email);
+    }
+
     public boolean isSameUser(String provider, String providerId) {
         return socialLoginRepository.existsByProviderAndProviderId(provider, providerId);
     }
 
-    // 소셜 로그인 정보로 사용자 조회
     @Transactional
     public JwtTokens login(LoginRequest request) {
-        if (!isRegisteredUser(request.email())) {
-            throw new ApiException(ExceptionCode.NON_EXISTENT_USER);
+        Optional<SocialLogin> socialLoginOptional;
+
+        if (request.email() != null && !request.email().isBlank()) {
+            socialLoginOptional = socialLoginRepository.findByProviderAndProviderIdAndEmail(request.provider(), request.providerId(), request.email());
+        } else {
+            socialLoginOptional = socialLoginRepository.findByProviderAndProviderId(request.provider(), request.providerId());
         }
 
-        if (!isSameUser(request.provider(), request.providerId())) {
-            throw new ApiException(ExceptionCode.EXISTENT_USER);
-        }
-
-        Optional<SocialLogin> socialLoginOptional = socialLoginRepository.findByProviderAndProviderIdAndEmail(request.provider(), request.providerId(), request.email());
         if (socialLoginOptional.isEmpty()) {
-            throw new ApiException(ExceptionCode.NON_EXISTENT_EMAIL);
+            Optional<SocialLogin> existingSocialLoginOptional = getSocialLoginByEmail(request.email());
+
+            if (existingSocialLoginOptional.isPresent()) {
+                SocialLogin existingSocialLogin = existingSocialLoginOptional.get();
+                String provider = existingSocialLogin.getProvider();
+
+                if ("kakao".equalsIgnoreCase(provider)) {
+                    throw new ApiException(ExceptionCode.EXISTENT_USER_KAKAO);
+                } else if ("apple".equalsIgnoreCase(provider)) {
+                    throw new ApiException(ExceptionCode.EXISTENT_USER_APPLE);
+                } else {
+                    throw new ApiException(ExceptionCode.EXISTENT_USER);
+                }
+            }
+            throw new ApiException(ExceptionCode.NON_EXISTENT_USER);
         }
 
         User user = socialLoginOptional.get().getUser();
         return generateJwtTokens(user);
     }
 
-    // 새로운 소셜 로그인 추가: 로그인 시 email 같고 provider+providerId 없는 경우
     @Transactional
     public JwtTokens addSocialLogin(String provider, String providerId, String email) {
-
         if (!ValidationUtil.isValidEmail(email)) {
             throw new ApiException(ExceptionCode.INVALID_EMAIL_FORMAT);
         }
@@ -95,7 +106,6 @@ public class AuthService {
         return generateJwtTokens(user);
     }
 
-    // 회원가입
     @Transactional
     public JwtTokens registerUser(
             String provider,
@@ -133,7 +143,6 @@ public class AuthService {
                     appPushNotification,
                     snsNotification
             );
-
             SocialLogin socialLogin = new SocialLogin(provider, providerId, email);
             socialLogin.setUser(user);
 
@@ -153,7 +162,6 @@ public class AuthService {
         }
     }
 
-    // Refresh Token 갱신
     @Transactional
     public JwtTokens refresh(String refreshToken) {
         try {
@@ -176,18 +184,15 @@ public class AuthService {
         }
     }
 
-    // RefreshToken 무효화 - 로그아웃 or 보안 상
     @Transactional
     public void invalidateRefreshToken(String refreshToken) {
         refreshTokenService.invalidateRefreshToken(refreshToken);
     }
 
-    // 닉네임 중복 검사
     public boolean checkDuplicateNickname(String nickname) {
         return userRepository.existsByNickname(nickname);
     }
 
-    // 사용자의 소셜 로그인 정보 업데이트
     private void updateSocialLogin(User user, String provider, String providerId, String email) {
         Optional<SocialLogin> socialLoginOptional = socialLoginRepository.findByProviderAndProviderIdAndEmail(provider, providerId, email);
 
@@ -201,7 +206,6 @@ public class AuthService {
         }
     }
 
-    // JWT 토큰 생성
     private JwtTokens generateJwtTokens(User user) {
         try {
             var authentication = authenticationManager.authenticate(
@@ -226,3 +230,4 @@ public class AuthService {
         }
     }
 }
+
