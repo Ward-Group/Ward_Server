@@ -6,6 +6,7 @@ public record ItemDetailResponse(
         String itemKoreanName,
         String itemEnglishName,
         String itemCode,
+        String MainImage,
         List<String> itemImages,
         String brandKoreanName,
         String brandEnglishName,

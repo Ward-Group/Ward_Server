@@ -120,6 +120,7 @@ public class ItemService {
                 item.getKoreanName(),
                 item.getEnglishName(),
                 item.getCode(),
+                item.getMainImage(),
                 itemImageRepository.findAllByItemId(item.getId()).stream().map(ItemImage::getUrl).toList(),
                 item.getBrand().getKoreanName(),
                 item.getBrand().getEnglishName(),
