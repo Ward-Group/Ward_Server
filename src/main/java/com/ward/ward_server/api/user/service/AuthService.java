@@ -9,6 +9,7 @@ import com.ward.ward_server.api.user.entity.SocialLogin;
 import com.ward.ward_server.api.user.entity.User;
 import com.ward.ward_server.api.user.repository.SocialLoginRepository;
 import com.ward.ward_server.api.user.repository.UserRepository;
+import com.ward.ward_server.global.Object.Constants;
 import com.ward.ward_server.global.exception.ApiException;
 import com.ward.ward_server.global.exception.ExceptionCode;
 import com.ward.ward_server.global.util.ValidationUtil;
@@ -69,9 +70,9 @@ public class AuthService {
                 SocialLogin existingSocialLogin = existingSocialLoginOptional.get();
                 String provider = existingSocialLogin.getProvider();
 
-                if ("kakao".equalsIgnoreCase(provider)) {
+                if (Constants.KAKAO.equalsIgnoreCase(provider)) {
                     throw new ApiException(ExceptionCode.EXISTENT_USER_KAKAO);
-                } else if ("apple".equalsIgnoreCase(provider)) {
+                } else if (Constants.APPLE.equalsIgnoreCase(provider)) {
                     throw new ApiException(ExceptionCode.EXISTENT_USER_APPLE);
                 } else {
                     throw new ApiException(ExceptionCode.EXISTENT_USER);
