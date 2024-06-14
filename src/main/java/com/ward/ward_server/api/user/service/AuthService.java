@@ -1,9 +1,7 @@
 package com.ward.ward_server.api.user.service;
 
-import com.ward.ward_server.api.user.auth.security.CustomUserDetails;
-import com.ward.ward_server.api.user.auth.security.JwtIssuer;
-import com.ward.ward_server.api.user.auth.security.JwtProperties;
-import com.ward.ward_server.api.user.auth.security.JwtTokens;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.ward.ward_server.api.user.auth.security.*;
 import com.ward.ward_server.api.user.dto.LoginRequest;
 import com.ward.ward_server.api.user.entity.SocialLogin;
 import com.ward.ward_server.api.user.entity.User;
@@ -40,6 +38,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtProperties properties;
     private final RefreshTokenService refreshTokenService;
+    private final JwtDecoder jwtDecoder;
 
     public boolean isRegisteredUser(String email) {
         return socialLoginRepository.existsByEmail(email);
@@ -165,9 +164,21 @@ public class AuthService {
 
     @Transactional
     public JwtTokens refresh(String refreshToken) {
+        if (refreshToken == null || refreshToken.isBlank()) {
+            log.error("리프레시 토큰이 누락되었습니다.");
+            throw new ApiException(ExceptionCode.MISSING_REFRESH_TOKEN);
+        }
+
         try {
+            DecodedJWT decodedJWT = jwtDecoder.decode(refreshToken);
+            if (jwtDecoder.isTokenExpired(decodedJWT)) {
+                log.error("리프레시 토큰이 만료되었습니다: {}", refreshToken);
+                throw new ApiException(ExceptionCode.TOKEN_EXPIRED);
+            }
+
             var refreshTokenEntity = refreshTokenService.findRefreshTokenByToken(refreshToken);
             if (refreshTokenEntity == null) {
+                log.error("유효하지 않은 리프레시 토큰: {}", refreshToken);
                 throw new ApiException(ExceptionCode.INVALID_REFRESH_TOKEN);
             }
             var user = refreshTokenEntity.getUser();
@@ -179,11 +190,15 @@ public class AuthService {
             refreshTokenService.invalidateAndSaveNewToken(refreshTokenEntity, newRefreshToken);
 
             return new JwtTokens(newAccessToken, newRefreshToken);
+        } catch (ApiException e) {
+            log.error("토큰 갱신 중 API 예외 발생: {}", e.getMessage());
+            throw e;
         } catch (Exception e) {
-            log.error("토큰 갱신 중 예상 치 못한 오류 발생", e);
+            log.error("토큰 갱신 중 예상치 못한 오류 발생", e);
             throw new ApiException(ExceptionCode.SERVER_ERROR);
         }
     }
+
 
     @Transactional
     public void invalidateRefreshToken(String refreshToken) {

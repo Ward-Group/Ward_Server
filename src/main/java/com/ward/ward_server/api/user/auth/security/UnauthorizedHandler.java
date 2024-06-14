@@ -19,21 +19,23 @@ public class UnauthorizedHandler implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        String exceptionMessage = authException.getMessage();
-        ExceptionCode exceptionCode = determineExceptionCode(exceptionMessage);
+
+        ExceptionCode exceptionCode = (ExceptionCode) request.getAttribute("JWT_EXCEPTION");
+        if (exceptionCode == null) {
+            exceptionCode = determineExceptionCode(authException.getMessage());
+        }
+
         ApiResponse<?> apiResponse = ApiResponse.failure(exceptionCode);
         response.getWriter().write(new ObjectMapper().writeValueAsString(apiResponse));
     }
 
     private ExceptionCode determineExceptionCode(String message) {
-        if (message.equals(ExceptionCode.NON_EXISTENT_EMAIL.getMessage())) {
-            return ExceptionCode.NON_EXISTENT_EMAIL;
-        } else if (message.equals(ExceptionCode.INVALID_USERNAME_OR_PASSWORD.getMessage())) {
-            return ExceptionCode.INVALID_USERNAME_OR_PASSWORD;
-        } else if (message.equals(ExceptionCode.INVALID_REFRESH_TOKEN.getMessage())) {
+        // 메시지를 기반으로 적절한 예외 코드를 반환합니다.
+        if (message.contains("유효하지 않은 리프레시 토큰")) {
             return ExceptionCode.INVALID_REFRESH_TOKEN;
+        } else if (message.contains("Missing Authorization header")) {
+            return ExceptionCode.MISSING_AUTH_HEADER;
         }
-        // 기본 예외 코드
         return ExceptionCode.INVALID_USERNAME_OR_PASSWORD;
     }
 }
