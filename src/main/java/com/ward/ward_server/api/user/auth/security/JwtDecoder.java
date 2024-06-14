@@ -6,13 +6,20 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
+
 @Component
-@RequiredArgsConstructor // @Bean 주입할거기때문에 @RequiredArgsConstructor 어노테이션 사용
+@RequiredArgsConstructor
 public class JwtDecoder {
     private final JwtProperties properties;
+
     public DecodedJWT decode(String token) {
-         return JWT.require(Algorithm.HMAC256(properties.getSecretKey()))
-                 .build()
-                 .verify(token);
+        return JWT.require(Algorithm.HMAC256(properties.getSecretKey()))
+                .build()
+                .verify(token);
+    }
+
+    public boolean isTokenExpired(DecodedJWT decodedJWT) {
+        return decodedJWT.getExpiresAt().before(new Date());
     }
 }
