@@ -165,9 +165,15 @@ public class AuthService {
 
     @Transactional
     public JwtTokens refresh(String refreshToken) {
+        if (refreshToken == null || refreshToken.isBlank()) {
+            log.error("리프레시 토큰이 누락되었습니다.");
+            throw new ApiException(ExceptionCode.MISSING_REFRESH_TOKEN);
+        }
+
         try {
             var refreshTokenEntity = refreshTokenService.findRefreshTokenByToken(refreshToken);
             if (refreshTokenEntity == null) {
+                log.error("유효하지 않은 리프레시 토큰: {}", refreshToken);
                 throw new ApiException(ExceptionCode.INVALID_REFRESH_TOKEN);
             }
             var user = refreshTokenEntity.getUser();
@@ -179,11 +185,15 @@ public class AuthService {
             refreshTokenService.invalidateAndSaveNewToken(refreshTokenEntity, newRefreshToken);
 
             return new JwtTokens(newAccessToken, newRefreshToken);
+        } catch (ApiException e) {
+            log.error("토큰 갱신 중 API 예외 발생: {}", e.getMessage());
+            throw e;
         } catch (Exception e) {
-            log.error("토큰 갱신 중 예상 치 못한 오류 발생", e);
+            log.error("토큰 갱신 중 예상치 못한 오류 발생", e);
             throw new ApiException(ExceptionCode.SERVER_ERROR);
         }
     }
+
 
     @Transactional
     public void invalidateRefreshToken(String refreshToken) {

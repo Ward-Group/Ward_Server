@@ -1,6 +1,9 @@
 package com.ward.ward_server.api.user.auth.security;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.ward.ward_server.global.exception.ExceptionCode;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,15 +28,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        extractTokenFromRequest(request) // 헤더에서 JWT 토큰 추출
-                .map(jwtDecoder::decode) // JWT 토큰 해독하여 사용자 정보 가져오기
-                .filter(decodedJWT -> isAccessToken(decodedJWT)) // 추가된 부분
-                .map(jwtToPrincipalConverter::convert) // 가져온 사용자 정보를 CustomUserDetails 객체로 변환, 생성
-                .map(UserPrincipalAuthenticationToken::new) // UserPrincipalAuthenticationToken을 생성하여 인증된 사용자로 설정
-                .ifPresent(authentication -> SecurityContextHolder.getContext().setAuthentication(authentication));
-        // 앞에 UPAT 객체가 존재하면, 즉 토큰 검증,사용자 인증 성공했을 때 -> SecurityContextHolder에 현재 스레드에 대한 인증 객체를 설정
-        // 이를 통해 사용자에 대한 정보 얻기
-
+        try {
+            extractTokenFromRequest(request)
+                    .map(jwtDecoder::decode)
+                    .filter(this::isAccessToken)
+                    .map(jwtToPrincipalConverter::convert)
+                    .map(UserPrincipalAuthenticationToken::new)
+                    .ifPresent(authentication -> SecurityContextHolder.getContext().setAuthentication(authentication));
+        } catch (TokenExpiredException ex) {
+            request.setAttribute("JWT_EXCEPTION", ExceptionCode.TOKEN_EXPIRED);
+        } catch (JWTVerificationException ex) {
+            request.setAttribute("JWT_EXCEPTION", ExceptionCode.INVALID_TOKEN);
+        } catch (IllegalArgumentException ex) {
+            request.setAttribute("JWT_EXCEPTION", ExceptionCode.MISSING_AUTH_HEADER);
+        }
         filterChain.doFilter(request, response);
     }
 
@@ -42,10 +50,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(token) && token.startsWith("Bearer ")) {
             return Optional.of(token.substring(7));
         }
+        if (!StringUtils.hasText(token)) {
+            throw new IllegalArgumentException("Missing Authorization header");
+        }
         return Optional.empty();
     }
 
-    // access token 여부를 판별
     private boolean isAccessToken(DecodedJWT decodedJWT) {
         return decodedJWT.getExpiresAt().before(new Date(System.currentTimeMillis() + Duration.ofMinutes(properties.getAccessTokenValidity()).toMillis()));
     }

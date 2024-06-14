@@ -9,6 +9,10 @@ public enum ExceptionCode {
     //공통
     INVALID_INPUT(5000, "부적절한 입력입니다."),
     SERVER_ERROR(5001, "서버에서 오류가 발생했습니다."),
+    TOKEN_EXPIRED(5002, "access 토큰이 만료되었습니다."),
+    INVALID_TOKEN(5003, "유효하지 않은 토큰입니다."),
+    MISSING_AUTH_HEADER(5004, "Authorization 헤더가 누락되었습니다."),
+    MISSING_REFRESH_TOKEN(5005, "리프레시 토큰이 누락되었습니다."),
 
     //유저 회원가입 및 로그인
     NON_EXISTENT_EMAIL(5201, "존재하지 않는 이메일입니다"),

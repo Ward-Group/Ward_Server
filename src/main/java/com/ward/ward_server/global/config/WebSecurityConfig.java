@@ -37,6 +37,7 @@ public class WebSecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/auth/logout").authenticated()
                         .requestMatchers("/","/auth/**", "/v1/wc/**","/releaseInfos/**").permitAll()
                         .requestMatchers("/items/details").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/items").hasAnyRole("USER", "ADMIN")
