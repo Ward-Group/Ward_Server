@@ -13,4 +13,8 @@ public interface SocialLoginRepository extends JpaRepository<SocialLogin, Long> 
     Optional<SocialLogin> findByProviderAndProviderIdAndEmail(String provider, String providerId, String email);
 
     boolean existsByProviderAndProviderId(String provider, String providerId);
+
+    Optional<SocialLogin> findByProviderAndProviderId(String provider, String s);
+
+    Optional<SocialLogin> findByEmail(String email);
 }

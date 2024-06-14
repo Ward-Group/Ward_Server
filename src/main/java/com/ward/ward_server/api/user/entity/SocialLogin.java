@@ -19,7 +19,7 @@ public class SocialLogin {
     @Column(nullable = false, length = 1000)
     private String providerId;
 
-    @Column(nullable = false)
+    @Column
     private String email;
 
     @ManyToOne(fetch = FetchType.LAZY)
