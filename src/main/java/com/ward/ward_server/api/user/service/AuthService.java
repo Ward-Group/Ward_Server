@@ -11,7 +11,7 @@ import com.ward.ward_server.api.user.repository.SocialLoginRepository;
 import com.ward.ward_server.api.user.repository.UserRepository;
 import com.ward.ward_server.global.exception.ApiException;
 import com.ward.ward_server.global.exception.ExceptionCode;
-import com.ward.ward_server.global.util.ValidationUtil;
+import com.ward.ward_server.global.util.ValidationUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -75,7 +75,7 @@ public class AuthService {
     @Transactional
     public JwtTokens addSocialLogin(String provider, String providerId, String email) {
 
-        if (!ValidationUtil.isValidEmail(email)) {
+        if (!ValidationUtils.isValidEmail(email)) {
             throw new ApiException(ExceptionCode.INVALID_EMAIL_FORMAT);
         }
 
@@ -108,7 +108,7 @@ public class AuthService {
             Boolean snsNotification
     ) {
         try {
-            if (!ValidationUtil.isValidEmail(email)) {
+            if (!ValidationUtils.isValidEmail(email)) {
                 throw new ApiException(ExceptionCode.INVALID_EMAIL_FORMAT);
             }
 

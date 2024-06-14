@@ -6,7 +6,7 @@ import com.ward.ward_server.api.item.entity.Brand;
 import com.ward.ward_server.api.item.repository.BrandRepository;
 import com.ward.ward_server.global.exception.ApiException;
 import com.ward.ward_server.global.exception.ExceptionCode;
-import com.ward.ward_server.global.util.ValidationUtil;
+import com.ward.ward_server.global.util.ValidationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,7 +25,7 @@ public class BrandService {
 
     @Transactional
     public BrandResponse createBrand(String koreanName, String englishName, String brandLogoImage) {
-        if ((!StringUtils.hasText(koreanName) && !StringUtils.hasText(englishName)) || (englishName != null && !ValidationUtil.isValidEnglish(englishName)))
+        if ((!StringUtils.hasText(koreanName) && !StringUtils.hasText(englishName)) || (englishName != null && !ValidationUtils.isValidEnglish(englishName)))
             throw new ApiException(ExceptionCode.INVALID_INPUT);
         if (brandRepository.existsByKoreanNameOrEnglishName(koreanName, englishName))
             throw new ApiException(DUPLICATE_BRAND);
@@ -54,7 +54,7 @@ public class BrandService {
                 throw new ApiException(DUPLICATE_BRAND);
             if (StringUtils.hasText(koreanName)) brand.updateKoreanName(koreanName);
             if (StringUtils.hasText(englishName)) {
-                if (ValidationUtil.isValidEnglish(englishName)) brand.updateEnglishName(englishName);
+                if (ValidationUtils.isValidEnglish(englishName)) brand.updateEnglishName(englishName);
                 else throw new ApiException(ExceptionCode.INVALID_INPUT);
             }
         }

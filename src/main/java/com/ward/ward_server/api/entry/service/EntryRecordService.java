@@ -85,7 +85,7 @@ public class EntryRecordService {
                         entryRecords.getOrDefault(info, NOT_ENTRY).get(2).toString(),
                         new ReleaseInfoSimpleResponse(
                                 info.getDrawPlatform().getLogoImage(),
-                                info.getDrawPlatform().getName(),
+                                info.getDrawPlatform().getKoreanName(),
                                 info.getSiteUrl(),
                                 info.getDueDate(),
                                 info.getStatus().toString()
@@ -101,7 +101,7 @@ public class EntryRecordService {
                 .map(record -> new EntryRecordDetailResponse(true, record.getEntryDate(), record.getMemo(),
                         new ReleaseInfoSimpleResponse(
                                 record.getReleaseInfo().getDrawPlatform().getLogoImage(),
-                                record.getReleaseInfo().getDrawPlatform().getName(),
+                                record.getReleaseInfo().getDrawPlatform().getKoreanName(),
                                 record.getReleaseInfo().getSiteUrl(),
                                 record.getReleaseInfo().getDueDate(),
                                 record.getReleaseInfo().getStatus().toString())))
