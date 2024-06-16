@@ -38,4 +38,8 @@ public class ItemViewCount {
         this.viewCount = viewCount;
         this.calculatedAt = calculatedAt;
     }
+
+    public void increaseViewCount() {
+        this.viewCount += 1;
+    }
 }
