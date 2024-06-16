@@ -36,7 +36,9 @@ public class BrandServiceTest {
         assertEquals(2, result.size());
         assertEquals("브랜드1", result.get(0).koreanName());
         assertEquals("https://example.com/logo1.png", result.get(0).logoImage());
+        assertEquals("Brand1", result.get(0).englishName());
         assertEquals("브랜드2", result.get(1).koreanName());
         assertEquals("https://example.com/logo2.png", result.get(1).logoImage());
+        assertEquals("Brand2", result.get(1).englishName());
     }
 }

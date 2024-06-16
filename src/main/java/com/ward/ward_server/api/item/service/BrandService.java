@@ -50,7 +50,7 @@ public class BrandService {
     public List<BrandRecommendedResponse> getRecommendedBrands() {
         return brandRepository.findTop10ByOrderByViewCountDesc()
                 .stream()
-                .map(brand -> new BrandRecommendedResponse(brand.getLogoImage(), brand.getKoreanName()))
+                .map(brand -> new BrandRecommendedResponse(brand.getLogoImage(), brand.getKoreanName(), brand.getEnglishName()))
                 .collect(Collectors.toList());
     }
 
