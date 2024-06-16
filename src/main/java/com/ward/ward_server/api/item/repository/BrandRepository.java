@@ -7,9 +7,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface BrandRepository extends JpaRepository<Brand, Long>, BrandQueryRepository {
+
+    List<Brand> findTop10ByOrderByViewCountDesc();
+
     @Query("SELECT COUNT(b) > 0 " +
             "FROM Brand b " +
             "WHERE b.englishName = :name OR b.koreanName = :name")
