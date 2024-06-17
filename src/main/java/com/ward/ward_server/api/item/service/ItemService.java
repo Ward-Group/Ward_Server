@@ -5,11 +5,13 @@ import com.ward.ward_server.api.item.dto.ItemSimpleResponse;
 import com.ward.ward_server.api.item.entity.Brand;
 import com.ward.ward_server.api.item.entity.Item;
 import com.ward.ward_server.api.item.entity.ItemImage;
+import com.ward.ward_server.api.item.entity.ItemViewCount;
 import com.ward.ward_server.api.item.entity.enumtype.Category;
 import com.ward.ward_server.api.item.entity.enumtype.ItemSort;
 import com.ward.ward_server.api.item.repository.BrandRepository;
 import com.ward.ward_server.api.item.repository.ItemImageRepository;
 import com.ward.ward_server.api.item.repository.ItemRepository;
+import com.ward.ward_server.api.item.repository.ItemViewCountRepository;
 import com.ward.ward_server.global.exception.ApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +21,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static com.ward.ward_server.global.exception.ExceptionCode.*;
 
@@ -29,6 +32,7 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final BrandRepository brandRepository;
     private final ItemImageRepository itemImageRepository;
+    private final ItemViewCountRepository itemViewCountRepository;
 
     @Transactional
     public ItemDetailResponse createItem(String itemCode, String koreanName, String englishName, String mainImage, List<String> itemImages, String brandName, String category, Integer price) throws ApiException {
@@ -48,6 +52,16 @@ public class ItemService {
         itemImages.stream()
                 .map(e -> ItemImage.builder().item(savedItem).url(e).build())
                 .forEach(itemImageRepository::save);
+
+        // add 손지민: 실시간 Top10 을 위해 테이블 생성
+        ItemViewCount itemViewCount = ItemViewCount.builder()
+                .category(savedItem.getCategory())
+                .item(savedItem)
+                .viewCount(0L)
+                .calculatedAt(LocalDateTime.now())
+                .build();
+        itemViewCountRepository.save(itemViewCount);
+
         return getItemDetailResponse(savedItem);
     }
 
@@ -55,8 +69,21 @@ public class ItemService {
     public ItemDetailResponse getItem(String itemCode, String brandName) {
         Brand brand = brandRepository.findByName(brandName).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
         Item item = itemRepository.findByCodeAndBrandIdAndDeletedAtIsNull(itemCode, brand.getId()).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
-        item.increaseViewCount();
+        increaseViewCount(item);
         return getItemDetailResponse(item);
+    }
+
+    @Transactional
+    public void increaseViewCount(Item item) {
+        item.increaseViewCount();
+        itemRepository.save(item);
+
+        // add 손지민: ItemViewCount 의 viewCount 증가
+        Optional<ItemViewCount> itemViewCountOpt = itemViewCountRepository.findByItemAndCategory(item, item.getCategory());
+        itemViewCountOpt.ifPresent(itemViewCount -> {
+            itemViewCount.increaseViewCount();
+            itemViewCountRepository.save(itemViewCount);
+        });
     }
 
     @Transactional(readOnly = true)
