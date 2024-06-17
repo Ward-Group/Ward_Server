@@ -1,6 +1,7 @@
 package com.ward.ward_server.api.item.service;
 
 import com.ward.ward_server.api.item.dto.BrandInfoResponse;
+import com.ward.ward_server.api.item.dto.BrandRecommendedResponse;
 import com.ward.ward_server.api.item.dto.BrandResponse;
 import com.ward.ward_server.api.item.entity.Brand;
 import com.ward.ward_server.api.item.repository.BrandRepository;
@@ -13,6 +14,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.ward.ward_server.global.Object.Constants.HOME_PAGE_SIZE;
 import static com.ward.ward_server.global.exception.ExceptionCode.BRAND_NOT_FOUND;
@@ -40,6 +44,14 @@ public class BrandService {
     @Transactional(readOnly = true)
     public Page<BrandInfoResponse> getBrandItemPage(int page) {
         return brandRepository.getBrandItemPage(PageRequest.of(page, HOME_PAGE_SIZE));
+    }
+
+    @Transactional(readOnly = true)
+    public List<BrandRecommendedResponse> getRecommendedBrands() {
+        return brandRepository.findTop10ByOrderByViewCountDesc()
+                .stream()
+                .map(brand -> new BrandRecommendedResponse(brand.getLogoImage(), brand.getKoreanName(), brand.getEnglishName()))
+                .collect(Collectors.toList());
     }
 
     @Transactional

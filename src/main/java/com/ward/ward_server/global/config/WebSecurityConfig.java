@@ -43,7 +43,7 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/items").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/items/**").hasRole("ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/brands/top10").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/brands/top10","brands/recommended").permitAll()
                         .requestMatchers("/brands/**").hasRole("ADMIN")
                         .requestMatchers("/draw-platforms/**").hasRole("ADMIN")
                         .requestMatchers("/release-infos/**").hasRole("ADMIN")

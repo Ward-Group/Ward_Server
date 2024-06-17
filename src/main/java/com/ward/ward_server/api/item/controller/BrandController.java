@@ -1,6 +1,7 @@
 package com.ward.ward_server.api.item.controller;
 
 import com.ward.ward_server.api.item.dto.BrandInfoResponse;
+import com.ward.ward_server.api.item.dto.BrandRecommendedResponse;
 import com.ward.ward_server.api.item.dto.BrandRequest;
 import com.ward.ward_server.api.item.dto.BrandResponse;
 import com.ward.ward_server.api.item.service.BrandService;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.index.qual.Positive;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.ward.ward_server.global.response.ApiResponseMessage.*;
 
@@ -26,6 +29,11 @@ public class BrandController {
     @GetMapping("/top10")
     public ApiResponse<Page<BrandInfoResponse>> getBrandItemPage(@Positive @RequestParam(value = "page", defaultValue = "1") int page) {
         return ApiResponse.ok(BRAND_TOP10_WITH_ITEM_LOAD_SUCCESS, brandService.getBrandItemPage(page - 1));
+    }
+
+    @GetMapping("/recommended")
+    public ApiResponse<List<BrandRecommendedResponse>> getRecommendedBrands() {
+        return ApiResponse.ok(BRAND_RECOMMENDED_LOAD_SUCCESS, brandService.getRecommendedBrands());
     }
 
     @PatchMapping("/{originBrandName}")
