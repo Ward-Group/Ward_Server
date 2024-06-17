@@ -1,4 +1,4 @@
-package com.ward.ward_server.api.item.repository;
+package com.ward.ward_server.api.item.repository.query;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.DateTimeTemplate;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ward.ward_server.api.item.dto.ItemSimpleResponse;
+import com.ward.ward_server.api.item.repository.query.ItemQueryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

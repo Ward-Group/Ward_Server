@@ -1,4 +1,4 @@
-package com.ward.ward_server.api.item.repository;
+package com.ward.ward_server.api.item.repository.query;
 
 import com.ward.ward_server.api.item.dto.ItemSimpleResponse;
 

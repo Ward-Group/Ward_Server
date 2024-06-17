@@ -45,6 +45,8 @@ public class WebSecurityConfig {
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/brands/top10").permitAll()
                         .requestMatchers("/brands/**").hasRole("ADMIN")
+                        .requestMatchers("/draw-platforms/**").hasRole("ADMIN")
+                        .requestMatchers("/release-infos/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception

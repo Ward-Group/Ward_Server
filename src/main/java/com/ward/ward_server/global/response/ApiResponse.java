@@ -81,7 +81,7 @@ public class ApiResponse<T> {
     public static <T> ApiResponse<T> error(ErrorCode errorCode) {
         return new ApiResponse<>(
                 errorCode.getMessage(),
-                errorCode.getCode(),
+                500,
                 null
         );
     }
@@ -89,7 +89,7 @@ public class ApiResponse<T> {
     public static <T> ApiResponse<T> error(ErrorCode errorCode, T data) {
         return new ApiResponse<>(
                 errorCode.getMessage(),
-                errorCode.getCode(),
+                500,
                 data
         );
     }

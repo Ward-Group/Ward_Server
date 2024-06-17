@@ -1,4 +1,4 @@
-package com.ward.ward_server.api.item.repository;
+package com.ward.ward_server.api.item.repository.query;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
@@ -6,6 +6,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ward.ward_server.api.item.dto.BrandInfoResponse;
 import com.ward.ward_server.api.item.dto.BrandItemResponse;
+import com.ward.ward_server.api.item.repository.query.BrandQueryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

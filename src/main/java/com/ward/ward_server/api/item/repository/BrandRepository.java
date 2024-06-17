@@ -1,6 +1,7 @@
 package com.ward.ward_server.api.item.repository;
 
 import com.ward.ward_server.api.item.entity.Brand;
+import com.ward.ward_server.api.item.repository.query.BrandQueryRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -25,6 +26,11 @@ public interface BrandRepository extends JpaRepository<Brand, Long>, BrandQueryR
             "FROM Brand b " +
             "WHERE b.englishName = :name OR b.koreanName = :name")
     Optional<Brand> findByName(@Param("name") String name);
+
+    @Query("SELECT b.id " +
+            "FROM Brand b " +
+            "WHERE b.englishName = :name OR b.koreanName = :name")
+    Optional<Long> findIdByName(@Param("name") String name);
 
     @Modifying
     @Transactional

@@ -18,16 +18,6 @@ public class ExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @org.springframework.web.bind.annotation.ExceptionHandler(ApiException.class)
     public ApiResponse handleException(ApiException ex){
-        return ApiResponse.failure(ex.getExceptionCode());
-    }
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @org.springframework.web.bind.annotation.ExceptionHandler(IllegalArgumentException.class)
-    public ApiResponse handleException(IllegalArgumentException ex){
-        return ApiResponse.error(DATA_TYPE_CONVERT_FAIL);
-    }
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @org.springframework.web.bind.annotation.ExceptionHandler(MethodArgumentNotValidException.class)
-    public ApiResponse handleValidationExceptions(MethodArgumentNotValidException ex) {
-        return ApiResponse.failure(ExceptionCode.INVALID_INPUT);
+        return ApiResponse.failure(ex.getExceptionCode(), ex.getMessages());
     }
 }

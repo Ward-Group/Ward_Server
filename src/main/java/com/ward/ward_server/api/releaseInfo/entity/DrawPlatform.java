@@ -13,22 +13,27 @@ public class DrawPlatform {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
-    private String name;
-    @Column(nullable = false)
+    private String koreanName;
+    private String englishName;
     private String logoImage;
 
     @Builder
-    public DrawPlatform(String name, String logoImage) {
-        this.name = name;
+    public DrawPlatform(String koreanName, String englishName, String logoImage) {
+        this.koreanName = koreanName;
+        this.englishName = englishName;
         this.logoImage = logoImage;
     }
 
-    public void updateName(String name) {
-        this.name = name;
+    public void updateKoreanName(String koreanName) {
+        this.koreanName = koreanName;
+    }
+
+    public void updateEnglishName(String englishName) {
+        this.englishName = englishName;
     }
 
     public void updateLogoImage(String logoImage) {
         this.logoImage = logoImage;
     }
+
 }
