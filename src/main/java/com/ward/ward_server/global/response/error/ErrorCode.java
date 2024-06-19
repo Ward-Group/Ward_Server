@@ -13,9 +13,10 @@ public enum ErrorCode {
     INVALID_ENGLISH_NAME("영문이름은 영어와 숫자로만 구성해주세요."),
     INVALID_KOREAN_NAME("한글이름은 최소 한글자는 한글로 구성해주세요."),
     REQUIRED_FIELDS_MUST_BE_PROVIDED("필수항목은 반드시 제공해주세요."),
-    ITEM_IDENTIFY_BY_ITEM_CODE_AND_BRAND_NAME("상품은 상품코드와 브랜드이름으로 식별할 수 있습니다. 두 개 다 제공해주세요."),
+    ITEM_IDENTIFY_BY_ITEM_CODE_AND_BRAND_NAME("상품은 상품코드와 브랜드이름으로 식별할 수 있습니다. 둘 다 입력해주세요."),
     NOTIFICATION_METHOD_NOT_EXISTS("입력하신 공지방법이 존재하지 않아요."),
     RELEASE_METHOD_NOT_EXISTS("입력하신 발매방법이 존재하지 않아요."),
-    DELIVERY_METHOD_NOT_EXISTS("입력하신 배달방법이 존재하지 않아요.");
+    DELIVERY_METHOD_NOT_EXISTS("입력하신 배달방법이 존재하지 않아요."),
+    CURRENCY_UNIT_NOT_EXISTS("입력하신 화폐단위가 존재하지 않아요.");
     private final String message;
 }

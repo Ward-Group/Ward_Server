@@ -47,6 +47,7 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/brands/top10","brands/recommended").permitAll()
                         .requestMatchers("/brands/**").hasRole("ADMIN")
                         .requestMatchers("/draw-platforms/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/release-infos").permitAll()
                         .requestMatchers("/release-infos/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

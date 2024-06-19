@@ -7,6 +7,10 @@ import com.ward.ward_server.api.item.entity.enumtype.Category;
 import com.ward.ward_server.api.item.entity.enumtype.Status;
 import com.ward.ward_server.api.releaseInfo.entity.DrawPlatform;
 import com.ward.ward_server.api.releaseInfo.entity.ReleaseInfo;
+import com.ward.ward_server.api.releaseInfo.entity.enums.CurrencyUnit;
+import com.ward.ward_server.api.releaseInfo.entity.enums.DeliveryMethod;
+import com.ward.ward_server.api.releaseInfo.entity.enums.NotificationMethod;
+import com.ward.ward_server.api.releaseInfo.entity.enums.ReleaseMethod;
 import com.ward.ward_server.api.user.entity.User;
 import com.ward.ward_server.api.wishItem.WishItem;
 import com.ward.ward_server.global.config.QuerydslConfig;
@@ -25,6 +29,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.ward.ward_server.global.Object.Constants.FORMAT;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -48,15 +53,15 @@ class ItemRepositoryTest {
     public void 오늘_마감인_상품_조회() {
         //given
         LocalDateTime now = LocalDateTime.of(2024, 7, 3, 13, 30);
-        DrawPlatform drawPlatform = new DrawPlatform("테스트플랫폼", "플랫폼이미지");
+        DrawPlatform drawPlatform = new DrawPlatform("테스트플랫폼", "testPlatform", "플랫폼이미지");
         em.persist(drawPlatform);
         for (int itemId = 1; itemId <= 10; itemId++) {
             // 마감일 = 오늘, 발매일 < 지금 < 마감일 < 발표일
-            em.persist(new ReleaseInfo(itemId, drawPlatform, "주소" + itemId, now.minusDays(3), now.plusMinutes(itemId), now.plusDays(3), Status.POSSIBLE));
+            em.persist(new ReleaseInfo(itemId, drawPlatform, "주소" + itemId, now.minusDays(3).format(FORMAT), now.plusMinutes(itemId).format(FORMAT), now.plusDays(3).format(FORMAT), 30000, CurrencyUnit.KRW, NotificationMethod.EMAIL, ReleaseMethod.ENTRY, DeliveryMethod.AGENCY));
             // 마감일 = 오늘, 발매일 < 지금 < 마감일 < 발표일, 정렬 확인용
-            em.persist(new ReleaseInfo(itemId + 10, drawPlatform, "주소", now.minusDays(3), now.plusMinutes(itemId), now.plusDays(3), Status.POSSIBLE));
+            em.persist(new ReleaseInfo(itemId + 10, drawPlatform, "주소", now.minusDays(3).format(FORMAT), now.plusMinutes(itemId).format(FORMAT), now.plusDays(3).format(FORMAT),30000, CurrencyUnit.KRW, NotificationMethod.EMAIL, ReleaseMethod.ENTRY, DeliveryMethod.AGENCY));
             // 마감일 = 오늘, 발매일 < 마감일 < 지금 < 발표일
-            em.persist(new ReleaseInfo(itemId + 20, drawPlatform, "주소", now.minusDays(3), now.minusMinutes(itemId), now.plusDays(3), Status.POSSIBLE));
+            em.persist(new ReleaseInfo(itemId + 20, drawPlatform, "주소", now.minusDays(3).format(FORMAT), now.minusMinutes(itemId).format(FORMAT), now.plusDays(3).format(FORMAT), 30000, CurrencyUnit.KRW, NotificationMethod.EMAIL, ReleaseMethod.ENTRY, DeliveryMethod.AGENCY));
         }
         em.flush();
         em.clear();
@@ -82,17 +87,17 @@ class ItemRepositoryTest {
     public void 현재_발매중인_상품_조회() {
         //given
         LocalDateTime now = LocalDateTime.of(2024, 7, 3, 13, 30);
-        DrawPlatform drawPlatform = new DrawPlatform("테스트플랫폼", "플랫폼이미지");
+        DrawPlatform drawPlatform = new DrawPlatform("테스트플랫폼", "testPlatform", "플랫폼이미지");
         em.persist(drawPlatform);
         for (int itemId = 1; itemId <= 5; itemId++) {
             // 지금 < 발매일 < 마감일 < 발표일
-            em.persist(new ReleaseInfo(itemId, drawPlatform, "주소" + itemId, now.plusDays(itemId), now.plusDays(itemId + 3), now.plusDays(itemId + 5), Status.POSSIBLE));
+            em.persist(new ReleaseInfo(itemId, drawPlatform, "주소" + itemId, now.plusDays(itemId).format(FORMAT), now.plusDays(itemId + 3).format(FORMAT), now.plusDays(itemId + 5).format(FORMAT), 30000, CurrencyUnit.KRW, NotificationMethod.EMAIL, ReleaseMethod.ENTRY, DeliveryMethod.AGENCY));
             // 발매일 < 마감일 < 지금 < 발표일
-            em.persist(new ReleaseInfo(itemId + 5, drawPlatform, "주소", now.minusDays(itemId + 3), now.minusDays(itemId), now.plusDays(itemId + 5), Status.POSSIBLE));
+            em.persist(new ReleaseInfo(itemId + 5, drawPlatform, "주소", now.minusDays(itemId + 3).format(FORMAT), now.minusDays(itemId).format(FORMAT), now.plusDays(itemId + 5).format(FORMAT), 30000, CurrencyUnit.KRW, NotificationMethod.EMAIL, ReleaseMethod.ENTRY, DeliveryMethod.AGENCY));
             // 발매일 < 지금 < 마감일 < 발표일
-            em.persist(new ReleaseInfo(itemId + 10, drawPlatform, "주소", now.minusDays(itemId), now.plusMinutes(itemId), now.plusDays(itemId + 5), Status.POSSIBLE));
+            em.persist(new ReleaseInfo(itemId + 10, drawPlatform, "주소", now.minusDays(itemId).format(FORMAT), now.plusMinutes(itemId).format(FORMAT), now.plusDays(itemId + 5).format(FORMAT), 30000, CurrencyUnit.KRW, NotificationMethod.EMAIL, ReleaseMethod.ENTRY, DeliveryMethod.AGENCY));
             // 발매일 < 지금 < 마감일 < 발표일, 정렬 확인용
-            em.persist(new ReleaseInfo(itemId + 15, drawPlatform, "주소", now.minusDays(itemId), now.plusMinutes(itemId), now.plusDays(itemId + 5), Status.POSSIBLE));
+            em.persist(new ReleaseInfo(itemId + 15, drawPlatform, "주소", now.minusDays(itemId).format(FORMAT), now.plusMinutes(itemId).format(FORMAT), now.plusDays(itemId + 5).format(FORMAT), 30000, CurrencyUnit.KRW, NotificationMethod.EMAIL, ReleaseMethod.ENTRY, DeliveryMethod.AGENCY));
         }
         em.flush();
         em.clear();
@@ -117,20 +122,20 @@ class ItemRepositoryTest {
     public void 관심상품_중에_현재_발매중인_상품_조회() {
         //given
         LocalDateTime now = LocalDateTime.of(2024, 7, 3, 13, 30);
-        DrawPlatform drawPlatform = new DrawPlatform("테스트플랫폼", "플랫폼이미지");
+        DrawPlatform drawPlatform = new DrawPlatform("테스트플랫폼", "testPlatform", "플랫폼이미지");
         em.persist(drawPlatform);
 
         for (long itemId = 5; itemId <= 15; itemId++)
             em.persist(new WishItem(user, itemRepository.findById(itemId).get()));
         for (int itemId = 1; itemId <= 5; itemId++) {
             // 지금 < 발매일 < 마감일 < 발표일
-            em.persist(new ReleaseInfo(itemId, drawPlatform, "주소" + itemId, now.plusDays(itemId), now.plusDays(itemId + 3), now.plusDays(itemId + 5), Status.POSSIBLE));
+            em.persist(new ReleaseInfo(itemId, drawPlatform, "주소" + itemId, now.plusDays(itemId).format(FORMAT), now.plusDays(itemId + 3).format(FORMAT), now.plusDays(itemId + 5).format(FORMAT), 30000, CurrencyUnit.KRW, NotificationMethod.EMAIL, ReleaseMethod.ENTRY, DeliveryMethod.AGENCY));
             // 발매일 < 마감일 < 지금 < 발표일
-            em.persist(new ReleaseInfo(itemId + 5, drawPlatform, "주소", now.minusDays(itemId + 3), now.minusDays(itemId), now.plusDays(itemId + 5), Status.POSSIBLE));
+            em.persist(new ReleaseInfo(itemId + 5, drawPlatform, "주소", now.minusDays(itemId + 3).format(FORMAT), now.minusDays(itemId).format(FORMAT), now.plusDays(itemId + 5).format(FORMAT), 30000, CurrencyUnit.KRW, NotificationMethod.EMAIL, ReleaseMethod.ENTRY, DeliveryMethod.AGENCY));
             // 발매일 < 지금 < 마감일 < 발표일
-            em.persist(new ReleaseInfo(itemId + 10, drawPlatform, "주소", now.minusDays(itemId), now.plusMinutes(itemId), now.plusDays(itemId + 5), Status.POSSIBLE));
+            em.persist(new ReleaseInfo(itemId + 10, drawPlatform, "주소", now.minusDays(itemId).format(FORMAT), now.plusMinutes(itemId).format(FORMAT), now.plusDays(itemId + 5).format(FORMAT), 30000, CurrencyUnit.KRW, NotificationMethod.EMAIL, ReleaseMethod.ENTRY, DeliveryMethod.AGENCY));
             // 발매일 < 지금 < 마감일 < 발표일, 정렬 확인용
-            em.persist(new ReleaseInfo(itemId + 15, drawPlatform, "주소", now.minusDays(itemId), now.plusMinutes(itemId), now.plusDays(itemId + 5), Status.POSSIBLE));
+            em.persist(new ReleaseInfo(itemId + 15, drawPlatform, "주소", now.minusDays(itemId).format(FORMAT), now.plusMinutes(itemId).format(FORMAT), now.plusDays(itemId + 5).format(FORMAT), 30000, CurrencyUnit.KRW, NotificationMethod.EMAIL, ReleaseMethod.ENTRY, DeliveryMethod.AGENCY));
         }
         em.flush();
         em.clear();
@@ -155,15 +160,15 @@ class ItemRepositoryTest {
     public void 발매날짜는_확정이지만_미발매인_상품_조회() {
         //given
         LocalDateTime now = LocalDateTime.of(2024, 7, 3, 13, 30);
-        DrawPlatform drawPlatform = new DrawPlatform("테스트플랫폼", "플랫폼이미지");
+        DrawPlatform drawPlatform = new DrawPlatform("테스트플랫폼", "testPlatform", "플랫폼이미지");
         em.persist(drawPlatform);
         for (int itemId = 1; itemId <= 10; itemId++) {
             // 지금 < 발매일 < 마감일 < 발표일
-            em.persist(new ReleaseInfo(itemId, drawPlatform, "주소" + itemId, now.plusDays(itemId), now.plusDays(itemId + 3), now.plusDays(itemId + 5), Status.POSSIBLE));
+            em.persist(new ReleaseInfo(itemId, drawPlatform, "주소" + itemId, now.plusDays(itemId).format(FORMAT), now.plusDays(itemId + 3).format(FORMAT), now.plusDays(itemId + 5).format(FORMAT), 30000, CurrencyUnit.KRW, NotificationMethod.EMAIL, ReleaseMethod.ENTRY, DeliveryMethod.AGENCY));
             // 지금 < 발매일 < 마감일 < 발표일, 정렬 확인용
-            em.persist(new ReleaseInfo(itemId + 10, drawPlatform, "주소" + itemId, now.plusDays(itemId), now.plusDays(itemId + 3), now.plusDays(itemId + 5), Status.POSSIBLE));
+            em.persist(new ReleaseInfo(itemId + 10, drawPlatform, "주소" + itemId, now.plusDays(itemId).format(FORMAT), now.plusDays(itemId + 3).format(FORMAT), now.plusDays(itemId + 5).format(FORMAT), 30000, CurrencyUnit.KRW, NotificationMethod.EMAIL, ReleaseMethod.ENTRY, DeliveryMethod.AGENCY));
             // 발매일 < 지금 < 마감일 < 발표일
-            em.persist(new ReleaseInfo(itemId + 20, drawPlatform, "주소", now.minusDays(itemId), now.plusMinutes(itemId), now.plusDays(itemId + 5), Status.POSSIBLE));
+            em.persist(new ReleaseInfo(itemId + 20, drawPlatform, "주소", now.minusDays(itemId).format(FORMAT), now.plusMinutes(itemId).format(FORMAT), now.plusDays(itemId + 5).format(FORMAT), 30000, CurrencyUnit.KRW, NotificationMethod.EMAIL, ReleaseMethod.ENTRY, DeliveryMethod.AGENCY));
         }
         em.flush();
         em.clear();

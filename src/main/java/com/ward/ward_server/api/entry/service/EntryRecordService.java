@@ -54,7 +54,6 @@ public class EntryRecordService {
                 .orElseThrow(() -> new ApiException(DRAW_PLATFORM_NOT_FOUND));
         ReleaseInfo releaseInfo = releaseInfoRepository.findByItemIdAndDrawPlatform(item.getId(), drawPlatform)
                 .orElseThrow(() -> new ApiException(RELEASE_INFO_NOT_FOUND));
-        if (releaseInfo.getStatus().equals(Status.IMPOSSIBLE)) throw new ApiException(RELEASE_INFO_EXPIRED);
         if (entryRecordRepository.existsByUserIdAndReleaseInfoId(user.getId(), releaseInfo.getId()))
             throw new ApiException(DUPLICATE_ENTRY_RECORD);
         EntryRecord savedEntryRecord = entryRecordRepository.save(new EntryRecord(user, releaseInfo, request.memo()));
@@ -87,8 +86,7 @@ public class EntryRecordService {
                                 info.getDrawPlatform().getLogoImage(),
                                 info.getDrawPlatform().getKoreanName(),
                                 info.getSiteUrl(),
-                                info.getDueDate(),
-                                info.getStatus().toString()
+                                info.getDueFormatDate()
                         )))
                 .toList();
     }
@@ -103,8 +101,8 @@ public class EntryRecordService {
                                 record.getReleaseInfo().getDrawPlatform().getLogoImage(),
                                 record.getReleaseInfo().getDrawPlatform().getKoreanName(),
                                 record.getReleaseInfo().getSiteUrl(),
-                                record.getReleaseInfo().getDueDate(),
-                                record.getReleaseInfo().getStatus().toString())))
+                                record.getReleaseInfo().getDueFormatDate()
+                        )))
                 .toList();
         return new PageResponse<>(responses, entryRecordPage);
     }

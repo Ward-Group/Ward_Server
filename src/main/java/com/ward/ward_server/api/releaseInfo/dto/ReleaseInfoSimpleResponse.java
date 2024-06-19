@@ -6,7 +6,6 @@ public record ReleaseInfoSimpleResponse(
         String platformLogoImage,
         String platformName,
         String siteUrl,
-        String dueDate,
-        String status
+        String dueDate
 ) {
 }

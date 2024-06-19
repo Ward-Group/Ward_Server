@@ -1,11 +1,12 @@
 package com.ward.ward_server.api.releaseInfo.entity;
 
-import com.ward.ward_server.api.item.entity.enumtype.Status;
+import com.ward.ward_server.api.releaseInfo.entity.enums.CurrencyUnit;
 import com.ward.ward_server.api.releaseInfo.entity.enums.DeliveryMethod;
 import com.ward.ward_server.api.releaseInfo.entity.enums.NotificationMethod;
 import com.ward.ward_server.api.releaseInfo.entity.enums.ReleaseMethod;
 import com.ward.ward_server.global.Object.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,9 +39,11 @@ public class ReleaseInfo extends BaseTimeEntity {
 
     private LocalDateTime presentationDate;
 
-    @Column(nullable = false)
+    private Integer releasePrice;
+
     @Enumerated(EnumType.STRING)
-    private Status status;
+    @Column(columnDefinition = "char(20)")
+    private CurrencyUnit currencyUnit;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "char(20)", nullable = false)
@@ -56,18 +59,19 @@ public class ReleaseInfo extends BaseTimeEntity {
 
     @Builder
     public ReleaseInfo(long itemId, DrawPlatform drawPlatform, String siteUrl,
-                       String releaseDate, String dueDate, String presentationDate, Status status,
+                       String releaseDate, String dueDate, String presentationDate, Integer releasePrice, CurrencyUnit currencyUnit,
                        NotificationMethod notificationMethod, ReleaseMethod releaseMethod, DeliveryMethod deliveryMethod) {
         this.itemId = itemId;
         this.drawPlatform = drawPlatform;
         this.siteUrl = siteUrl;
-        this.releaseDate = LocalDateTime.parse(releaseDate, FORMAT);;
+        this.releaseDate = LocalDateTime.parse(releaseDate, FORMAT);
         this.dueDate = LocalDateTime.parse(dueDate, FORMAT);
-        this.presentationDate = LocalDateTime.parse(presentationDate, FORMAT);;
-        this.status = status;
-        this.notificationMethod=notificationMethod;
-        this.releaseMethod=releaseMethod;
-        this.deliveryMethod=deliveryMethod;
+        this.presentationDate = LocalDateTime.parse(presentationDate, FORMAT);
+        this.releasePrice = releasePrice;
+        this.currencyUnit = currencyUnit;
+        this.notificationMethod = notificationMethod;
+        this.releaseMethod = releaseMethod;
+        this.deliveryMethod = deliveryMethod;
     }
 
     public void updateItemId(long itemId) {
@@ -94,6 +98,14 @@ public class ReleaseInfo extends BaseTimeEntity {
         this.presentationDate = LocalDateTime.parse(presentationDate, FORMAT);
     }
 
+    public void updateReleasePrice(Integer releasePrice) {
+        this.releasePrice = releasePrice;
+    }
+
+    public void updateCurrencyUnit(CurrencyUnit currencyUnit) {
+        this.currencyUnit = currencyUnit;
+    }
+
     public void updateNotificationMethod(NotificationMethod notificationMethod) {
         this.notificationMethod = notificationMethod;
     }
@@ -106,15 +118,15 @@ public class ReleaseInfo extends BaseTimeEntity {
         this.deliveryMethod = deliveryMethod;
     }
 
-    public String getReleaseDate() {
+    public String getReleaseFormatDate() {
         return releaseDate.format(FORMAT);
     }
 
-    public String getDueDate() {
+    public String getDueFormatDate() {
         return dueDate.format(FORMAT);
     }
 
-    public String getPresentationDate() {
+    public String getPresentationFormatDate() {
         return presentationDate.format(FORMAT);
     }
 

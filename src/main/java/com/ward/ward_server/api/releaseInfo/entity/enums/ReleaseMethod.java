@@ -20,7 +20,7 @@ public enum ReleaseMethod {
     @JsonCreator
     public static ReleaseMethod from(String text) {
         return Arrays.stream(ReleaseMethod.values())
-                .filter(e -> e.toString().toLowerCase().equals(text.replace('-', '_')))
+                .filter(e -> e.toString().equals(text.replace('-', '_').toUpperCase()))
                 .findAny()
                 .orElseThrow(() -> new ApiException(INVALID_INPUT, RELEASE_METHOD_NOT_EXISTS.getMessage()));
     }
