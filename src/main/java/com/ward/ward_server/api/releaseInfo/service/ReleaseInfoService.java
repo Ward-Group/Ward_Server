@@ -2,7 +2,6 @@ package com.ward.ward_server.api.releaseInfo.service;
 
 import com.ward.ward_server.api.item.entity.Brand;
 import com.ward.ward_server.api.item.entity.Item;
-import com.ward.ward_server.api.item.repository.BrandRepository;
 import com.ward.ward_server.api.item.repository.ItemRepository;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoDetailResponse;
 import com.ward.ward_server.api.releaseInfo.entity.DrawPlatform;
@@ -31,19 +30,20 @@ public class ReleaseInfoService {
     private final ReleaseInfoRepository releaseInfoRepository;
     private final DrawPlatformRepository drawPlatformRepository;
     private final ItemRepository itemRepository;
-    private final BrandRepository brandRepository;
 
     @Transactional
     public ReleaseInfoDetailResponse createReleaseInfo(Long itemId, String platformName, String siteUrl,
                                                        String releaseDate, String dueDate, String presentationDate, Integer releasePrice, CurrencyUnit currencyUnit,
                                                        NotificationMethod notificationMethod, ReleaseMethod releaseMethod, DeliveryMethod deliveryMethod) {
         if (itemId == null || !StringUtils.hasText(platformName) || !StringUtils.hasText(releaseDate)
-                || notificationMethod == null || releaseMethod == null || deliveryMethod == null)
+                || notificationMethod == null || releaseMethod == null || deliveryMethod == null) {
             throw new ApiException(INVALID_INPUT, REQUIRED_FIELDS_MUST_BE_PROVIDED.getMessage());
+        }
         Item item = itemRepository.findByIdAndDeletedAtIsNull(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
         DrawPlatform platform = drawPlatformRepository.findByName(platformName).orElseThrow(() -> new ApiException(DRAW_PLATFORM_NOT_FOUND));
-        if (releaseInfoRepository.existsByItemIdAndDrawPlatform(item.getId(), platform))
+        if (releaseInfoRepository.existsByItemIdAndDrawPlatform(item.getId(), platform)) {
             throw new ApiException(DUPLICATE_RELEASE_INFO);
+        }
         ReleaseInfo savedReleaseInfo = releaseInfoRepository.save(ReleaseInfo.builder()
                 .itemId(itemId)
                 .drawPlatform(platform)
@@ -82,31 +82,55 @@ public class ReleaseInfoService {
         if (itemId != null && !StringUtils.hasText(platformName)) {
             //상품만 변경
             targetItem = itemRepository.findByIdAndDeletedAtIsNull(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
-            if (releaseInfoRepository.existsByItemIdAndDrawPlatform(targetItem.getId(), originPlatform)) throw new ApiException(DUPLICATE_RELEASE_INFO);
+            if (releaseInfoRepository.existsByItemIdAndDrawPlatform(targetItem.getId(), originPlatform)) {
+                throw new ApiException(DUPLICATE_RELEASE_INFO);
+            }
             origin.updateItemId(targetItem.getId());
         } else if (itemId != null && StringUtils.hasText(platformName)) {
             //상품과 플랫폼 변경
             targetItem = itemRepository.findByIdAndDeletedAtIsNull(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
             targetPlatform = drawPlatformRepository.findByName(platformName).orElseThrow(() -> new ApiException(DRAW_PLATFORM_NOT_FOUND));
-            if (releaseInfoRepository.existsByItemIdAndDrawPlatform(targetItem.getId(), targetPlatform)) throw new ApiException(DUPLICATE_RELEASE_INFO);
+            if (releaseInfoRepository.existsByItemIdAndDrawPlatform(targetItem.getId(), targetPlatform)) {
+                throw new ApiException(DUPLICATE_RELEASE_INFO);
+            }
             origin.updateItemId(targetItem.getId());
             origin.updateDrawPlatform(targetPlatform);
         } else if (StringUtils.hasText(platformName)) {
             //플랫폼만 변경
             targetPlatform = drawPlatformRepository.findByName(platformName).orElseThrow(() -> new ApiException(DRAW_PLATFORM_NOT_FOUND));
-            if (releaseInfoRepository.existsByItemIdAndDrawPlatform(originItem.getId(), targetPlatform)) throw new ApiException(DUPLICATE_RELEASE_INFO);
+            if (releaseInfoRepository.existsByItemIdAndDrawPlatform(originItem.getId(), targetPlatform)) {
+                throw new ApiException(DUPLICATE_RELEASE_INFO);
+            }
             origin.updateDrawPlatform(targetPlatform);
         }
 
-        if (StringUtils.hasText(siteUrl)) origin.updateSiteUrl(siteUrl);
-        if (StringUtils.hasText(releaseDate)) origin.updateReleaseDate(releaseDate);
-        if (StringUtils.hasText(dueDate)) origin.updateDueDate(dueDate);
-        if (StringUtils.hasText(presentationDate)) origin.updatePresentationDate(presentationDate);
-        if (releasePrice != null) origin.updateReleasePrice(releasePrice);
-        if (currencyUnit != null) origin.updateCurrencyUnit(currencyUnit);
-        if (notificationMethod != null) origin.updateNotificationMethod(notificationMethod);
-        if (releaseMethod != null) origin.updateReleaseMethod(releaseMethod);
-        if (deliveryMethod != null) origin.updateDeliveryMethod(deliveryMethod);
+        if (StringUtils.hasText(siteUrl)) {
+            origin.updateSiteUrl(siteUrl);
+        }
+        if (StringUtils.hasText(releaseDate)) {
+            origin.updateReleaseDate(releaseDate);
+        }
+        if (StringUtils.hasText(dueDate)) {
+            origin.updateDueDate(dueDate);
+        }
+        if (StringUtils.hasText(presentationDate)) {
+            origin.updatePresentationDate(presentationDate);
+        }
+        if (releasePrice != null) {
+            origin.updateReleasePrice(releasePrice);
+        }
+        if (currencyUnit != null) {
+            origin.updateCurrencyUnit(currencyUnit);
+        }
+        if (notificationMethod != null) {
+            origin.updateNotificationMethod(notificationMethod);
+        }
+        if (releaseMethod != null) {
+            origin.updateReleaseMethod(releaseMethod);
+        }
+        if (deliveryMethod != null) {
+            origin.updateDeliveryMethod(deliveryMethod);
+        }
 
         return getDetailResponse(
                 targetItem == null ? originItem.getBrand() : targetItem.getBrand(),

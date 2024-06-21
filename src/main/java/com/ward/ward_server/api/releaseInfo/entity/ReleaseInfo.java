@@ -67,8 +67,8 @@ public class ReleaseInfo extends BaseTimeEntity {
         this.releaseDate = LocalDateTime.parse(releaseDate, FORMAT);
         this.dueDate = LocalDateTime.parse(dueDate, FORMAT);
         this.presentationDate = LocalDateTime.parse(presentationDate, FORMAT);
-        this.releasePrice = releasePrice;
-        this.currencyUnit = currencyUnit;
+        this.releasePrice = releasePrice == null ? 0 : releasePrice;
+        this.currencyUnit = currencyUnit == null ? CurrencyUnit.KRW : currencyUnit;
         this.notificationMethod = notificationMethod;
         this.releaseMethod = releaseMethod;
         this.deliveryMethod = deliveryMethod;
