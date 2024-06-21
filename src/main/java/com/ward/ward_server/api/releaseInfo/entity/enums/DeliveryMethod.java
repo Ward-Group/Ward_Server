@@ -22,7 +22,7 @@ public enum DeliveryMethod {
     @JsonCreator
     public static DeliveryMethod from(String text) {
         return Arrays.stream(DeliveryMethod.values())
-                .filter(e -> e.toString().toLowerCase().equals(text.replace('-', '_')))
+                .filter(e -> e.toString().equals(text.replace('-', '_').toUpperCase()))
                 .findAny()
                 .orElseThrow(() -> new ApiException(INVALID_INPUT, DELIVERY_METHOD_NOT_EXISTS.getMessage()));
     }

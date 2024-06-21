@@ -18,7 +18,7 @@ public class ExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @org.springframework.web.bind.annotation.ExceptionHandler(ApiException.class)
     public ApiResponse handleException(ApiException ex){
-        return ApiResponse.failure(ex.getExceptionCode());
+        return ApiResponse.failure(ex.getExceptionCode(), ex.getMessages());
     }
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @org.springframework.web.bind.annotation.ExceptionHandler(IllegalArgumentException.class)

@@ -20,4 +20,5 @@ public interface ItemRepository extends JpaRepository<Item, Long>, ItemQueryRepo
 
     boolean existsByCodeAndBrandId(String code, long brandId);
 
+    Optional<Item> findByIdAndDeletedAtIsNull(Long id);
 }
