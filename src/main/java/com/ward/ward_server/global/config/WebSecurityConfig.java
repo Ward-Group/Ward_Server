@@ -38,9 +38,9 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/auth/logout").authenticated()
-                        .requestMatchers("/","/auth/**", "/v1/wc/**","/releaseInfos/**").permitAll()
+                        .requestMatchers("/","/auth/**", "/v1/wc/**","/release-infos/**", "/release-infos/{itemId}").permitAll()
                         .requestMatchers("/items/details").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/items/top10").permitAll()
+                        .requestMatchers("/items/top10","items/{itemId}/details").permitAll()
                         .requestMatchers(HttpMethod.GET, "/items").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/items/**").hasRole("ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")

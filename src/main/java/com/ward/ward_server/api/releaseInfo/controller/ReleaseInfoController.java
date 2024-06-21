@@ -1,14 +1,13 @@
 package com.ward.ward_server.api.releaseInfo.controller;
 
+import com.ward.ward_server.api.item.entity.enumtype.Status;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoRequest;
-import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoSimpleResponse;
 import com.ward.ward_server.api.releaseInfo.entity.ReleaseInfo;
 import com.ward.ward_server.api.releaseInfo.service.ReleaseInfoService;
 import com.ward.ward_server.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 import static com.ward.ward_server.global.response.ApiResponseMessage.*;
 
@@ -40,6 +39,16 @@ public class ReleaseInfoController {
                                                                            @RequestParam(value = "brandName") String brandName,
                                                                            @RequestParam(value = "platformName") String platformName) {
         return ApiResponse.ok(RELEASE_INFO_LIST_LOAD_SUCCESS, releaseInfoService.getReleaseInfo(itemCode, brandName, platformName));
+    }
+
+    @GetMapping("/{itemId}")
+    public ApiResponse<Page<ReleaseInfo>> getReleaseInfos(
+            @PathVariable Long itemId,
+            @RequestParam Status status,
+            @RequestParam int page,
+            @RequestParam int size) {
+        Page<ReleaseInfo> releaseInfos = releaseInfoService.getReleaseInfos(itemId, status, page, size);
+        return ApiResponse.ok(releaseInfos);
     }
 
     @PatchMapping

@@ -53,7 +53,7 @@ public class ItemService {
                 .map(e -> ItemImage.builder().item(savedItem).url(e).build())
                 .forEach(itemImageRepository::save);
 
-        // add 손지민: 실시간 Top10 을 위해 테이블 생성
+        // add 손지민: 실시간 Top10 을 위해 ItemViewCount 테이블 생성
         ItemViewCount itemViewCount = ItemViewCount.builder()
                 .category(savedItem.getCategory())
                 .item(savedItem)
@@ -69,6 +69,13 @@ public class ItemService {
     public ItemDetailResponse getItem(String itemCode, String brandName) {
         Brand brand = brandRepository.findByName(brandName).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
         Item item = itemRepository.findByCodeAndBrandIdAndDeletedAtIsNull(itemCode, brand.getId()).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
+        increaseViewCount(item);
+        return getItemDetailResponse(item);
+    }
+
+    @Transactional(readOnly = true)
+    public ItemDetailResponse getItem(Long itemId) {
+        Item item = itemRepository.findByIdAndDeletedAtIsNull(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
         increaseViewCount(item);
         return getItemDetailResponse(item);
     }
@@ -149,6 +156,7 @@ public class ItemService {
                 item.getCode(),
                 item.getMainImage(),
                 itemImageRepository.findAllByItemId(item.getId()).stream().map(ItemImage::getUrl).toList(),
+                item.getBrand().getLogoImage(),
                 item.getBrand().getKoreanName(),
                 item.getBrand().getEnglishName(),
                 item.getViewCount(),

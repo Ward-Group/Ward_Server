@@ -1,13 +1,9 @@
 package com.ward.ward_server.api.releaseInfo.service;
 
-import com.ward.ward_server.api.item.entity.Brand;
 import com.ward.ward_server.api.item.entity.Item;
 import com.ward.ward_server.api.item.entity.enumtype.Status;
 import com.ward.ward_server.api.item.repository.BrandRepository;
 import com.ward.ward_server.api.item.repository.ItemRepository;
-import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoDetailResponse;
-import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoRequest;
-import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoSimpleResponse;
 import com.ward.ward_server.api.releaseInfo.entity.DrawPlatform;
 import com.ward.ward_server.api.releaseInfo.entity.ReleaseInfo;
 import com.ward.ward_server.api.releaseInfo.entity.enums.DeliveryMethod;
@@ -17,18 +13,15 @@ import com.ward.ward_server.api.releaseInfo.repository.DrawPlatformRepository;
 import com.ward.ward_server.api.releaseInfo.repository.ReleaseInfoRepository;
 import com.ward.ward_server.global.exception.ApiException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static com.ward.ward_server.global.Object.Constants.FORMAT;
 import static com.ward.ward_server.global.exception.ExceptionCode.*;
-import static com.ward.ward_server.global.response.error.ErrorCode.*;
+import static com.ward.ward_server.global.response.error.ErrorCode.ITEM_IDENTIFY_BY_ITEM_CODE_AND_BRAND_NAME;
+import static com.ward.ward_server.global.response.error.ErrorCode.REQUIRED_FIELDS_MUST_BE_PROVIDED;
 
 //FIXME 개선필요 : 상품 식별하는 방법을 바꾸기. 너무 난잡함
 @Service
@@ -74,6 +67,11 @@ public class ReleaseInfoService {
         Long itemId = itemRepository.findIdByCodeAndBrandId(itemCode, brandId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
         DrawPlatform platform = drawPlatformRepository.findByName(platformName).orElseThrow(() -> new ApiException(DRAW_PLATFORM_NOT_FOUND));
         return releaseInfoRepository.findByItemIdAndDrawPlatform(itemId, platform).orElseThrow(() -> new ApiException(RELEASE_INFO_NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ReleaseInfo> getReleaseInfos(Long itemId, Status status, int page, int size) {
+        return releaseInfoRepository.findByItemIdAndStatus(itemId, status, PageRequest.of(page, size));
     }
 
     @Transactional

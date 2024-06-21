@@ -8,6 +8,7 @@ public record ItemDetailResponse(
         String itemCode,
         String MainImage,
         List<String> itemImages,
+        String logoImage,
         String brandKoreanName,
         String brandEnglishName,
         long viewCount,
