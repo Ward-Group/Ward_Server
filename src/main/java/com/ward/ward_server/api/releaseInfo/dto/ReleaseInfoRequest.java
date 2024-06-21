@@ -7,8 +7,7 @@ import com.ward.ward_server.api.releaseInfo.entity.enums.ReleaseMethod;
 import jakarta.validation.constraints.Pattern;
 
 public record ReleaseInfoRequest(
-        String itemCode,
-        String brandName,
+        Long itemId,
         String platformName,
         String siteUrl,
         @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}", message = "yyyy-MM-dd HH:mm 형식으로 입력해주세요")
