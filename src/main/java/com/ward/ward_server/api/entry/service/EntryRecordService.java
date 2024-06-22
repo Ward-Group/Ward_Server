@@ -77,34 +77,38 @@ public class EntryRecordService {
                         ));
         final List<Object> NOT_ENTRY = Arrays.asList(false, "", "");
         //FIXME Query 개선필요
-        return releaseInfos.stream()
-                .map(info -> new EntryRecordDetailResponse(
-                        entryRecords.getOrDefault(info, NOT_ENTRY).get(0).equals(true),
-                        entryRecords.getOrDefault(info, NOT_ENTRY).get(1).toString(),
-                        entryRecords.getOrDefault(info, NOT_ENTRY).get(2).toString(),
-                        new ReleaseInfoSimpleResponse(
-                                info.getDrawPlatform().getLogoImage(),
-                                info.getDrawPlatform().getKoreanName(),
-                                info.getSiteUrl(),
-                                info.getDueFormatDate()
-                        )))
-                .toList();
+//        return releaseInfos.stream()
+//                .map(info -> new EntryRecordDetailResponse(
+//                        entryRecords.getOrDefault(info, NOT_ENTRY).get(0).equals(true),
+//                        entryRecords.getOrDefault(info, NOT_ENTRY).get(1).toString(),
+//                        entryRecords.getOrDefault(info, NOT_ENTRY).get(2).toString(),
+//                        new ReleaseInfoSimpleResponse(
+//                                info.getDrawPlatform().getKoreanName(),
+//                                info.getDrawPlatform().getEnglishName(),
+//                                1,
+//
+//                                info.getSiteUrl(),
+//                                info.getDueFormatDate()
+//                        )))
+//                .toList();
+        return null;
     }
 
     @Transactional(readOnly = true)
     public PageResponse<EntryRecordDetailResponse> getEntryRecordListByUser(Long userId, int page, int size) {
         Page<EntryRecord> entryRecordPage = entryRecordRepository.findAllByUserId(userId, PageRequest.of(page, size));
         List<EntryRecord> contents = entryRecordPage.getContent();
-        List<EntryRecordDetailResponse> responses = contents.stream()
-                .map(record -> new EntryRecordDetailResponse(true, record.getEntryDate(), record.getMemo(),
-                        new ReleaseInfoSimpleResponse(
-                                record.getReleaseInfo().getDrawPlatform().getLogoImage(),
-                                record.getReleaseInfo().getDrawPlatform().getKoreanName(),
-                                record.getReleaseInfo().getSiteUrl(),
-                                record.getReleaseInfo().getDueFormatDate()
-                        )))
-                .toList();
-        return new PageResponse<>(responses, entryRecordPage);
+//        List<EntryRecordDetailResponse> responses = contents.stream()
+//                .map(record -> new EntryRecordDetailResponse(true, record.getEntryDate(), record.getMemo(),
+//                        new ReleaseInfoSimpleResponse(
+//                                record.getReleaseInfo().getDrawPlatform().getLogoImage(),
+//                                record.getReleaseInfo().getDrawPlatform().getKoreanName(),
+//                                record.getReleaseInfo().getSiteUrl(),
+//                                record.getReleaseInfo().getDueFormatDate()
+//                        )))
+//                .toList();
+//        return new PageResponse<>(responses, entryRecordPage);
+        return null;
     }
 
     @Transactional

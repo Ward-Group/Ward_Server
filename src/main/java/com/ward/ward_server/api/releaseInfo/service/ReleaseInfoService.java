@@ -1,9 +1,11 @@
 package com.ward.ward_server.api.releaseInfo.service;
 
+import com.ward.ward_server.api.item.dto.ItemSimpleResponse;
 import com.ward.ward_server.api.item.entity.Brand;
 import com.ward.ward_server.api.item.entity.Item;
 import com.ward.ward_server.api.item.repository.ItemRepository;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoDetailResponse;
+import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoSimpleResponse;
 import com.ward.ward_server.api.releaseInfo.entity.DrawPlatform;
 import com.ward.ward_server.api.releaseInfo.entity.ReleaseInfo;
 import com.ward.ward_server.api.releaseInfo.entity.enums.CurrencyUnit;
@@ -12,19 +14,23 @@ import com.ward.ward_server.api.releaseInfo.entity.enums.NotificationMethod;
 import com.ward.ward_server.api.releaseInfo.entity.enums.ReleaseMethod;
 import com.ward.ward_server.api.releaseInfo.repository.DrawPlatformRepository;
 import com.ward.ward_server.api.releaseInfo.repository.ReleaseInfoRepository;
+import com.ward.ward_server.global.Object.enums.Sort;
 import com.ward.ward_server.global.exception.ApiException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static com.ward.ward_server.global.exception.ExceptionCode.*;
 import static com.ward.ward_server.global.response.error.ErrorCode.REQUIRED_FIELDS_MUST_BE_PROVIDED;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReleaseInfoService {
 
     private final ReleaseInfoRepository releaseInfoRepository;
@@ -66,6 +72,19 @@ public class ReleaseInfoService {
         DrawPlatform platform = drawPlatformRepository.findByName(platformName).orElseThrow(() -> new ApiException(DRAW_PLATFORM_NOT_FOUND));
         ReleaseInfo releaseInfo = releaseInfoRepository.findByItemIdAndDrawPlatform(item.getId(), platform).orElseThrow(() -> new ApiException(RELEASE_INFO_NOT_FOUND));
         return getDetailResponse(item.getBrand(), item, platform, releaseInfo);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReleaseInfoSimpleResponse> getReleaseInfo10List(Long userId, Sort sort) {
+        log.debug("sort:{}", sort.toString());
+        LocalDateTime now = LocalDateTime.now();
+        return switch (sort) {
+            case RELEASE_NOW -> releaseInfoRepository.getReleaseTodayReleaseInfoOrdered(now);
+            case RELEASE_WISH -> releaseInfoRepository.getWishItemReleaseInfoOrdered(userId, now);
+            case RELEASE_CONFIRM -> releaseInfoRepository.getJustConfirmReleaseInfoOrdered(now);
+            case REGISTER_TODAY -> releaseInfoRepository.getRegisterTodayReleaseInfoOrdered(now);
+            default -> releaseInfoRepository.getDueTodayReleaseInfoOrdered(now);
+        };
     }
 
     @Transactional
@@ -143,7 +162,7 @@ public class ReleaseInfoService {
     public void deleteReleaseInfo(Long itemId, String platformName) {
         DrawPlatform platform = drawPlatformRepository.findByName(platformName).orElseThrow(() -> new ApiException(DRAW_PLATFORM_NOT_FOUND));
         ReleaseInfo releaseInfo = releaseInfoRepository.findByItemIdAndDrawPlatform(itemId, platform).orElseThrow(() -> new ApiException(RELEASE_INFO_NOT_FOUND));
-        releaseInfo.setDeletedAt(LocalDateTime.now());
+        releaseInfoRepository.delete(releaseInfo);
     }
 
     private ReleaseInfoDetailResponse getDetailResponse(Brand brand, Item item, DrawPlatform platform, ReleaseInfo releaseInfo) {
