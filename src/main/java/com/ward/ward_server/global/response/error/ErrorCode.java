@@ -17,6 +17,8 @@ public enum ErrorCode {
     NOTIFICATION_METHOD_NOT_EXISTS("입력하신 공지방법이 존재하지 않아요."),
     RELEASE_METHOD_NOT_EXISTS("입력하신 발매방법이 존재하지 않아요."),
     DELIVERY_METHOD_NOT_EXISTS("입력하신 배달방법이 존재하지 않아요."),
-    CURRENCY_UNIT_NOT_EXISTS("입력하신 화폐단위가 존재하지 않아요.");
+    CURRENCY_UNIT_NOT_EXISTS("입력하신 화폐단위가 존재하지 않아요."),
+    SERVER_ERROR("서버에서 오류가 발생했습니다.");
+
     private final String message;
 }
