@@ -49,6 +49,9 @@ public class WebSecurityConfig {
                         .requestMatchers("/draw-platforms/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/release-infos").permitAll()
 //                        .requestMatchers("/release-infos/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/release-infos/details").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/release-infos").hasRole("USER")
+                        .requestMatchers("/release-infos/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception

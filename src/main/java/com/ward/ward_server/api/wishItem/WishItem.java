@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import static com.ward.ward_server.global.Object.Constants.FORMAT;
+import static com.ward.ward_server.global.Object.Constants.DATE_STRING_FORMAT;
+
 
 @Getter
 @Entity
@@ -40,6 +41,6 @@ public class WishItem {
     }
 
     public String getWishDate(){
-        return wishDate.format(FORMAT);
+        return wishDate.format(DATE_STRING_FORMAT);
     }
 }

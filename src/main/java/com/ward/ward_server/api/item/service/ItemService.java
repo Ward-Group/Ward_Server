@@ -7,7 +7,7 @@ import com.ward.ward_server.api.item.entity.Item;
 import com.ward.ward_server.api.item.entity.ItemImage;
 import com.ward.ward_server.api.item.entity.ItemViewCount;
 import com.ward.ward_server.api.item.entity.enumtype.Category;
-import com.ward.ward_server.api.item.entity.enumtype.ItemSort;
+import com.ward.ward_server.global.Object.enums.Sort;
 import com.ward.ward_server.api.item.repository.BrandRepository;
 import com.ward.ward_server.api.item.repository.ItemImageRepository;
 import com.ward.ward_server.api.item.repository.ItemRepository;
@@ -94,7 +94,7 @@ public class ItemService {
     }
 
     @Transactional(readOnly = true)
-    public List<ItemSimpleResponse> getItem10List(Long userId, ItemSort sort) {
+    public List<ItemSimpleResponse> getItem10List(Long userId, Sort sort) {
         log.debug("item sort:{}", sort.toString());
         LocalDateTime now = LocalDateTime.now();
         return switch (sort) {

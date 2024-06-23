@@ -6,7 +6,7 @@ import com.ward.ward_server.api.item.dto.ItemSimpleResponse;
 import com.ward.ward_server.api.item.dto.ItemTop10Response;
 import com.ward.ward_server.api.item.entity.ItemViewCount;
 import com.ward.ward_server.api.item.entity.enumtype.Category;
-import com.ward.ward_server.api.item.entity.enumtype.ItemSort;
+import com.ward.ward_server.global.Object.enums.Sort;
 import com.ward.ward_server.api.item.service.ItemService;
 import com.ward.ward_server.api.item.service.TopItemsCacheService;
 import com.ward.ward_server.api.user.auth.security.CustomUserDetails;
@@ -49,7 +49,7 @@ public class ItemController {
 
     @GetMapping
     public ApiResponse<List<ItemSimpleResponse>> getItem10List(@AuthenticationPrincipal CustomUserDetails principal,
-                                                               @RequestParam ItemSort sort) {
+                                                               @RequestParam Sort sort) {
         return ApiResponse.ok(ITEM_LIST_LOAD_SUCCESS, itemService.getItem10List(principal.getUserId(), sort));
     }
 
