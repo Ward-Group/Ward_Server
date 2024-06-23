@@ -9,12 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 public interface ReleaseInfoRepository extends JpaRepository<ReleaseInfo, Long>, ReleaseInfoQueryRepository {
-    Optional<ReleaseInfo> findById(long id);
-
-    Optional<Long> findIdByItemIdAndDrawPlatformId(long itemId, long platformId);
 
     Page<ReleaseInfo> findByItemAndDueDateAfter(Item item, LocalDateTime now, Pageable pageable);
 
