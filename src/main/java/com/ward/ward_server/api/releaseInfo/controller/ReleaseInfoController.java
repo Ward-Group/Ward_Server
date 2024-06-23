@@ -1,8 +1,10 @@
 package com.ward.ward_server.api.releaseInfo.controller;
 
-import com.ward.ward_server.api.item.entity.enumtype.Status;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoDetailResponse;
-import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoIdentificationRequest;
+import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoIdentifierRequest;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoRequest;
 import com.ward.ward_server.api.releaseInfo.entity.ReleaseInfo;
 import com.ward.ward_server.api.releaseInfo.service.ReleaseInfoService;
@@ -36,7 +38,7 @@ public class ReleaseInfoController {
     }
 
     @GetMapping
-    public ApiResponse<ReleaseInfoDetailResponse> getReleaseInfo(@RequestBody ReleaseInfoIdentificationRequest request) {
+    public ApiResponse<ReleaseInfoDetailResponse> getReleaseInfo(@RequestBody ReleaseInfoIdentifierRequest request) {
         return ApiResponse.ok(RELEASE_INFO_LIST_LOAD_SUCCESS, releaseInfoService.getReleaseInfo(request.itemId(), request.platformName()));
     }
 
@@ -51,8 +53,10 @@ public class ReleaseInfoController {
     }
 
     @PatchMapping
-    public ApiResponse<ReleaseInfoDetailResponse> updateReleaseInfo(@RequestBody ReleaseInfoIdentificationRequest origin,
-                                                                    @RequestBody ReleaseInfoRequest request) {
+    public ApiResponse<ReleaseInfoDetailResponse> updateReleaseInfo(@RequestBody ObjectNode node) throws JsonProcessingException {
+        ObjectMapper mapper=new ObjectMapper();
+        ReleaseInfoIdentifierRequest origin=mapper.treeToValue(node.get("releaseInfoIdentifierRequest"), ReleaseInfoIdentifierRequest.class);
+        ReleaseInfoRequest request=mapper.treeToValue(node.get("releaseInfoRequest"), ReleaseInfoRequest.class);
         return ApiResponse.ok(RELEASE_INFO_UPDATE_SUCCESS, releaseInfoService.updateReleaseInfo(
                 origin.itemId(),
                 origin.platformName(),
@@ -70,7 +74,7 @@ public class ReleaseInfoController {
     }
 
     @DeleteMapping
-    public ApiResponse<Void> deleteReleaseInfo(@RequestBody ReleaseInfoIdentificationRequest request) {
+    public ApiResponse<Void> deleteReleaseInfo(@RequestBody ReleaseInfoIdentifierRequest request) {
         releaseInfoService.deleteReleaseInfo(request.itemId(), request.platformName());
         return ApiResponse.ok(RELEASE_INFO_DELETE_SUCCESS);
     }
