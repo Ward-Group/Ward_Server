@@ -45,7 +45,7 @@ public enum ApiResponseMessage {
     //응모
     ENTRY_RECORD_CREATE_SUCCESS("응모 등록에 성공하였습니다."),
     ENTRY_RECORD_DELETE_SUCCESS("응모 삭제에 성공하였습니다."),
-    ENTRY_RECORD_BY_ITEM_LOAD_SUCCESS("상품의 발매정보와 응모 조회에 성공하였습니다."),
+    ENTRY_RECORD_LOAD_SUCCESS("응모 조회에 성공하였습니다."),
     ENTRY_RECORD_BY_USER_LOAD_SUCCESS("회원의 발매정보와 응모 조회에 성공하였습니다."),
     //관심상품
     WISH_ITEM_CREATE_SUCCESS("관심상품 등록에 성공하였습니다"),

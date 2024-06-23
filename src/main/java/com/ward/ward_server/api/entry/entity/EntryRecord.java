@@ -1,16 +1,13 @@
 package com.ward.ward_server.api.entry.entity;
 
-import com.ward.ward_server.api.releaseInfo.entity.ReleaseInfo;
-import com.ward.ward_server.api.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
-import static com.ward.ward_server.global.Object.Constants.FORMAT;
+import static com.ward.ward_server.global.Object.Constants.DATE_STRING_FORMAT;
 
 @Entity
 @Getter
@@ -22,28 +19,21 @@ public class EntryRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column(nullable = false)
+    private Long userId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "release_info_id")
-    private ReleaseInfo releaseInfo;
+    @Column(nullable = false)
+    private Long releaseInfoId;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "entry_date")
     private LocalDateTime entryDate;
 
-    private String memo;
-
-    public EntryRecord(User user, ReleaseInfo releaseInfo, String memo) {
-        this.user = user;
-        this.releaseInfo = releaseInfo;
+    public EntryRecord(long userId, long releaseInfoId) {
+        this.userId = userId;
+        this.releaseInfoId = releaseInfoId;
         this.entryDate = LocalDateTime.now();
-        this.memo = memo;
     }
 
-    public String getEntryDate(){
-        return entryDate.format(FORMAT);
+    public String getEntryDate() {
+        return entryDate.format(DATE_STRING_FORMAT);
     }
 }
