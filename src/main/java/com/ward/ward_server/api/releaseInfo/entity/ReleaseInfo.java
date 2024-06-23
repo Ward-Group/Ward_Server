@@ -1,19 +1,19 @@
 package com.ward.ward_server.api.releaseInfo.entity;
 
+import com.ward.ward_server.api.item.entity.Item;
 import com.ward.ward_server.api.releaseInfo.entity.enums.CurrencyUnit;
 import com.ward.ward_server.api.releaseInfo.entity.enums.DeliveryMethod;
 import com.ward.ward_server.api.releaseInfo.entity.enums.NotificationMethod;
 import com.ward.ward_server.api.releaseInfo.entity.enums.ReleaseMethod;
 import com.ward.ward_server.global.Object.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import static com.ward.ward_server.global.Object.Constants.FORMAT;
+import static com.ward.ward_server.global.Object.Constants.DATE_STRING_FORMAT;
 
 @Entity
 @Getter
@@ -24,10 +24,12 @@ public class ReleaseInfo extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long itemId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_id", nullable = false)
+    private Item item;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "draw_platform_id")
+    @JoinColumn(name = "draw_platform_id", nullable = false)
     private DrawPlatform drawPlatform;
 
     private String siteUrl;
@@ -58,15 +60,15 @@ public class ReleaseInfo extends BaseTimeEntity {
     private DeliveryMethod deliveryMethod;
 
     @Builder
-    public ReleaseInfo(long itemId, DrawPlatform drawPlatform, String siteUrl,
+    public ReleaseInfo(Item item, DrawPlatform drawPlatform, String siteUrl,
                        String releaseDate, String dueDate, String presentationDate, Integer releasePrice, CurrencyUnit currencyUnit,
                        NotificationMethod notificationMethod, ReleaseMethod releaseMethod, DeliveryMethod deliveryMethod) {
-        this.itemId = itemId;
+        this.item = item;
         this.drawPlatform = drawPlatform;
         this.siteUrl = siteUrl;
-        this.releaseDate = LocalDateTime.parse(releaseDate, FORMAT);
-        this.dueDate = LocalDateTime.parse(dueDate, FORMAT);
-        this.presentationDate = LocalDateTime.parse(presentationDate, FORMAT);
+        this.releaseDate = LocalDateTime.parse(releaseDate, DATE_STRING_FORMAT);
+        this.dueDate = LocalDateTime.parse(dueDate, DATE_STRING_FORMAT);
+        this.presentationDate = LocalDateTime.parse(presentationDate, DATE_STRING_FORMAT);
         this.releasePrice = releasePrice == null ? 0 : releasePrice;
         this.currencyUnit = currencyUnit == null ? CurrencyUnit.KRW : currencyUnit;
         this.notificationMethod = notificationMethod;
@@ -74,8 +76,8 @@ public class ReleaseInfo extends BaseTimeEntity {
         this.deliveryMethod = deliveryMethod;
     }
 
-    public void updateItemId(long itemId) {
-        this.itemId = itemId;
+    public void updateItem(Item item) {
+        this.item = item;
     }
 
     public void updateDrawPlatform(DrawPlatform drawPlatform) {
@@ -87,15 +89,15 @@ public class ReleaseInfo extends BaseTimeEntity {
     }
 
     public void updateReleaseDate(String releaseDate) {
-        this.releaseDate = LocalDateTime.parse(releaseDate, FORMAT);
+        this.releaseDate = LocalDateTime.parse(releaseDate, DATE_STRING_FORMAT);
     }
 
     public void updateDueDate(String dueDate) {
-        this.dueDate = LocalDateTime.parse(dueDate, FORMAT);
+        this.dueDate = LocalDateTime.parse(dueDate, DATE_STRING_FORMAT);
     }
 
     public void updatePresentationDate(String presentationDate) {
-        this.presentationDate = LocalDateTime.parse(presentationDate, FORMAT);
+        this.presentationDate = LocalDateTime.parse(presentationDate, DATE_STRING_FORMAT);
     }
 
     public void updateReleasePrice(Integer releasePrice) {
@@ -119,15 +121,15 @@ public class ReleaseInfo extends BaseTimeEntity {
     }
 
     public String getReleaseFormatDate() {
-        return releaseDate.format(FORMAT);
+        return releaseDate.format(DATE_STRING_FORMAT);
     }
 
     public String getDueFormatDate() {
-        return dueDate.format(FORMAT);
+        return dueDate.format(DATE_STRING_FORMAT);
     }
 
     public String getPresentationFormatDate() {
-        return presentationDate.format(FORMAT);
+        return presentationDate.format(DATE_STRING_FORMAT);
     }
 
     public LocalDateTime getReleaseLocalDate() {

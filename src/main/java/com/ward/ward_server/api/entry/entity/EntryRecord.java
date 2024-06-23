@@ -8,9 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
-import static com.ward.ward_server.global.Object.Constants.FORMAT;
+import static com.ward.ward_server.global.Object.Constants.DATE_STRING_FORMAT;
 
 @Entity
 @Getter
@@ -23,27 +22,22 @@ public class EntryRecord {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "release_info_id")
+    @JoinColumn(name = "release_info_id", nullable = false)
     private ReleaseInfo releaseInfo;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "entry_date")
     private LocalDateTime entryDate;
 
-    private String memo;
-
-    public EntryRecord(User user, ReleaseInfo releaseInfo, String memo) {
+    public EntryRecord(User user, ReleaseInfo releaseInfo) {
         this.user = user;
         this.releaseInfo = releaseInfo;
         this.entryDate = LocalDateTime.now();
-        this.memo = memo;
     }
 
-    public String getEntryDate(){
-        return entryDate.format(FORMAT);
+    public String getEntryDate() {
+        return entryDate.format(DATE_STRING_FORMAT);
     }
 }

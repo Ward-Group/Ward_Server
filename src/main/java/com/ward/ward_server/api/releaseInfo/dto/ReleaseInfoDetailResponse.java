@@ -7,8 +7,10 @@ import com.ward.ward_server.api.releaseInfo.entity.enums.ReleaseMethod;
 import java.time.LocalDateTime;
 
 public record ReleaseInfoDetailResponse(
+        long releaseInfoId,
         String brandKoreanName,
         String brandEnglishName,
+        long itemId,
         String itemCode,
         String itemKoreanName,
         String itemEnglishName,

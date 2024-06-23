@@ -35,6 +35,7 @@ public enum ApiResponseMessage {
     BRAND_VIEW_COUNT_UP_SUCCESS("브랜드 조회수 증가에 성공하였습니다."),
     //발매정보
     RELEASE_INFO_CREATE_SUCCESS("발매정보 등록에 성공하였습니다."),
+    RELEASE_INFO_DETAIL_LOAD_SUCCESS("발매정보 상세정보 조회에 성공하였습니다."),
     RELEASE_INFO_LIST_LOAD_SUCCESS("발매정보 목록 조회에 성공하였습니다."),
     RELEASE_INFO_UPDATE_SUCCESS("발매정보 수정에 성공하였습니다."),
     RELEASE_INFO_DELETE_SUCCESS("발매정보를 삭제했습니다."),
@@ -44,7 +45,7 @@ public enum ApiResponseMessage {
     //응모
     ENTRY_RECORD_CREATE_SUCCESS("응모 등록에 성공하였습니다."),
     ENTRY_RECORD_DELETE_SUCCESS("응모 삭제에 성공하였습니다."),
-    ENTRY_RECORD_BY_ITEM_LOAD_SUCCESS("상품의 발매정보와 응모 조회에 성공하였습니다."),
+    ENTRY_RECORD_LOAD_SUCCESS("응모 조회에 성공하였습니다."),
     ENTRY_RECORD_BY_USER_LOAD_SUCCESS("회원의 발매정보와 응모 조회에 성공하였습니다."),
     //관심상품
     WISH_ITEM_CREATE_SUCCESS("관심상품 등록에 성공하였습니다"),

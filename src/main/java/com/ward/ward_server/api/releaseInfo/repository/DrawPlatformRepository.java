@@ -23,4 +23,9 @@ public interface DrawPlatformRepository extends JpaRepository<DrawPlatform, Long
             "FROM DrawPlatform d " +
             "WHERE d.englishName = :name OR d.koreanName = :name")
     Optional<DrawPlatform> findByName(@Param("name") String name);
+
+    @Query("SELECT d.id " +
+            "FROM DrawPlatform d " +
+            "WHERE d.englishName = :name OR d.koreanName = :name")
+    Optional<Long> findIdByName(@Param("name") String name);
 }

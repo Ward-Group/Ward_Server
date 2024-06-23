@@ -4,6 +4,7 @@ import com.ward.ward_server.api.item.entity.Brand;
 import com.ward.ward_server.api.item.entity.Item;
 import com.ward.ward_server.api.item.repository.ItemRepository;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoDetailResponse;
+import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoSimpleResponse;
 import com.ward.ward_server.api.releaseInfo.entity.DrawPlatform;
 import com.ward.ward_server.api.releaseInfo.entity.ReleaseInfo;
 import com.ward.ward_server.api.releaseInfo.entity.enums.CurrencyUnit;
@@ -12,6 +13,7 @@ import com.ward.ward_server.api.releaseInfo.entity.enums.NotificationMethod;
 import com.ward.ward_server.api.releaseInfo.entity.enums.ReleaseMethod;
 import com.ward.ward_server.api.releaseInfo.repository.DrawPlatformRepository;
 import com.ward.ward_server.api.releaseInfo.repository.ReleaseInfoRepository;
+import com.ward.ward_server.global.Object.enums.Sort;
 import com.ward.ward_server.global.exception.ApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static com.ward.ward_server.global.exception.ExceptionCode.*;
 import static com.ward.ward_server.global.response.error.ErrorCode.REQUIRED_FIELDS_MUST_BE_PROVIDED;
@@ -26,7 +29,6 @@ import static com.ward.ward_server.global.response.error.ErrorCode.REQUIRED_FIEL
 @Service
 @RequiredArgsConstructor
 public class ReleaseInfoService {
-
     private final ReleaseInfoRepository releaseInfoRepository;
     private final DrawPlatformRepository drawPlatformRepository;
     private final ItemRepository itemRepository;
@@ -45,7 +47,7 @@ public class ReleaseInfoService {
             throw new ApiException(DUPLICATE_RELEASE_INFO);
         }
         ReleaseInfo savedReleaseInfo = releaseInfoRepository.save(ReleaseInfo.builder()
-                .itemId(itemId)
+                .item(item)
                 .drawPlatform(platform)
                 .siteUrl(siteUrl)
                 .dueDate(dueDate)
@@ -61,22 +63,31 @@ public class ReleaseInfoService {
     }
 
     @Transactional(readOnly = true)
-    public ReleaseInfoDetailResponse getReleaseInfo(Long itemId, String platformName) {
-        Item item = itemRepository.findByIdAndDeletedAtIsNull(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
-        DrawPlatform platform = drawPlatformRepository.findByName(platformName).orElseThrow(() -> new ApiException(DRAW_PLATFORM_NOT_FOUND));
-        ReleaseInfo releaseInfo = releaseInfoRepository.findByItemIdAndDrawPlatform(item.getId(), platform).orElseThrow(() -> new ApiException(RELEASE_INFO_NOT_FOUND));
-        return getDetailResponse(item.getBrand(), item, platform, releaseInfo);
+    public ReleaseInfoDetailResponse getReleaseInfo(Long releaseInfoId) {
+        ReleaseInfo releaseInfo = releaseInfoRepository.findById(releaseInfoId).orElseThrow(() -> new ApiException(RELEASE_INFO_NOT_FOUND));
+        return getDetailResponse(releaseInfo.getItem().getBrand(), releaseInfo.getItem(), releaseInfo.getDrawPlatform(), releaseInfo);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReleaseInfoSimpleResponse> getReleaseInfo10List(Long userId, Sort sort) {
+        LocalDateTime now = LocalDateTime.now();
+        return switch (sort) {
+            case RELEASE_NOW -> releaseInfoRepository.getReleaseTodayReleaseInfoOrdered(now);
+            case RELEASE_WISH -> releaseInfoRepository.getWishItemReleaseInfoOrdered(userId, now);
+            case RELEASE_CONFIRM -> releaseInfoRepository.getJustConfirmReleaseInfoOrdered(now);
+            case REGISTER_TODAY -> releaseInfoRepository.getRegisterTodayReleaseInfoOrdered(now);
+            default -> releaseInfoRepository.getDueTodayReleaseInfoOrdered(now);
+        };
     }
 
     @Transactional
-    public ReleaseInfoDetailResponse updateReleaseInfo(Long originItemId, String originDrawPlatformName,
+    public ReleaseInfoDetailResponse updateReleaseInfo(Long originId,
                                                        Long itemId, String platformName, String siteUrl,
                                                        String releaseDate, String dueDate, String presentationDate, Integer releasePrice, CurrencyUnit currencyUnit,
                                                        NotificationMethod notificationMethod, ReleaseMethod releaseMethod, DeliveryMethod deliveryMethod) {
-        Item originItem = itemRepository.findByIdAndDeletedAtIsNull(originItemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
-        DrawPlatform originPlatform = drawPlatformRepository.findByName(originDrawPlatformName).orElseThrow(() -> new ApiException(DRAW_PLATFORM_NOT_FOUND));
-        ReleaseInfo origin = releaseInfoRepository.findByItemIdAndDrawPlatform(originItem.getId(), originPlatform).orElseThrow(() -> new ApiException(RELEASE_INFO_NOT_FOUND));
-
+        ReleaseInfo origin = releaseInfoRepository.findById(originId).orElseThrow(() -> new ApiException(RELEASE_INFO_NOT_FOUND));
+        Item originItem = origin.getItem();
+        DrawPlatform originPlatform = origin.getDrawPlatform();
         Item targetItem = null;
         DrawPlatform targetPlatform = null;
         if (itemId != null && !StringUtils.hasText(platformName)) {
@@ -85,7 +96,7 @@ public class ReleaseInfoService {
             if (releaseInfoRepository.existsByItemIdAndDrawPlatform(targetItem.getId(), originPlatform)) {
                 throw new ApiException(DUPLICATE_RELEASE_INFO);
             }
-            origin.updateItemId(targetItem.getId());
+            origin.updateItem(targetItem);
         } else if (itemId != null && StringUtils.hasText(platformName)) {
             //상품과 플랫폼 변경
             targetItem = itemRepository.findByIdAndDeletedAtIsNull(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
@@ -93,7 +104,7 @@ public class ReleaseInfoService {
             if (releaseInfoRepository.existsByItemIdAndDrawPlatform(targetItem.getId(), targetPlatform)) {
                 throw new ApiException(DUPLICATE_RELEASE_INFO);
             }
-            origin.updateItemId(targetItem.getId());
+            origin.updateItem(targetItem);
             origin.updateDrawPlatform(targetPlatform);
         } else if (StringUtils.hasText(platformName)) {
             //플랫폼만 변경
@@ -140,16 +151,16 @@ public class ReleaseInfoService {
     }
 
     @Transactional
-    public void deleteReleaseInfo(Long itemId, String platformName) {
-        DrawPlatform platform = drawPlatformRepository.findByName(platformName).orElseThrow(() -> new ApiException(DRAW_PLATFORM_NOT_FOUND));
-        ReleaseInfo releaseInfo = releaseInfoRepository.findByItemIdAndDrawPlatform(itemId, platform).orElseThrow(() -> new ApiException(RELEASE_INFO_NOT_FOUND));
-        releaseInfo.setDeletedAt(LocalDateTime.now());
+    public void deleteReleaseInfo(Long releaseInfoId) {
+        ReleaseInfo releaseInfo = releaseInfoRepository.findById(releaseInfoId).orElseThrow(() -> new ApiException(RELEASE_INFO_NOT_FOUND));
+        releaseInfoRepository.delete(releaseInfo);
     }
 
     private ReleaseInfoDetailResponse getDetailResponse(Brand brand, Item item, DrawPlatform platform, ReleaseInfo releaseInfo) {
         return new ReleaseInfoDetailResponse(
+                releaseInfo.getId(),
                 brand.getKoreanName(), brand.getEnglishName(),
-                item.getCode(), item.getKoreanName(), item.getEnglishName(), item.getMainImage(),
+                item.getId(), item.getCode(), item.getKoreanName(), item.getEnglishName(), item.getMainImage(),
                 platform.getLogoImage(), platform.getKoreanName(), platform.getEnglishName(),
                 releaseInfo.getReleaseFormatDate(), releaseInfo.getDueFormatDate(), releaseInfo.getPresentationFormatDate(),
                 releaseInfo.getReleasePrice(), releaseInfo.getCurrencyUnit().toString(),
