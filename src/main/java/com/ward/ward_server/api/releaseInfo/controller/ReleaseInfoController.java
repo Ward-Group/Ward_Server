@@ -1,6 +1,8 @@
 package com.ward.ward_server.api.releaseInfo.controller;
 
 import com.ward.ward_server.api.item.entity.enumtype.Status;
+import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoDetailResponse;
+import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoIdentificationRequest;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoRequest;
 import com.ward.ward_server.api.releaseInfo.entity.ReleaseInfo;
 import com.ward.ward_server.api.releaseInfo.service.ReleaseInfoService;
@@ -15,30 +17,27 @@ import static com.ward.ward_server.global.response.ApiResponseMessage.*;
 @RequiredArgsConstructor
 @RequestMapping("/release-infos")
 public class ReleaseInfoController {
-
     private final ReleaseInfoService releaseInfoService;
 
-    //TODO 관리자 권한만
     @PostMapping
-    public ApiResponse<ReleaseInfo> createReleaseInfo(@RequestBody ReleaseInfoRequest request) {
+    public ApiResponse<ReleaseInfoDetailResponse> createReleaseInfo(@RequestBody ReleaseInfoRequest request) {
         return ApiResponse.ok(RELEASE_INFO_CREATE_SUCCESS, releaseInfoService.createReleaseInfo(
-                request.itemCode(),
-                request.brandName(),
+                request.itemId(),
                 request.platformName(),
                 request.siteUrl(),
                 request.releaseDate(),
                 request.dueDate(),
                 request.presentationDate(),
+                request.releasePrice(),
+                request.currencyUnit(),
                 request.notificationMethod(),
                 request.releaseMethod(),
                 request.deliveryMethod()));
     }
 
     @GetMapping
-    public ApiResponse<ReleaseInfo> getReleaseInfo(@RequestParam(value = "itemCode") String itemCode,
-                                                                           @RequestParam(value = "brandName") String brandName,
-                                                                           @RequestParam(value = "platformName") String platformName) {
-        return ApiResponse.ok(RELEASE_INFO_LIST_LOAD_SUCCESS, releaseInfoService.getReleaseInfo(itemCode, brandName, platformName));
+    public ApiResponse<ReleaseInfoDetailResponse> getReleaseInfo(@RequestBody ReleaseInfoIdentificationRequest request) {
+        return ApiResponse.ok(RELEASE_INFO_LIST_LOAD_SUCCESS, releaseInfoService.getReleaseInfo(request.itemId(), request.platformName()));
     }
 
     @GetMapping("/{itemId}")
@@ -52,29 +51,27 @@ public class ReleaseInfoController {
     }
 
     @PatchMapping
-    public ApiResponse<ReleaseInfo> updateReleaseInfo(@RequestParam(value = "originItemCode") String originItemCode,
-                                                      @RequestParam(value = "originBrandName") String originBrandName,
-                                                      @RequestParam(value = "originPlatformName") String originPlatformName,
-                                                      @RequestBody ReleaseInfoRequest request) {
+    public ApiResponse<ReleaseInfoDetailResponse> updateReleaseInfo(@RequestBody ReleaseInfoIdentificationRequest origin,
+                                                                    @RequestBody ReleaseInfoRequest request) {
         return ApiResponse.ok(RELEASE_INFO_UPDATE_SUCCESS, releaseInfoService.updateReleaseInfo(
-                originItemCode, originBrandName, originPlatformName,
-                request.itemCode(),
-                request.brandName(),
+                origin.itemId(),
+                origin.platformName(),
+                request.itemId(),
                 request.platformName(),
                 request.siteUrl(),
                 request.releaseDate(),
                 request.dueDate(),
                 request.presentationDate(),
+                request.releasePrice(),
+                request.currencyUnit(),
                 request.notificationMethod(),
                 request.releaseMethod(),
                 request.deliveryMethod()));
     }
 
     @DeleteMapping
-    public ApiResponse<Void> deleteReleaseInfo(@RequestParam(value = "itemCode") String itemCode,
-                                               @RequestParam(value = "brandName") String brandName,
-                                               @RequestParam(value = "platformName") String platformName) {
-        releaseInfoService.deleteReleaseInfo(itemCode, brandName, platformName);
+    public ApiResponse<Void> deleteReleaseInfo(@RequestBody ReleaseInfoIdentificationRequest request) {
+        releaseInfoService.deleteReleaseInfo(request.itemId(), request.platformName());
         return ApiResponse.ok(RELEASE_INFO_DELETE_SUCCESS);
     }
 
