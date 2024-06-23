@@ -40,7 +40,7 @@ public class QReleaseInfo extends EntityPathBase<ReleaseInfo> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final NumberPath<Long> itemId = createNumber("itemId", Long.class);
+    public final com.ward.ward_server.api.item.entity.QItem item;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> modifiedAt = _super.modifiedAt;
@@ -76,6 +76,7 @@ public class QReleaseInfo extends EntityPathBase<ReleaseInfo> {
     public QReleaseInfo(Class<? extends ReleaseInfo> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.drawPlatform = inits.isInitialized("drawPlatform") ? new QDrawPlatform(forProperty("drawPlatform")) : null;
+        this.item = inits.isInitialized("item") ? new com.ward.ward_server.api.item.entity.QItem(forProperty("item"), inits.get("item")) : null;
     }
 
 }

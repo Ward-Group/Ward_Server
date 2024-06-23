@@ -26,8 +26,6 @@ public class QEntryRecord extends EntityPathBase<EntryRecord> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final StringPath memo = createString("memo");
-
     public final com.ward.ward_server.api.releaseInfo.entity.QReleaseInfo releaseInfo;
 
     public final com.ward.ward_server.api.user.entity.QUser user;
