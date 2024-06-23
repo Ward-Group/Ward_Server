@@ -84,14 +84,16 @@ public class ReleaseInfoService {
 
     @Transactional(readOnly = true)
     public Page<ReleaseInfo> getOngoingReleaseInfos(Long itemId, int page, int size) {
+        Item item = itemRepository.findByIdAndDeletedAtIsNull(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
         LocalDateTime now = LocalDateTime.now();
-        return releaseInfoRepository.findByItemIdAndDueDateAfter(itemId, now, PageRequest.of(page, size));
+        return releaseInfoRepository.findByItemAndDueDateAfter(item, now, PageRequest.of(page, size));
     }
 
     @Transactional(readOnly = true)
     public Page<ReleaseInfo> getCompletedReleaseInfos(Long itemId, int page, int size) {
+        Item item = itemRepository.findByIdAndDeletedAtIsNull(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
         LocalDateTime now = LocalDateTime.now();
-        return releaseInfoRepository.findByItemIdAndDueDateBefore(itemId, now, PageRequest.of(page, size));
+        return releaseInfoRepository.findByItemAndDueDateBefore(item, now, PageRequest.of(page, size));
     }
 
     @Transactional
