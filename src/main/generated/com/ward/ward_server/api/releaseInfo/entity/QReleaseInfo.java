@@ -27,6 +27,8 @@ public class QReleaseInfo extends EntityPathBase<ReleaseInfo> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
+    public final EnumPath<com.ward.ward_server.api.releaseInfo.entity.enums.CurrencyUnit> currencyUnit = createEnum("currencyUnit", com.ward.ward_server.api.releaseInfo.entity.enums.CurrencyUnit.class);
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> deletedAt = _super.deletedAt;
 
@@ -51,9 +53,9 @@ public class QReleaseInfo extends EntityPathBase<ReleaseInfo> {
 
     public final EnumPath<com.ward.ward_server.api.releaseInfo.entity.enums.ReleaseMethod> releaseMethod = createEnum("releaseMethod", com.ward.ward_server.api.releaseInfo.entity.enums.ReleaseMethod.class);
 
-    public final StringPath siteUrl = createString("siteUrl");
+    public final NumberPath<Integer> releasePrice = createNumber("releasePrice", Integer.class);
 
-    public final EnumPath<com.ward.ward_server.api.item.entity.enumtype.Status> status = createEnum("status", com.ward.ward_server.api.item.entity.enumtype.Status.class);
+    public final StringPath siteUrl = createString("siteUrl");
 
     public QReleaseInfo(String variable) {
         this(ReleaseInfo.class, forVariable(variable), INITS);

@@ -38,7 +38,7 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/auth/logout").authenticated()
-                        .requestMatchers("/","/auth/**", "/v1/wc/**","/release-infos/**", "/release-infos/{itemId}").permitAll()
+                        .requestMatchers("/","/auth/**", "/v1/wc/**", "/release-infos/**", "/release-infos/{itemId}/releases").permitAll()
                         .requestMatchers("/items/details").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/items/top10","items/{itemId}/details").permitAll()
                         .requestMatchers(HttpMethod.GET, "/items").hasAnyRole("USER", "ADMIN")
@@ -48,7 +48,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/brands/**").hasRole("ADMIN")
                         .requestMatchers("/draw-platforms/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/release-infos").permitAll()
-                        .requestMatchers("/release-infos/**").hasRole("ADMIN")
+//                        .requestMatchers("/release-infos/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception

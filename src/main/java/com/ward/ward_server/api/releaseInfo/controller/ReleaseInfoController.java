@@ -10,6 +10,7 @@ import com.ward.ward_server.api.releaseInfo.entity.ReleaseInfo;
 import com.ward.ward_server.api.releaseInfo.service.ReleaseInfoService;
 import com.ward.ward_server.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +19,7 @@ import static com.ward.ward_server.global.response.ApiResponseMessage.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/release-infos")
+@Slf4j
 public class ReleaseInfoController {
     private final ReleaseInfoService releaseInfoService;
 
@@ -42,13 +44,20 @@ public class ReleaseInfoController {
         return ApiResponse.ok(RELEASE_INFO_LIST_LOAD_SUCCESS, releaseInfoService.getReleaseInfo(request.itemId(), request.platformName()));
     }
 
-    @GetMapping("/{itemId}")
+    @GetMapping("/{itemId}/releases")
     public ApiResponse<Page<ReleaseInfo>> getReleaseInfos(
-            @PathVariable Long itemId,
-            @RequestParam Status status,
-            @RequestParam int page,
-            @RequestParam int size) {
-        Page<ReleaseInfo> releaseInfos = releaseInfoService.getReleaseInfos(itemId, status, page, size);
+            @PathVariable("itemId") Long itemId,
+            @RequestParam("status") String status,
+            @RequestParam("page") int page,
+            @RequestParam("size") int size) {
+        Page<ReleaseInfo> releaseInfos;
+        if ("ongoing".equalsIgnoreCase(status)) {
+            releaseInfos = releaseInfoService.getOngoingReleaseInfos(itemId, page, size);
+        } else if ("completed".equalsIgnoreCase(status)) {
+            releaseInfos = releaseInfoService.getCompletedReleaseInfos(itemId, page, size);
+        } else {
+            throw new IllegalArgumentException("Invalid status: " + status);
+        }
         return ApiResponse.ok(releaseInfos);
     }
 

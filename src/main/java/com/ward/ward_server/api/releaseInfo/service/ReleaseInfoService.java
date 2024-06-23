@@ -2,7 +2,6 @@ package com.ward.ward_server.api.releaseInfo.service;
 
 import com.ward.ward_server.api.item.entity.Brand;
 import com.ward.ward_server.api.item.entity.Item;
-import com.ward.ward_server.api.item.entity.enumtype.Status;
 import com.ward.ward_server.api.item.repository.ItemRepository;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoDetailResponse;
 import com.ward.ward_server.api.releaseInfo.entity.DrawPlatform;
@@ -72,8 +71,15 @@ public class ReleaseInfoService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ReleaseInfo> getReleaseInfos(Long itemId, Status status, int page, int size) {
-        return releaseInfoRepository.findByItemIdAndStatus(itemId, status, PageRequest.of(page, size));
+    public Page<ReleaseInfo> getOngoingReleaseInfos(Long itemId, int page, int size) {
+        LocalDateTime now = LocalDateTime.now();
+        return releaseInfoRepository.findByItemIdAndDueDateAfter(itemId, now, PageRequest.of(page, size));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ReleaseInfo> getCompletedReleaseInfos(Long itemId, int page, int size) {
+        LocalDateTime now = LocalDateTime.now();
+        return releaseInfoRepository.findByItemIdAndDueDateBefore(itemId, now, PageRequest.of(page, size));
     }
 
     @Transactional
