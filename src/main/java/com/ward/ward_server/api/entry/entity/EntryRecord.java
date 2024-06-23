@@ -1,5 +1,7 @@
 package com.ward.ward_server.api.entry.entity;
 
+import com.ward.ward_server.api.releaseInfo.entity.ReleaseInfo;
+import com.ward.ward_server.api.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -19,17 +21,19 @@ public class EntryRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    @Column(nullable = false)
-    private Long releaseInfoId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "release_info_id", nullable = false)
+    private ReleaseInfo releaseInfo;
 
     private LocalDateTime entryDate;
 
-    public EntryRecord(long userId, long releaseInfoId) {
-        this.userId = userId;
-        this.releaseInfoId = releaseInfoId;
+    public EntryRecord(User user, ReleaseInfo releaseInfo) {
+        this.user = user;
+        this.releaseInfo = releaseInfo;
         this.entryDate = LocalDateTime.now();
     }
 

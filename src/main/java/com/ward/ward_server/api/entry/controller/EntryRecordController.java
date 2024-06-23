@@ -21,19 +21,19 @@ public class EntryRecordController {
     @PostMapping
     public ApiResponse<EntryRecordResponse> createEntryRecord(@AuthenticationPrincipal CustomUserDetails principal,
                                                               @RequestBody EntryRecordRequest request) {
-        return ApiResponse.ok(ENTRY_RECORD_CREATE_SUCCESS, entryRecordService.createEntryRecord(principal.getUserId(), request.itemId(), request.platformName()));
+        return ApiResponse.ok(ENTRY_RECORD_CREATE_SUCCESS, entryRecordService.createEntryRecord(principal.getUserId(), request.releaseInfoId()));
     }
 
-    @GetMapping
+    @GetMapping("/release-infos/{releaseInfoId}")
     public ApiResponse<EntryRecordResponse> getEntryRecordListByItem(@AuthenticationPrincipal CustomUserDetails principal,
-                                                                     @RequestBody EntryRecordRequest request) {
-        return ApiResponse.ok(ENTRY_RECORD_LOAD_SUCCESS, entryRecordService.getEntryRecordByReleaseInfo(principal.getUserId(), request.itemId(), request.platformName()));
+                                                                     @PathVariable("releaseInfoId") Long releaseInfoId) {
+        return ApiResponse.ok(ENTRY_RECORD_LOAD_SUCCESS, entryRecordService.getEntryRecordByReleaseInfo(principal.getUserId(), releaseInfoId));
     }
 
-    @DeleteMapping
+    @DeleteMapping("/release-infos/{releaseInfoId}")
     public ApiResponse<Void> deleteEntryRecord(@AuthenticationPrincipal CustomUserDetails principal,
-                                               @RequestBody EntryRecordRequest request) {
-        entryRecordService.deleteEntryRecord(principal.getUserId(), request.itemId(), request.platformName());
+                                               @PathVariable("releaseInfoId") Long releaseInfoId) {
+        entryRecordService.deleteEntryRecord(principal.getUserId(), releaseInfoId);
         return ApiResponse.ok(ENTRY_RECORD_DELETE_SUCCESS);
     }
 }

@@ -47,8 +47,8 @@ public class ReleaseInfoService {
             throw new ApiException(DUPLICATE_RELEASE_INFO);
         }
         ReleaseInfo savedReleaseInfo = releaseInfoRepository.save(ReleaseInfo.builder()
-                .itemId(itemId)
-                .drawPlatformId(platform.getId())
+                .item(item)
+                .drawPlatform(platform)
                 .siteUrl(siteUrl)
                 .dueDate(dueDate)
                 .presentationDate(presentationDate)
@@ -63,11 +63,9 @@ public class ReleaseInfoService {
     }
 
     @Transactional(readOnly = true)
-    public ReleaseInfoDetailResponse getReleaseInfo(Long itemId, String platformName) {
-        Item item = itemRepository.findByIdAndDeletedAtIsNull(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
-        DrawPlatform platform = drawPlatformRepository.findByName(platformName).orElseThrow(() -> new ApiException(DRAW_PLATFORM_NOT_FOUND));
-        ReleaseInfo releaseInfo = releaseInfoRepository.findByItemIdAndDrawPlatformId(item.getId(), platform.getId()).orElseThrow(() -> new ApiException(RELEASE_INFO_NOT_FOUND));
-        return getDetailResponse(item.getBrand(), item, platform, releaseInfo);
+    public ReleaseInfoDetailResponse getReleaseInfo(Long releaseInfoId) {
+        ReleaseInfo releaseInfo = releaseInfoRepository.findById(releaseInfoId).orElseThrow(() -> new ApiException(RELEASE_INFO_NOT_FOUND));
+        return getDetailResponse(releaseInfo.getItem().getBrand(), releaseInfo.getItem(), releaseInfo.getDrawPlatform(), releaseInfo);
     }
 
     @Transactional(readOnly = true)
@@ -83,14 +81,13 @@ public class ReleaseInfoService {
     }
 
     @Transactional
-    public ReleaseInfoDetailResponse updateReleaseInfo(Long originItemId, String originDrawPlatformName,
+    public ReleaseInfoDetailResponse updateReleaseInfo(Long originId,
                                                        Long itemId, String platformName, String siteUrl,
                                                        String releaseDate, String dueDate, String presentationDate, Integer releasePrice, CurrencyUnit currencyUnit,
                                                        NotificationMethod notificationMethod, ReleaseMethod releaseMethod, DeliveryMethod deliveryMethod) {
-        Item originItem = itemRepository.findByIdAndDeletedAtIsNull(originItemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
-        DrawPlatform originPlatform = drawPlatformRepository.findByName(originDrawPlatformName).orElseThrow(() -> new ApiException(DRAW_PLATFORM_NOT_FOUND));
-        ReleaseInfo origin = releaseInfoRepository.findByItemIdAndDrawPlatformId(originItem.getId(), originPlatform.getId()).orElseThrow(() -> new ApiException(RELEASE_INFO_NOT_FOUND));
-
+        ReleaseInfo origin = releaseInfoRepository.findById(originId).orElseThrow(() -> new ApiException(RELEASE_INFO_NOT_FOUND));
+        Item originItem = origin.getItem();
+        DrawPlatform originPlatform = origin.getDrawPlatform();
         Item targetItem = null;
         DrawPlatform targetPlatform = null;
         if (itemId != null && !StringUtils.hasText(platformName)) {
@@ -99,7 +96,7 @@ public class ReleaseInfoService {
             if (releaseInfoRepository.existsByItemIdAndDrawPlatform(targetItem.getId(), originPlatform)) {
                 throw new ApiException(DUPLICATE_RELEASE_INFO);
             }
-            origin.updateItemId(targetItem.getId());
+            origin.updateItem(targetItem);
         } else if (itemId != null && StringUtils.hasText(platformName)) {
             //상품과 플랫폼 변경
             targetItem = itemRepository.findByIdAndDeletedAtIsNull(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
@@ -107,15 +104,15 @@ public class ReleaseInfoService {
             if (releaseInfoRepository.existsByItemIdAndDrawPlatform(targetItem.getId(), targetPlatform)) {
                 throw new ApiException(DUPLICATE_RELEASE_INFO);
             }
-            origin.updateItemId(targetItem.getId());
-            origin.updateDrawPlatformId(targetPlatform.getId());
+            origin.updateItem(targetItem);
+            origin.updateDrawPlatform(targetPlatform);
         } else if (StringUtils.hasText(platformName)) {
             //플랫폼만 변경
             targetPlatform = drawPlatformRepository.findByName(platformName).orElseThrow(() -> new ApiException(DRAW_PLATFORM_NOT_FOUND));
             if (releaseInfoRepository.existsByItemIdAndDrawPlatform(originItem.getId(), targetPlatform)) {
                 throw new ApiException(DUPLICATE_RELEASE_INFO);
             }
-            origin.updateDrawPlatformId(targetPlatform.getId());
+            origin.updateDrawPlatform(targetPlatform);
         }
 
         if (StringUtils.hasText(siteUrl)) {
@@ -154,16 +151,16 @@ public class ReleaseInfoService {
     }
 
     @Transactional
-    public void deleteReleaseInfo(Long itemId, String platformName) {
-        long platformId = drawPlatformRepository.findIdByName(platformName).orElseThrow(() -> new ApiException(DRAW_PLATFORM_NOT_FOUND));
-        ReleaseInfo releaseInfo = releaseInfoRepository.findByItemIdAndDrawPlatformId(itemId, platformId).orElseThrow(() -> new ApiException(RELEASE_INFO_NOT_FOUND));
+    public void deleteReleaseInfo(Long releaseInfoId) {
+        ReleaseInfo releaseInfo = releaseInfoRepository.findById(releaseInfoId).orElseThrow(() -> new ApiException(RELEASE_INFO_NOT_FOUND));
         releaseInfoRepository.delete(releaseInfo);
     }
 
     private ReleaseInfoDetailResponse getDetailResponse(Brand brand, Item item, DrawPlatform platform, ReleaseInfo releaseInfo) {
         return new ReleaseInfoDetailResponse(
+                releaseInfo.getId(),
                 brand.getKoreanName(), brand.getEnglishName(),
-                item.getCode(), item.getKoreanName(), item.getEnglishName(), item.getMainImage(),
+                item.getId(), item.getCode(), item.getKoreanName(), item.getEnglishName(), item.getMainImage(),
                 platform.getLogoImage(), platform.getKoreanName(), platform.getEnglishName(),
                 releaseInfo.getReleaseFormatDate(), releaseInfo.getDueFormatDate(), releaseInfo.getPresentationFormatDate(),
                 releaseInfo.getReleasePrice(), releaseInfo.getCurrencyUnit().toString(),

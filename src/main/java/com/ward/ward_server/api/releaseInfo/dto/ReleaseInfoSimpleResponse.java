@@ -4,9 +4,10 @@ import com.ward.ward_server.api.releaseInfo.entity.enums.ReleaseMethod;
 
 import java.time.LocalDateTime;
 
-import static com.ward.ward_server.global.Object.Constants.FORMAT;
+import static com.ward.ward_server.global.Object.Constants.DATE_STRING_FORMAT;
 
 public record ReleaseInfoSimpleResponse(
+        long releaseInfoId,
         String platformKoreanName,
         String platformEnglishName,
         long itemId,
@@ -16,7 +17,8 @@ public record ReleaseInfoSimpleResponse(
         String releaseMethod,
         String dueDate
 ) {
-    public ReleaseInfoSimpleResponse(String platformKoreanName,
+    public ReleaseInfoSimpleResponse(long releaseInfoId,
+                                     String platformKoreanName,
                                      String platformEnglishName,
                                      long itemId,
                                      String itemMainImage,
@@ -24,13 +26,14 @@ public record ReleaseInfoSimpleResponse(
                                      String itemEnglishName,
                                      ReleaseMethod releaseMethod,
                                      LocalDateTime dueDate) {
-        this(platformKoreanName,
+        this(releaseInfoId,
+                platformKoreanName,
                 platformEnglishName,
                 itemId,
                 itemMainImage,
                 itemKoreanName,
                 itemEnglishName,
                 releaseMethod.getDesc(),
-                dueDate.format(FORMAT));
+                dueDate.format(DATE_STRING_FORMAT));
     }
 }

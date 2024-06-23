@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoDetailResponse;
-import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoIdentifierRequest;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoRequest;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoSimpleResponse;
 import com.ward.ward_server.api.releaseInfo.service.ReleaseInfoService;
@@ -41,9 +40,9 @@ public class ReleaseInfoController {
                 request.deliveryMethod()));
     }
 
-    @GetMapping("/details")
-    public ApiResponse<ReleaseInfoDetailResponse> getReleaseInfo(@RequestBody ReleaseInfoIdentifierRequest request) {
-        return ApiResponse.ok(RELEASE_INFO_DETAIL_LOAD_SUCCESS, releaseInfoService.getReleaseInfo(request.itemId(), request.platformName()));
+    @GetMapping("/{releaseInfoId}")
+    public ApiResponse<ReleaseInfoDetailResponse> getReleaseInfo(@PathVariable("releaseInfoId") Long releaseInfoId) {
+        return ApiResponse.ok(RELEASE_INFO_DETAIL_LOAD_SUCCESS, releaseInfoService.getReleaseInfo(releaseInfoId));
     }
 
     @GetMapping
@@ -52,14 +51,11 @@ public class ReleaseInfoController {
         return ApiResponse.ok(RELEASE_INFO_LIST_LOAD_SUCCESS, releaseInfoService.getReleaseInfo10List(principal.getUserId(), sort));
     }
 
-    @PatchMapping
-    public ApiResponse<ReleaseInfoDetailResponse> updateReleaseInfo(@RequestBody ObjectNode node) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        ReleaseInfoIdentifierRequest origin = mapper.treeToValue(node.get("releaseInfoIdentifierRequest"), ReleaseInfoIdentifierRequest.class);
-        ReleaseInfoRequest request = mapper.treeToValue(node.get("releaseInfoRequest"), ReleaseInfoRequest.class);
+    @PatchMapping("/{releaseInfoId}")
+    public ApiResponse<ReleaseInfoDetailResponse> updateReleaseInfo(@PathVariable("releaseInfoId") Long releaseInfoId,
+                                                                    @RequestBody ReleaseInfoRequest request) {
         return ApiResponse.ok(RELEASE_INFO_UPDATE_SUCCESS, releaseInfoService.updateReleaseInfo(
-                origin.itemId(),
-                origin.platformName(),
+                releaseInfoId,
                 request.itemId(),
                 request.platformName(),
                 request.siteUrl(),
@@ -73,9 +69,9 @@ public class ReleaseInfoController {
                 request.deliveryMethod()));
     }
 
-    @DeleteMapping
-    public ApiResponse<Void> deleteReleaseInfo(@RequestBody ReleaseInfoIdentifierRequest request) {
-        releaseInfoService.deleteReleaseInfo(request.itemId(), request.platformName());
+    @DeleteMapping("/{releaseInfoId}")
+    public ApiResponse<Void> deleteReleaseInfo(@PathVariable("releaseInfoId") Long releaseInfoId) {
+        releaseInfoService.deleteReleaseInfo(releaseInfoId);
         return ApiResponse.ok(RELEASE_INFO_DELETE_SUCCESS);
     }
 

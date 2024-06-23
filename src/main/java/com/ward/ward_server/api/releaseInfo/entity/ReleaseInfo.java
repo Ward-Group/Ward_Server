@@ -1,5 +1,6 @@
 package com.ward.ward_server.api.releaseInfo.entity;
 
+import com.ward.ward_server.api.item.entity.Item;
 import com.ward.ward_server.api.releaseInfo.entity.enums.CurrencyUnit;
 import com.ward.ward_server.api.releaseInfo.entity.enums.DeliveryMethod;
 import com.ward.ward_server.api.releaseInfo.entity.enums.NotificationMethod;
@@ -23,11 +24,13 @@ public class ReleaseInfo extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long itemId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_id", nullable = false)
+    private Item item;
 
-    @Column(nullable = false)
-    private Long drawPlatformId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "draw_platform_id", nullable = false)
+    private DrawPlatform drawPlatform;
 
     private String siteUrl;
 
@@ -57,11 +60,11 @@ public class ReleaseInfo extends BaseTimeEntity {
     private DeliveryMethod deliveryMethod;
 
     @Builder
-    public ReleaseInfo(long itemId, long drawPlatformId, String siteUrl,
+    public ReleaseInfo(Item item, DrawPlatform drawPlatform, String siteUrl,
                        String releaseDate, String dueDate, String presentationDate, Integer releasePrice, CurrencyUnit currencyUnit,
                        NotificationMethod notificationMethod, ReleaseMethod releaseMethod, DeliveryMethod deliveryMethod) {
-        this.itemId = itemId;
-        this.drawPlatformId = drawPlatformId;
+        this.item = item;
+        this.drawPlatform = drawPlatform;
         this.siteUrl = siteUrl;
         this.releaseDate = LocalDateTime.parse(releaseDate, DATE_STRING_FORMAT);
         this.dueDate = LocalDateTime.parse(dueDate, DATE_STRING_FORMAT);
@@ -73,12 +76,12 @@ public class ReleaseInfo extends BaseTimeEntity {
         this.deliveryMethod = deliveryMethod;
     }
 
-    public void updateItemId(long itemId) {
-        this.itemId = itemId;
+    public void updateItem(Item item) {
+        this.item = item;
     }
 
-    public void updateDrawPlatformId(long drawPlatformId) {
-        this.drawPlatformId = drawPlatformId;
+    public void updateDrawPlatform(DrawPlatform drawPlatform) {
+        this.drawPlatform = drawPlatform;
     }
 
     public void updateSiteUrl(String siteUrl) {

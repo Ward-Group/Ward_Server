@@ -39,7 +39,7 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
                         brand.englishName,
                         item.id)
                 .from(releaseInfo)
-                .leftJoin(item).on(releaseInfo.itemId.eq(item.id))
+                .leftJoin(releaseInfo.item, item)
                 .leftJoin(item.brand, brand)
                 .where(isSameDay(now, releaseInfo.dueDate), nowDateTime.between(releaseInfo.releaseDate, releaseInfo.dueDate))
                 .orderBy(releaseInfo.dueDate.asc())
@@ -60,7 +60,7 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
                         brand.englishName,
                         item.id
                 ).from(releaseInfo)
-                .leftJoin(item).on(releaseInfo.itemId.eq(item.id))
+                .leftJoin(releaseInfo.item, item)
                 .leftJoin(item.brand, brand)
                 .where(nowDateTime.between(releaseInfo.releaseDate, releaseInfo.dueDate))
                 .orderBy(releaseInfo.dueDate.asc())
@@ -81,7 +81,7 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
                         brand.englishName,
                         item.id
                 ).from(releaseInfo)
-                .leftJoin(item).on(releaseInfo.itemId.eq(item.id))
+                .leftJoin(releaseInfo.item, item)
                 .leftJoin(item.brand, brand)
                 .where(item.id.in(wishItemIdListByUser(userId)),
                         nowDateTime.between(releaseInfo.releaseDate, releaseInfo.dueDate))
@@ -103,7 +103,7 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
                         brand.englishName,
                         item.id
                 ).from(releaseInfo)
-                .leftJoin(item).on(releaseInfo.itemId.eq(item.id))
+                .leftJoin(releaseInfo.item, item)
                 .leftJoin(item.brand, brand)
                 .where(nowDateTime.before(releaseInfo.releaseDate))
                 .orderBy(releaseInfo.releaseDate.asc())

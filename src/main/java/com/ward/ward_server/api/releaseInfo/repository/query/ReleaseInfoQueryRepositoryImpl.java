@@ -34,6 +34,7 @@ public class ReleaseInfoQueryRepositoryImpl implements ReleaseInfoQueryRepositor
         //마감일 = 오늘, 발매일 < 지금 < 마감일, 정렬은 마감일 오름차순
         return queryFactory.select(
                         Projections.constructor(ReleaseInfoSimpleResponse.class,
+                                releaseInfo.id,
                                 drawPlatform.koreanName,
                                 drawPlatform.englishName,
                                 item.id,
@@ -45,7 +46,7 @@ public class ReleaseInfoQueryRepositoryImpl implements ReleaseInfoQueryRepositor
                         ))
                 .from(releaseInfo)
                 .leftJoin(releaseInfo.drawPlatform, drawPlatform)
-                .leftJoin(item).on(releaseInfo.itemId.eq(item.id))
+                .leftJoin(releaseInfo.item, item)
                 .leftJoin(item.brand, brand)
                 .where(isSameDay(now, releaseInfo.dueDate), nowDateTime.between(releaseInfo.releaseDate, releaseInfo.dueDate))
                 .orderBy(releaseInfo.dueDate.asc())
@@ -58,6 +59,7 @@ public class ReleaseInfoQueryRepositoryImpl implements ReleaseInfoQueryRepositor
         //발매일 < 지금 < 마감일, 정렬은 마감일 오름차순
         return queryFactory.select(
                         Projections.constructor(ReleaseInfoSimpleResponse.class,
+                                releaseInfo.id,
                                 drawPlatform.koreanName,
                                 drawPlatform.englishName,
                                 item.id,
@@ -69,7 +71,7 @@ public class ReleaseInfoQueryRepositoryImpl implements ReleaseInfoQueryRepositor
                         ))
                 .from(releaseInfo)
                 .leftJoin(releaseInfo.drawPlatform, drawPlatform)
-                .leftJoin(item).on(releaseInfo.itemId.eq(item.id))
+                .leftJoin(releaseInfo.item, item)
                 .leftJoin(item.brand, brand)
                 .where(nowDateTime.between(releaseInfo.releaseDate, releaseInfo.dueDate))
                 .orderBy(releaseInfo.dueDate.asc())
@@ -82,6 +84,7 @@ public class ReleaseInfoQueryRepositoryImpl implements ReleaseInfoQueryRepositor
         //발매일 < 지금 < 마감일, 사용자의 관심 상품, 정렬은 마감일 오름차순
         return queryFactory.select(
                         Projections.constructor(ReleaseInfoSimpleResponse.class,
+                                releaseInfo.id,
                                 drawPlatform.koreanName,
                                 drawPlatform.englishName,
                                 item.id,
@@ -93,7 +96,7 @@ public class ReleaseInfoQueryRepositoryImpl implements ReleaseInfoQueryRepositor
                         ))
                 .from(releaseInfo)
                 .leftJoin(releaseInfo.drawPlatform, drawPlatform)
-                .leftJoin(item).on(releaseInfo.itemId.eq(item.id))
+                .leftJoin(releaseInfo.item, item)
                 .leftJoin(item.brand, brand)
                 .where(item.id.in(wishItemIdListByUser(userId)), nowDateTime.between(releaseInfo.releaseDate, releaseInfo.dueDate))
                 .orderBy(releaseInfo.dueDate.asc())
@@ -105,6 +108,7 @@ public class ReleaseInfoQueryRepositoryImpl implements ReleaseInfoQueryRepositor
         //지금 < 발매일, 정렬은 발매일 오름차순
         return queryFactory.select(
                         Projections.constructor(ReleaseInfoSimpleResponse.class,
+                                releaseInfo.id,
                                 drawPlatform.koreanName,
                                 drawPlatform.englishName,
                                 item.id,
@@ -116,7 +120,7 @@ public class ReleaseInfoQueryRepositoryImpl implements ReleaseInfoQueryRepositor
                         ))
                 .from(releaseInfo)
                 .leftJoin(releaseInfo.drawPlatform, drawPlatform)
-                .leftJoin(item).on(releaseInfo.itemId.eq(item.id))
+                .leftJoin(releaseInfo.item, item)
                 .leftJoin(item.brand, brand)
                 .where(nowDateTime.before(releaseInfo.releaseDate))
                 .orderBy(releaseInfo.releaseDate.asc())
@@ -128,6 +132,7 @@ public class ReleaseInfoQueryRepositoryImpl implements ReleaseInfoQueryRepositor
         //생성일 = 지금, 발매일 = null, 정렬은 생성일 오름차순
         return queryFactory.select(
                         Projections.constructor(ReleaseInfoSimpleResponse.class,
+                                releaseInfo.id,
                                 drawPlatform.koreanName,
                                 drawPlatform.englishName,
                                 item.id,
@@ -139,7 +144,7 @@ public class ReleaseInfoQueryRepositoryImpl implements ReleaseInfoQueryRepositor
                         ))
                 .from(releaseInfo)
                 .leftJoin(releaseInfo.drawPlatform, drawPlatform)
-                .leftJoin(item).on(releaseInfo.itemId.eq(item.id))
+                .leftJoin(releaseInfo.item, item)
                 .leftJoin(item.brand, brand)
                 .where(isSameDay(now, releaseInfo.createdAt))
                 .orderBy(releaseInfo.createdAt.asc())

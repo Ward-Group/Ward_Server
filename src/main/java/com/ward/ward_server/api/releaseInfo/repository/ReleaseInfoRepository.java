@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface ReleaseInfoRepository extends JpaRepository<ReleaseInfo, Long>, ReleaseInfoQueryRepository {
-    Optional<ReleaseInfo> findByItemIdAndDrawPlatformId(long itemId, long platformId);
+    Optional<ReleaseInfo> findById(long id);
 
     Optional<Long> findIdByItemIdAndDrawPlatformId(long itemId, long platformId);
 
