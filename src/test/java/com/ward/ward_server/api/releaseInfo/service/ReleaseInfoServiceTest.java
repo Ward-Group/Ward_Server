@@ -9,7 +9,6 @@ import com.ward.ward_server.api.releaseInfo.entity.enums.DeliveryMethod;
 import com.ward.ward_server.api.releaseInfo.entity.enums.NotificationMethod;
 import com.ward.ward_server.api.releaseInfo.entity.enums.ReleaseMethod;
 import com.ward.ward_server.api.releaseInfo.repository.ReleaseInfoRepository;
-import com.ward.ward_server.global.Object.Constants;
 import com.ward.ward_server.global.exception.ApiException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +20,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -42,14 +40,15 @@ public class ReleaseInfoServiceTest {
     private ReleaseInfoService releaseInfoService;
 
     private Item item;
-    private PageRequest pageRequest;
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
-        item = Item.builder().code("itemCode").koreanName("itemKoreanName").englishName("itemEnglishName").build();
-        setId(item, 1L);
-        pageRequest = PageRequest.of(0, 10);
+        try (AutoCloseable mocks = MockitoAnnotations.openMocks(this)) {
+            item = Item.builder().code("itemCode").koreanName("itemKoreanName").englishName("itemEnglishName").build();
+            setId(item, 1L);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void setId(Item item, Long id) {
@@ -97,8 +96,6 @@ public class ReleaseInfoServiceTest {
     @Test
     public void getOngoingReleaseInfos_multipleResults() {
         // Arrange
-        DateTimeFormatter formatter = Constants.DATE_STRING_FORMAT;
-
         ReleaseInfo releaseInfo1 = ReleaseInfo.builder()
                 .item(item)
                 .drawPlatform(DrawPlatform.builder().koreanName("Platform1").englishName("Platform1").logoImage("logo1").build())
@@ -143,8 +140,6 @@ public class ReleaseInfoServiceTest {
     @Test
     public void getCompletedReleaseInfos_multipleResults() {
         // Arrange
-        DateTimeFormatter formatter = Constants.DATE_STRING_FORMAT;
-
         ReleaseInfo releaseInfo1 = ReleaseInfo.builder()
                 .item(item)
                 .drawPlatform(DrawPlatform.builder().koreanName("Platform1").englishName("Platform1").logoImage("logo1").build())
