@@ -1,5 +1,7 @@
 package com.ward.ward_server.api.item.dto;
 
+import com.ward.ward_server.api.item.entity.enums.Category;
+
 import java.util.List;
 
 public record ItemRequest(
@@ -9,6 +11,6 @@ public record ItemRequest(
         String mainImage,
         List<String> itemImages,
         String brandName,
-        String category,
+        Category category,
         Integer price) {
 }

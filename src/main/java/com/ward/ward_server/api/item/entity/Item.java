@@ -1,6 +1,6 @@
 package com.ward.ward_server.api.item.entity;
 
-import com.ward.ward_server.api.item.entity.enumtype.Category;
+import com.ward.ward_server.api.item.entity.enums.Category;
 import com.ward.ward_server.global.Object.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;

@@ -1,6 +1,6 @@
 package com.ward.ward_server.api.item.entity;
 
-import com.ward.ward_server.api.item.entity.enumtype.Category;
+import com.ward.ward_server.api.item.entity.enums.Category;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import static com.ward.ward_server.global.Object.Constants.HOME_PAGE_SIZE;
 import static com.ward.ward_server.global.exception.ExceptionCode.BRAND_NOT_FOUND;
 import static com.ward.ward_server.global.exception.ExceptionCode.DUPLICATE_BRAND;
+import static com.ward.ward_server.global.response.error.ErrorCode.REQUIRED_FIELDS_MUST_BE_PROVIDED;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +31,7 @@ public class BrandService {
     @Transactional
     public BrandResponse createBrand(String koreanName, String englishName, String brandLogoImage) {
         if ((!StringUtils.hasText(koreanName) && !StringUtils.hasText(englishName)) || (englishName != null && !ValidationUtils.isValidEnglish(englishName)))
-            throw new ApiException(ExceptionCode.INVALID_INPUT);
+            throw new ApiException(ExceptionCode.INVALID_INPUT, REQUIRED_FIELDS_MUST_BE_PROVIDED.getMessage());
         if (brandRepository.existsByKoreanNameOrEnglishName(koreanName, englishName))
             throw new ApiException(DUPLICATE_BRAND);
         Brand savedBrand = brandRepository.save(Brand.builder()
@@ -38,7 +39,7 @@ public class BrandService {
                 .koreanName(koreanName)
                 .englishName(englishName)
                 .build());
-        return new BrandResponse(savedBrand.getLogoImage(), savedBrand.getKoreanName(), savedBrand.getEnglishName(), savedBrand.getViewCount());
+        return new BrandResponse(savedBrand.getId(), savedBrand.getLogoImage(), savedBrand.getKoreanName(), savedBrand.getEnglishName(), savedBrand.getViewCount());
     }
 
     @Transactional(readOnly = true)

@@ -3,7 +3,7 @@ package com.ward.ward_server.api.item.repository;
 import com.ward.ward_server.api.item.dto.ItemSimpleResponse;
 import com.ward.ward_server.api.item.entity.Brand;
 import com.ward.ward_server.api.item.entity.Item;
-import com.ward.ward_server.api.item.entity.enumtype.Category;
+import com.ward.ward_server.api.item.entity.enums.Category;
 import com.ward.ward_server.api.releaseInfo.entity.DrawPlatform;
 import com.ward.ward_server.api.releaseInfo.entity.ReleaseInfo;
 import com.ward.ward_server.api.releaseInfo.entity.enums.CurrencyUnit;

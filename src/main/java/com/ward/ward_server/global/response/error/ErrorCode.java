@@ -18,6 +18,7 @@ public enum ErrorCode {
     RELEASE_METHOD_NOT_EXISTS("입력하신 발매방법이 존재하지 않아요."),
     DELIVERY_METHOD_NOT_EXISTS("입력하신 배달방법이 존재하지 않아요."),
     CURRENCY_UNIT_NOT_EXISTS("입력하신 화폐단위가 존재하지 않아요."),
-    SORT_NOT_EXISTS("입력하신 정렬방법이 존재하지 않아요.");
+    SORT_NOT_EXISTS("입력하신 정렬방법이 존재하지 않아요."),
+    CATEGORY_NOT_EXISTS("입력하신 카테고리가 존재하지 않아요.");
     private final String message;
 }

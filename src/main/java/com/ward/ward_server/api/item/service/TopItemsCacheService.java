@@ -1,7 +1,7 @@
 package com.ward.ward_server.api.item.service;
 
 import com.ward.ward_server.api.item.entity.ItemViewCount;
-import com.ward.ward_server.api.item.entity.enumtype.Category;
+import com.ward.ward_server.api.item.entity.enums.Category;
 import com.ward.ward_server.api.item.repository.ItemViewCountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

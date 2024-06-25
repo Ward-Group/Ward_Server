@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface ItemRepository extends JpaRepository<Item, Long>, ItemQueryRepository {
-    Optional<Item> findByCodeAndBrandIdAndDeletedAtIsNull(String code, long brandId);
+    Optional<Item> findById(long itemId);
     @Query("SELECT i.id " +
             "FROM Item i " +
             "WHERE i.code = :code " +
