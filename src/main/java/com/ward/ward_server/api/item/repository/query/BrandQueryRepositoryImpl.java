@@ -1,14 +1,18 @@
 package com.ward.ward_server.api.item.repository.query;
 
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ward.ward_server.api.item.dto.BrandInfoResponse;
 import com.ward.ward_server.api.item.dto.BrandItemResponse;
+import com.ward.ward_server.api.item.entity.enums.BrandSort;
 import com.ward.ward_server.api.item.repository.query.BrandQueryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
@@ -27,8 +31,7 @@ import static com.ward.ward_server.api.wishItem.QWishItem.wishItem;
 public class BrandQueryRepositoryImpl implements BrandQueryRepository {
     private final JPAQueryFactory queryFactory;
 
-    public Page<BrandInfoResponse> getBrandItemPage(Pageable pageable) {
-        log.debug("pageable {}", pageable.toString());
+    public Page<BrandInfoResponse> getBrandItemPage(BrandSort brandSort, Pageable pageable) {
         List<Tuple> content = queryFactory.select(
                         brand.id,
                         brand.logoImage,
@@ -39,7 +42,8 @@ public class BrandQueryRepositoryImpl implements BrandQueryRepository {
                 .from(brand)
                 .leftJoin(wishBrand).on(brand.id.eq(wishBrand.brand.id))
                 .groupBy(brand.id)
-                .orderBy(brand.viewCount.add(count(wishBrand)).desc())
+                //.orderBy(brand.viewCount.add(count(wishBrand)).desc())
+                .orderBy(createOrderSpecifier(brandSort))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -51,12 +55,14 @@ public class BrandQueryRepositoryImpl implements BrandQueryRepository {
 
         List<BrandInfoResponse> result = content.stream()
                 .map(e -> new BrandInfoResponse(
+                        e.get(brand.id),
                         e.get(brand.logoImage),
                         e.get(brand.koreanName),
                         e.get(brand.englishName),
                         e.get(brand.viewCount),
                         e.get(5, Long.class),
                         queryFactory.select(Projections.constructor(BrandItemResponse.class,
+                                        item.id,
                                         item.koreanName,
                                         item.englishName,
                                         item.code,
@@ -77,5 +83,13 @@ public class BrandQueryRepositoryImpl implements BrandQueryRepository {
                 .from(brand);
 
         return PageableExecutionUtils.getPage(result, pageable, countQuery::fetchOne);
+    }
+
+    private OrderSpecifier createOrderSpecifier(BrandSort brandSort){
+        return switch (brandSort){
+            case KOREAN_ALPHABETICAL -> new OrderSpecifier<>(Order.ASC, brand.koreanName);
+            case ALPHABETICAL -> new OrderSpecifier<>(Order.ASC, brand.englishName);
+            default -> new OrderSpecifier<>(Order.DESC, brand.viewCount.add(count(wishBrand)));
+        };
     }
 }

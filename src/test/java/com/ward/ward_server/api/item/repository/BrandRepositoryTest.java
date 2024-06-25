@@ -2,6 +2,7 @@ package com.ward.ward_server.api.item.repository;
 
 import com.ward.ward_server.api.item.dto.BrandInfoResponse;
 import com.ward.ward_server.api.item.entity.Brand;
+import com.ward.ward_server.api.item.entity.enums.BrandSort;
 import com.ward.ward_server.global.config.QuerydslConfig;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +42,7 @@ class BrandRepositoryTest {
         IntStream.range(0, 30).forEach(i -> brand.increaseViewCount()); //브랜드 조회수를 db 데이터보다 더 많게 설정 -> top1
 
         //when
-        Page<BrandInfoResponse> result = brandRepository.getBrandItemPage(PageRequest.of(page, size));
+        Page<BrandInfoResponse> result = brandRepository.getBrandItemPage(BrandSort.RANKING, PageRequest.of(page, size));
 
         //then
         log.info("\n결과: {}", result.stream()
