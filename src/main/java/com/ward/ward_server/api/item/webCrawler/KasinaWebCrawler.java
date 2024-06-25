@@ -100,8 +100,8 @@ public class KasinaWebCrawler {
 
             // 5.상태
             LocalDateTime now = LocalDateTime.now();
-            Status status = Status.IMPOSSIBLE;
-            if (now.isAfter(releaseDate)) status = Status.POSSIBLE;
+            //Status status = Status.IMPOSSIBLE;
+            //if (now.isAfter(releaseDate)) status = Status.POSSIBLE;
 
             // 6.브랜드 KASINA
 

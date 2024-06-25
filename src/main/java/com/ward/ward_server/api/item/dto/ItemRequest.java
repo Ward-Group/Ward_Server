@@ -10,7 +10,7 @@ public record ItemRequest(
         String itemCode,
         String mainImage,
         List<String> itemImages,
-        String brandName,
+        Long brandId,
         Category category,
         Integer price) {
 }

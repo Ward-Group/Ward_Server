@@ -7,13 +7,14 @@ public record ItemDetailResponse(
         String itemKoreanName,
         String itemEnglishName,
         String itemCode,
-        String MainImage,
+        String mainImage,
         List<String> itemImages,
-        long brandId,
-        String brandKoreanName,
-        String brandEnglishName,
         long viewCount,
         String category,
-        int price
+        int price,
+        long brandId,
+        String brandLogoImage,
+        String brandKoreanName,
+        String brandEnglishName
 ) {
 }

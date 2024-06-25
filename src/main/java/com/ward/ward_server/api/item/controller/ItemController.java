@@ -6,10 +6,10 @@ import com.ward.ward_server.api.item.dto.ItemSimpleResponse;
 import com.ward.ward_server.api.item.dto.ItemTop10Response;
 import com.ward.ward_server.api.item.entity.ItemViewCount;
 import com.ward.ward_server.api.item.entity.enums.Category;
-import com.ward.ward_server.global.Object.enums.Sort;
 import com.ward.ward_server.api.item.service.ItemService;
 import com.ward.ward_server.api.item.service.TopItemsCacheService;
 import com.ward.ward_server.api.user.auth.security.CustomUserDetails;
+import com.ward.ward_server.global.Object.enums.Sort;
 import com.ward.ward_server.global.exception.ApiException;
 import com.ward.ward_server.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -32,18 +32,18 @@ public class ItemController {
     @PostMapping
     public ApiResponse<ItemDetailResponse> createItem(@RequestBody ItemRequest request) throws ApiException {
         return ApiResponse.ok(ITEM_CREATE_SUCCESS,
-                itemService.createItem(request.itemCode(), request.koreanName(), request.englishName(), request.mainImage(), request.itemImages(), request.brandName(), request.category(), request.price()));
+                itemService.createItem(request.itemCode(), request.koreanName(), request.englishName(), request.mainImage(), request.itemImages(), request.brandId(), request.category(), request.price()));
     }
 
-    @GetMapping("/{itemId}")
+    @GetMapping("/{itemId}/details")
     public ApiResponse<ItemDetailResponse> getItem(@PathVariable("itemId") Long itemId) {
         return ApiResponse.ok(ITEM_DETAIL_LOAD_SUCCESS, itemService.getItem(itemId));
     }
 
     @GetMapping
-    public ApiResponse<List<ItemSimpleResponse>> getItem10List(@AuthenticationPrincipal CustomUserDetails principal,
-                                                               @RequestParam Sort sort) {
-        return ApiResponse.ok(ITEM_LIST_LOAD_SUCCESS, itemService.getItem10List(principal.getUserId(), sort));
+    public ApiResponse<List<ItemSimpleResponse>> getItem10ListSortedForHomeView(@AuthenticationPrincipal CustomUserDetails principal,
+                                                                                @RequestParam Sort sort) {
+        return ApiResponse.ok(ITEM_LIST_LOAD_SUCCESS, itemService.getItem10ListSortedForHomeView(principal.getUserId(), sort));
     }
 
     @GetMapping("/top10")
@@ -64,7 +64,7 @@ public class ItemController {
     public ApiResponse<ItemDetailResponse> updateItem(@PathVariable("itemId") Long itemId,
                                                       @RequestBody ItemRequest request) {
         return ApiResponse.ok(ITEM_UPDATE_SUCCESS,
-                itemService.updateItem(itemId, request.koreanName(), request.englishName(), request.itemCode(), request.mainImage(), request.itemImages(), request.brandName(), request.category(), request.price()));
+                itemService.updateItem(itemId, request.koreanName(), request.englishName(), request.itemCode(), request.mainImage(), request.itemImages(), request.brandId(), request.category(), request.price()));
     }
 
     @DeleteMapping("/{itemId}")
@@ -72,5 +72,4 @@ public class ItemController {
         itemService.deleteItem(itemId);
         return ApiResponse.ok(ITEM_DELETE_SUCCESS);
     }
-
 }

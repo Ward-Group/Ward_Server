@@ -1,15 +1,11 @@
 package com.ward.ward_server.api.wishItem;
 
-import com.ward.ward_server.api.item.entity.Brand;
 import com.ward.ward_server.api.item.entity.Item;
 import com.ward.ward_server.api.item.repository.BrandRepository;
 import com.ward.ward_server.api.item.repository.ItemImageRepository;
 import com.ward.ward_server.api.item.repository.ItemRepository;
 import com.ward.ward_server.api.user.entity.User;
 import com.ward.ward_server.api.user.repository.UserRepository;
-import com.ward.ward_server.api.wishItem.WishItemResponse;
-import com.ward.ward_server.api.wishItem.WishItem;
-import com.ward.ward_server.api.wishItem.WishItemRepository;
 import com.ward.ward_server.global.Object.PageResponse;
 import com.ward.ward_server.global.exception.ApiException;
 import lombok.RequiredArgsConstructor;
@@ -28,15 +24,15 @@ public class WishItemService {
     private final WishItemRepository wishItemRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
-    private final BrandRepository brandRepository;
     private final ItemImageRepository itemImageRepository;
 
-    public void createWishItem(long userId, String itemCode, String brandName) {
-        Brand brand = brandRepository.findByName(brandName).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
+    @Transactional
+    public void createWishItem(long userId, long itemId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ApiException(USER_NOT_FOUND));
-        Item item = itemRepository.findByCodeAndBrandIdAndDeletedAtIsNull(itemCode, brand.getId()).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
-        if (wishItemRepository.existsByUserIdAndItemId(userId, item.getId()))
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
+        if (wishItemRepository.existsByUserIdAndItemId(userId, item.getId())) {
             throw new ApiException(DUPLICATE_WISH_ITEM);
+        }
         wishItemRepository.save(new WishItem(user, item));
     }
 
@@ -56,11 +52,13 @@ public class WishItemService {
     }
 
     @Transactional
-    public void deleteWishItem(long userId, String itemCode, String brandName) {
-        Brand brand = brandRepository.findByName(brandName).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
-        Item item = itemRepository.findByCodeAndBrandIdAndDeletedAtIsNull(itemCode, brand.getId()).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
-        if (!wishItemRepository.existsByUserIdAndItemId(userId, item.getId()))
+    public void deleteWishItem(long userId, long itemId) {
+        if (!itemImageRepository.existsById(itemId)) {
+            throw new ApiException(ITEM_NOT_FOUND);
+        }
+        if (!wishItemRepository.existsByUserIdAndItemId(userId, itemId)) {
             throw new ApiException(WISH_ITEM_NOT_FOUND);
-        wishItemRepository.deleteByUserIdAndItemId(userId, item.getId());
+        }
+        wishItemRepository.deleteByUserIdAndItemId(userId, itemId);
     }
 }

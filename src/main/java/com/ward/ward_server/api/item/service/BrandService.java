@@ -71,7 +71,7 @@ public class BrandService {
                 else throw new ApiException(ExceptionCode.INVALID_INPUT);
             }
         }
-        return new BrandResponse(brand.getLogoImage(), brand.getKoreanName(), brand.getEnglishName(), brand.getViewCount());
+        return new BrandResponse(brand.getId(), brand.getLogoImage(), brand.getKoreanName(), brand.getEnglishName(), brand.getViewCount());
     }
 
     @Transactional
