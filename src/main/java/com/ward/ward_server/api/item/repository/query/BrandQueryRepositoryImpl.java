@@ -8,11 +8,9 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ward.ward_server.api.item.dto.BrandInfoResponse;
 import com.ward.ward_server.api.item.dto.BrandItemResponse;
-import com.ward.ward_server.api.item.entity.enums.BrandSort;
-import com.ward.ward_server.api.item.repository.query.BrandQueryRepository;
+import com.ward.ward_server.global.Object.enums.ApiSort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
@@ -31,7 +29,7 @@ import static com.ward.ward_server.api.wishItem.QWishItem.wishItem;
 public class BrandQueryRepositoryImpl implements BrandQueryRepository {
     private final JPAQueryFactory queryFactory;
 
-    public Page<BrandInfoResponse> getBrandItemPage(BrandSort brandSort, Pageable pageable) {
+    public Page<BrandInfoResponse> getBrandItemPage(ApiSort apiSort, Pageable pageable) {
         List<Tuple> content = queryFactory.select(
                         brand.id,
                         brand.logoImage,
@@ -42,8 +40,7 @@ public class BrandQueryRepositoryImpl implements BrandQueryRepository {
                 .from(brand)
                 .leftJoin(wishBrand).on(brand.id.eq(wishBrand.brand.id))
                 .groupBy(brand.id)
-                //.orderBy(brand.viewCount.add(count(wishBrand)).desc())
-                .orderBy(createOrderSpecifier(brandSort))
+                .orderBy(createOrderSpecifier(apiSort))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -85,8 +82,8 @@ public class BrandQueryRepositoryImpl implements BrandQueryRepository {
         return PageableExecutionUtils.getPage(result, pageable, countQuery::fetchOne);
     }
 
-    private OrderSpecifier createOrderSpecifier(BrandSort brandSort){
-        return switch (brandSort){
+    private OrderSpecifier createOrderSpecifier(ApiSort apiSort){
+        return switch (apiSort){
             case KOREAN_ALPHABETICAL -> new OrderSpecifier<>(Order.ASC, brand.koreanName);
             case ALPHABETICAL -> new OrderSpecifier<>(Order.ASC, brand.englishName);
             default -> new OrderSpecifier<>(Order.DESC, brand.viewCount.add(count(wishBrand)));

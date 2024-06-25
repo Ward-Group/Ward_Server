@@ -4,14 +4,12 @@ import com.ward.ward_server.api.item.dto.BrandInfoResponse;
 import com.ward.ward_server.api.item.dto.BrandRecommendedResponse;
 import com.ward.ward_server.api.item.dto.BrandRequest;
 import com.ward.ward_server.api.item.dto.BrandResponse;
-import com.ward.ward_server.api.item.entity.enums.BrandSort;
+import com.ward.ward_server.global.Object.enums.ApiSort;
 import com.ward.ward_server.api.item.service.BrandService;
 import com.ward.ward_server.global.Object.PageResponse;
-import com.ward.ward_server.global.Object.enums.Sort;
 import com.ward.ward_server.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.index.qual.Positive;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,7 +28,7 @@ public class BrandController {
     }
 
     @GetMapping
-    public ApiResponse<PageResponse<BrandInfoResponse>> getBrandItemPage(@RequestParam("sort") BrandSort sort,
+    public ApiResponse<PageResponse<BrandInfoResponse>> getBrandItemPage(@RequestParam("sort") ApiSort sort,
                                                                          @Positive @RequestParam(value = "page") int page) {
         return ApiResponse.ok(BRAND_TOP10_WITH_ITEM_LOAD_SUCCESS, brandService.getBrandItemPageSortedForHomeView(sort, page - 1));
     }

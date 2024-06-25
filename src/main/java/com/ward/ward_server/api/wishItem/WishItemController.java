@@ -2,6 +2,7 @@ package com.ward.ward_server.api.wishItem;
 
 import com.ward.ward_server.api.user.auth.security.CustomUserDetails;
 import com.ward.ward_server.global.Object.PageResponse;
+import com.ward.ward_server.global.Object.enums.ApiSort;
 import com.ward.ward_server.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.index.qual.Positive;
@@ -25,10 +26,10 @@ public class WishItemController {
 
     @GetMapping
     public ApiResponse<PageResponse<WishItemResponse>> getWishItemListByUser(
-            @Positive @RequestParam(value = "page", defaultValue = "1") int page,
-            @Positive @RequestParam(value = "size", defaultValue = "10") int size,
-            @AuthenticationPrincipal CustomUserDetails principal) {
-        return ApiResponse.ok(WISH_ITEM_LOAD_SUCCESS, wishItemService.getWishItemListByUser(page - 1, size, principal.getUserId()));
+            @AuthenticationPrincipal CustomUserDetails principal,
+            @RequestParam("sort") ApiSort sort,
+            @Positive @RequestParam(value = "page") int page) {
+        return ApiResponse.ok(WISH_ITEM_LOAD_SUCCESS, wishItemService.getWishItemListByUser(principal.getUserId(), sort, page - 1));
     }
 
     @DeleteMapping("/{itemId}")
