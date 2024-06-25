@@ -16,6 +16,8 @@ import com.ward.ward_server.api.releaseInfo.repository.ReleaseInfoRepository;
 import com.ward.ward_server.global.Object.enums.Sort;
 import com.ward.ward_server.global.exception.ApiException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -78,6 +80,20 @@ public class ReleaseInfoService {
             case REGISTER_TODAY -> releaseInfoRepository.getRegisterTodayReleaseInfoOrdered(now);
             default -> releaseInfoRepository.getDueTodayReleaseInfoOrdered(now);
         };
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ReleaseInfo> getOngoingReleaseInfos(Long itemId, int page, int size) {
+        Item item = itemRepository.findByIdAndDeletedAtIsNull(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
+        LocalDateTime now = LocalDateTime.now();
+        return releaseInfoRepository.findByItemAndDueDateAfter(item, now, PageRequest.of(page, size));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ReleaseInfo> getCompletedReleaseInfos(Long itemId, int page, int size) {
+        Item item = itemRepository.findByIdAndDeletedAtIsNull(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
+        LocalDateTime now = LocalDateTime.now();
+        return releaseInfoRepository.findByItemAndDueDateBefore(item, now, PageRequest.of(page, size));
     }
 
     @Transactional

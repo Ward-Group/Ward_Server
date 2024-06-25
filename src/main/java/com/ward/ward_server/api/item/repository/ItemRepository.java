@@ -2,8 +2,6 @@ package com.ward.ward_server.api.item.repository;
 
 import com.ward.ward_server.api.item.entity.Item;
 import com.ward.ward_server.api.item.repository.query.ItemQueryRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

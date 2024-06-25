@@ -41,12 +41,19 @@ public class ItemController {
         return ApiResponse.ok(ITEM_DETAIL_LOAD_SUCCESS, itemService.getItem(itemCode, brandName));
     }
 
+    // 상품 상세 화면
+    @GetMapping("/{itemId}/details")
+    public ApiResponse<ItemDetailResponse> getItem(@PathVariable("itemId") Long itemId) {
+        return ApiResponse.ok(ITEM_DETAIL_LOAD_SUCCESS, itemService.getItem(itemId));
+    }
+
     @GetMapping
     public ApiResponse<List<ItemSimpleResponse>> getItem10List(@AuthenticationPrincipal CustomUserDetails principal,
                                                                @RequestParam Sort sort) {
         return ApiResponse.ok(ITEM_LIST_LOAD_SUCCESS, itemService.getItem10List(principal.getUserId(), sort));
     }
 
+    // 홈 화면-실시간 Top10
     @GetMapping("/top10")
     public ApiResponse<List<ItemTop10Response>> getTop10ItemsByCategory(@RequestParam("category") String category) {
         Category itemCategory = Category.ofText(category);

@@ -3,6 +3,7 @@ package com.ward.ward_server.global.exception.handler;
 import com.ward.ward_server.global.exception.ApiException;
 import com.ward.ward_server.global.exception.ExceptionCode;
 import com.ward.ward_server.global.response.ApiResponse;
+import com.ward.ward_server.global.response.error.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -29,5 +30,19 @@ public class ExceptionHandler {
     @org.springframework.web.bind.annotation.ExceptionHandler(MethodArgumentNotValidException.class)
     public ApiResponse handleValidationExceptions(MethodArgumentNotValidException ex) {
         return ApiResponse.failure(ExceptionCode.INVALID_INPUT);
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @org.springframework.web.bind.annotation.ExceptionHandler(NullPointerException.class)
+    public ApiResponse handleNullPointerException(NullPointerException ex) {
+        log.error("Null Pointer Exception: ", ex);
+        return ApiResponse.error(ErrorCode.DATA_TYPE_CONVERT_FAIL);
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @org.springframework.web.bind.annotation.ExceptionHandler(Exception.class)
+    public ApiResponse handleException(Exception ex) {
+        log.error("Unexpected Exception: ", ex);
+        return ApiResponse.error(ErrorCode.SERVER_ERROR);
     }
 }
