@@ -343,3 +343,6 @@ Dockerfile
 #gradlew
 gradlew.bat
 gradlew
+
+# QueryDSL Q-classes
+src/main/generated/
