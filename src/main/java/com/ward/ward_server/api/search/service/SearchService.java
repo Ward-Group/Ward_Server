@@ -40,8 +40,6 @@ public class SearchService {
             );
         }).collect(Collectors.toList());
 
-        SearchItemsResponse response = new SearchItemsResponse(items.getTotalElements(), results);
-
-        return response;
+        return new SearchItemsResponse(items.getTotalElements(), results);
     }
 }
