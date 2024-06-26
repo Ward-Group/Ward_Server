@@ -3,14 +3,14 @@ package com.ward.ward_server.global.exception.handler;
 import com.ward.ward_server.global.exception.ApiException;
 import com.ward.ward_server.global.exception.ExceptionCode;
 import com.ward.ward_server.global.response.ApiResponse;
-import com.ward.ward_server.global.response.error.ErrorCode;
+import com.ward.ward_server.global.response.error.ErrorMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import static com.ward.ward_server.global.response.error.ErrorCode.DATA_TYPE_CONVERT_FAIL;
+import static com.ward.ward_server.global.response.error.ErrorMessage.DATA_TYPE_CONVERT_FAIL;
 
 @RestControllerAdvice
 @Slf4j
@@ -36,13 +36,13 @@ public class ExceptionHandler {
     @org.springframework.web.bind.annotation.ExceptionHandler(NullPointerException.class)
     public ApiResponse handleNullPointerException(NullPointerException ex) {
         log.error("Null Pointer Exception: ", ex);
-        return ApiResponse.error(ErrorCode.DATA_TYPE_CONVERT_FAIL);
+        return ApiResponse.error(ErrorMessage.DATA_TYPE_CONVERT_FAIL);
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @org.springframework.web.bind.annotation.ExceptionHandler(Exception.class)
     public ApiResponse handleException(Exception ex) {
         log.error("Unexpected Exception: ", ex);
-        return ApiResponse.error(ErrorCode.SERVER_ERROR);
+        return ApiResponse.error(ErrorMessage.SERVER_ERROR);
     }
 }

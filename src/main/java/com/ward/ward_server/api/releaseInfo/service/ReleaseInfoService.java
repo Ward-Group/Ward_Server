@@ -13,7 +13,7 @@ import com.ward.ward_server.api.releaseInfo.entity.enums.NotificationMethod;
 import com.ward.ward_server.api.releaseInfo.entity.enums.ReleaseMethod;
 import com.ward.ward_server.api.releaseInfo.repository.DrawPlatformRepository;
 import com.ward.ward_server.api.releaseInfo.repository.ReleaseInfoRepository;
-import com.ward.ward_server.global.Object.enums.Sort;
+import com.ward.ward_server.global.Object.enums.HomeSort;
 import com.ward.ward_server.global.exception.ApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.ward.ward_server.global.exception.ExceptionCode.*;
-import static com.ward.ward_server.global.response.error.ErrorCode.REQUIRED_FIELDS_MUST_BE_PROVIDED;
+import static com.ward.ward_server.global.response.error.ErrorMessage.REQUIRED_FIELDS_MUST_BE_PROVIDED;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +43,7 @@ public class ReleaseInfoService {
                 || notificationMethod == null || releaseMethod == null || deliveryMethod == null) {
             throw new ApiException(INVALID_INPUT, REQUIRED_FIELDS_MUST_BE_PROVIDED.getMessage());
         }
-        Item item = itemRepository.findByIdAndDeletedAtIsNull(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
         DrawPlatform platform = drawPlatformRepository.findByName(platformName).orElseThrow(() -> new ApiException(DRAW_PLATFORM_NOT_FOUND));
         if (releaseInfoRepository.existsByItemIdAndDrawPlatform(item.getId(), platform)) {
             throw new ApiException(DUPLICATE_RELEASE_INFO);
@@ -71,9 +71,9 @@ public class ReleaseInfoService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReleaseInfoSimpleResponse> getReleaseInfo10List(Long userId, Sort sort) {
+    public List<ReleaseInfoSimpleResponse> getReleaseInfo10List(Long userId, HomeSort homeSort) {
         LocalDateTime now = LocalDateTime.now();
-        return switch (sort) {
+        return switch (homeSort) {
             case RELEASE_NOW -> releaseInfoRepository.getReleaseTodayReleaseInfoOrdered(now);
             case RELEASE_WISH -> releaseInfoRepository.getWishItemReleaseInfoOrdered(userId, now);
             case RELEASE_CONFIRM -> releaseInfoRepository.getJustConfirmReleaseInfoOrdered(now);
@@ -84,14 +84,14 @@ public class ReleaseInfoService {
 
     @Transactional(readOnly = true)
     public Page<ReleaseInfo> getOngoingReleaseInfos(Long itemId, int page, int size) {
-        Item item = itemRepository.findByIdAndDeletedAtIsNull(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
         LocalDateTime now = LocalDateTime.now();
         return releaseInfoRepository.findByItemAndDueDateAfter(item, now, PageRequest.of(page, size));
     }
 
     @Transactional(readOnly = true)
     public Page<ReleaseInfo> getCompletedReleaseInfos(Long itemId, int page, int size) {
-        Item item = itemRepository.findByIdAndDeletedAtIsNull(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
         LocalDateTime now = LocalDateTime.now();
         return releaseInfoRepository.findByItemAndDueDateBefore(item, now, PageRequest.of(page, size));
     }
@@ -108,14 +108,14 @@ public class ReleaseInfoService {
         DrawPlatform targetPlatform = null;
         if (itemId != null && !StringUtils.hasText(platformName)) {
             //상품만 변경
-            targetItem = itemRepository.findByIdAndDeletedAtIsNull(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
+            targetItem = itemRepository.findById(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
             if (releaseInfoRepository.existsByItemIdAndDrawPlatform(targetItem.getId(), originPlatform)) {
                 throw new ApiException(DUPLICATE_RELEASE_INFO);
             }
             origin.updateItem(targetItem);
         } else if (itemId != null && StringUtils.hasText(platformName)) {
             //상품과 플랫폼 변경
-            targetItem = itemRepository.findByIdAndDeletedAtIsNull(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
+            targetItem = itemRepository.findById(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
             targetPlatform = drawPlatformRepository.findByName(platformName).orElseThrow(() -> new ApiException(DRAW_PLATFORM_NOT_FOUND));
             if (releaseInfoRepository.existsByItemIdAndDrawPlatform(targetItem.getId(), targetPlatform)) {
                 throw new ApiException(DUPLICATE_RELEASE_INFO);

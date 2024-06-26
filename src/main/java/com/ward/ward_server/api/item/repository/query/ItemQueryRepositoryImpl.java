@@ -7,7 +7,6 @@ import com.querydsl.core.types.dsl.DateTimeTemplate;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ward.ward_server.api.item.dto.ItemSimpleResponse;
-import com.ward.ward_server.api.item.repository.query.ItemQueryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,14 +30,15 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
         DateTimeTemplate<LocalDateTime> nowDateTime = Expressions.dateTimeTemplate(LocalDateTime.class, "{0}", now);
         //마감일 = 오늘, 발매일 < 지금 < 마감일, 정렬은 마감일 오름차순
         List<Tuple> result = queryFactory.select(
+                        item.id,
                         item.koreanName,
                         item.englishName,
                         item.code,
                         item.mainImage,
+                        brand.id,
                         brand.koreanName,
-                        brand.englishName,
-                        item.id)
-                .from(releaseInfo)
+                        brand.englishName
+                ).from(releaseInfo)
                 .leftJoin(releaseInfo.item, item)
                 .leftJoin(item.brand, brand)
                 .where(isSameDay(now, releaseInfo.dueDate), nowDateTime.between(releaseInfo.releaseDate, releaseInfo.dueDate))
@@ -52,13 +52,14 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
         DateTimeTemplate<LocalDateTime> nowDateTime = Expressions.dateTimeTemplate(LocalDateTime.class, "{0}", now);
         //발매일 < 지금 < 마감일, 정렬은 마감일 오름차순
         List<Tuple> result = queryFactory.select(
+                        item.id,
                         item.koreanName,
                         item.englishName,
                         item.code,
                         item.mainImage,
+                        brand.id,
                         brand.koreanName,
-                        brand.englishName,
-                        item.id
+                        brand.englishName
                 ).from(releaseInfo)
                 .leftJoin(releaseInfo.item, item)
                 .leftJoin(item.brand, brand)
@@ -73,13 +74,14 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
         DateTimeTemplate<LocalDateTime> nowDateTime = Expressions.dateTimeTemplate(LocalDateTime.class, "{0}", now);
         //발매일 < 지금 < 마감일, 사용자의 관심 상품, 정렬은 마감일 오름차순
         List<Tuple> result = queryFactory.select(
+                        item.id,
                         item.koreanName,
                         item.englishName,
                         item.code,
                         item.mainImage,
+                        brand.id,
                         brand.koreanName,
-                        brand.englishName,
-                        item.id
+                        brand.englishName
                 ).from(releaseInfo)
                 .leftJoin(releaseInfo.item, item)
                 .leftJoin(item.brand, brand)
@@ -95,13 +97,14 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
         DateTimeTemplate<LocalDateTime> nowDateTime = Expressions.dateTimeTemplate(LocalDateTime.class, "{0}", now);
         //지금 < 발매일, 정렬은 발매일 오름차순
         List<Tuple> result = queryFactory.select(
+                        item.id,
                         item.koreanName,
                         item.englishName,
                         item.code,
                         item.mainImage,
+                        brand.id,
                         brand.koreanName,
-                        brand.englishName,
-                        item.id
+                        brand.englishName
                 ).from(releaseInfo)
                 .leftJoin(releaseInfo.item, item)
                 .leftJoin(item.brand, brand)
@@ -113,18 +116,16 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
     }
 
     public List<ItemSimpleResponse> getRegisterTodayItemOrdered(long userId, LocalDateTime now) {
-        log.debug("register\n" +
-                "app now : {}\n" +
-                "UTC : {}", now, now.minusHours(9));
         //생성일 = 지금, 발매일 = null, 정렬은 생성일 오름차순
         List<Tuple> result = queryFactory.select(
+                        item.id,
                         item.koreanName,
                         item.englishName,
                         item.code,
                         item.mainImage,
+                        brand.id,
                         brand.koreanName,
-                        brand.englishName,
-                        item.id
+                        brand.englishName
                 ).from(item)
                 .leftJoin(item.brand, brand)
                 .where(isSameDay(now, item.createdAt))
@@ -149,14 +150,15 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
     }
 
     private List<ItemSimpleResponse> itemSimpleResponseList(long userId, List<Tuple> tuples) {
-        log.debug("response list 메서드, tuple 개수 {} ", tuples.size());
         final Set<Long> wishItemIdList = wishItemIdListByUser(userId);
         return tuples.stream()
                 .map(e -> new ItemSimpleResponse(
+                        e.get(item.id),
                         e.get(item.koreanName),
                         e.get(item.englishName),
                         e.get(item.code),
                         e.get(item.mainImage),
+                        e.get(brand.id),
                         e.get(brand.koreanName),
                         e.get(brand.englishName),
                         wishItemIdList.contains(e.get(item.id))))

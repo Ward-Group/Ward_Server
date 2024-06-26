@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import static com.ward.ward_server.global.exception.ExceptionCode.*;
-import static com.ward.ward_server.global.response.error.ErrorCode.NAME_MUST_BE_PROVIDED;
+import static com.ward.ward_server.global.response.error.ErrorMessage.NAME_MUST_BE_PROVIDED;
 
 @Service
 @RequiredArgsConstructor
