@@ -42,8 +42,8 @@ public class ItemController {
 
     @GetMapping
     public ApiResponse<List<ItemSimpleResponse>> getItem10ListSortedForHomeView(@AuthenticationPrincipal CustomUserDetails principal,
-                                                                                @RequestParam HomeSort homeSort) {
-        return ApiResponse.ok(ITEM_LIST_LOAD_SUCCESS, itemService.getItem10ListSortedForHomeView(principal.getUserId(), homeSort));
+                                                                                @RequestParam("sort") HomeSort sort) {
+        return ApiResponse.ok(ITEM_LIST_LOAD_SUCCESS, itemService.getItem10ListSortedForHomeView(principal.getUserId(), sort));
     }
 
     @GetMapping("/top10")

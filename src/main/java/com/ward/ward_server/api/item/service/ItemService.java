@@ -15,6 +15,7 @@ import com.ward.ward_server.global.Object.enums.HomeSort;
 import com.ward.ward_server.global.exception.ApiException;
 import com.ward.ward_server.global.util.ValidationUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;

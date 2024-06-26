@@ -48,8 +48,8 @@ public class ReleaseInfoController {
 
     @GetMapping
     public ApiResponse<List<ReleaseInfoSimpleResponse>> getReleaseInfo10List(@AuthenticationPrincipal CustomUserDetails principal,
-                                                                             @RequestParam HomeSort homeSort) {
-        return ApiResponse.ok(RELEASE_INFO_LIST_LOAD_SUCCESS, releaseInfoService.getReleaseInfo10List(principal.getUserId(), homeSort));
+                                                                             @RequestParam("sort") HomeSort sort) {
+        return ApiResponse.ok(RELEASE_INFO_LIST_LOAD_SUCCESS, releaseInfoService.getReleaseInfo10List(principal.getUserId(), sort));
     }
 
     @GetMapping("/{itemId}/releases")
