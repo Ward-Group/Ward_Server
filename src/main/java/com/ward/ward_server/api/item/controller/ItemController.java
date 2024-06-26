@@ -9,7 +9,7 @@ import com.ward.ward_server.api.item.entity.enums.Category;
 import com.ward.ward_server.api.item.service.ItemService;
 import com.ward.ward_server.api.item.service.TopItemsCacheService;
 import com.ward.ward_server.api.user.auth.security.CustomUserDetails;
-import com.ward.ward_server.global.Object.enums.Sort;
+import com.ward.ward_server.global.Object.enums.HomeSort;
 import com.ward.ward_server.global.exception.ApiException;
 import com.ward.ward_server.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +42,7 @@ public class ItemController {
 
     @GetMapping
     public ApiResponse<List<ItemSimpleResponse>> getItem10ListSortedForHomeView(@AuthenticationPrincipal CustomUserDetails principal,
-                                                                                @RequestParam Sort sort) {
+                                                                                @RequestParam("sort") HomeSort sort) {
         return ApiResponse.ok(ITEM_LIST_LOAD_SUCCESS, itemService.getItem10ListSortedForHomeView(principal.getUserId(), sort));
     }
 

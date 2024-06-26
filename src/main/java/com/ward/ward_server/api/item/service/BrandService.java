@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 import static com.ward.ward_server.global.Object.Constants.API_PAGE_SIZE;
 import static com.ward.ward_server.global.exception.ExceptionCode.*;
-import static com.ward.ward_server.global.response.error.ErrorCode.NAME_MUST_BE_PROVIDED;
+import static com.ward.ward_server.global.response.error.ErrorMessage.NAME_MUST_BE_PROVIDED;
 
 @Service
 @RequiredArgsConstructor

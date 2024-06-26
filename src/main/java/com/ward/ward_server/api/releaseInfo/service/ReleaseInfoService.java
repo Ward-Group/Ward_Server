@@ -13,7 +13,7 @@ import com.ward.ward_server.api.releaseInfo.entity.enums.NotificationMethod;
 import com.ward.ward_server.api.releaseInfo.entity.enums.ReleaseMethod;
 import com.ward.ward_server.api.releaseInfo.repository.DrawPlatformRepository;
 import com.ward.ward_server.api.releaseInfo.repository.ReleaseInfoRepository;
-import com.ward.ward_server.global.Object.enums.Sort;
+import com.ward.ward_server.global.Object.enums.HomeSort;
 import com.ward.ward_server.global.exception.ApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.ward.ward_server.global.exception.ExceptionCode.*;
-import static com.ward.ward_server.global.response.error.ErrorCode.REQUIRED_FIELDS_MUST_BE_PROVIDED;
+import static com.ward.ward_server.global.response.error.ErrorMessage.REQUIRED_FIELDS_MUST_BE_PROVIDED;
 
 @Service
 @RequiredArgsConstructor
@@ -71,9 +71,9 @@ public class ReleaseInfoService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReleaseInfoSimpleResponse> getReleaseInfo10List(Long userId, Sort sort) {
+    public List<ReleaseInfoSimpleResponse> getReleaseInfo10List(Long userId, HomeSort homeSort) {
         LocalDateTime now = LocalDateTime.now();
-        return switch (sort) {
+        return switch (homeSort) {
             case RELEASE_NOW -> releaseInfoRepository.getReleaseTodayReleaseInfoOrdered(now);
             case RELEASE_WISH -> releaseInfoRepository.getWishItemReleaseInfoOrdered(userId, now);
             case RELEASE_CONFIRM -> releaseInfoRepository.getJustConfirmReleaseInfoOrdered(now);

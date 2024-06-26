@@ -1,7 +1,7 @@
 package com.ward.ward_server.global.util;
 
 import com.ward.ward_server.global.exception.ApiException;
-import com.ward.ward_server.global.response.error.ErrorCode;
+import com.ward.ward_server.global.response.error.ErrorMessage;
 import org.apache.commons.validator.routines.EmailValidator;
 
 import java.util.ArrayList;
@@ -35,9 +35,9 @@ public class ValidationUtils {
     public static void validationNames(String koreanName, String englishName) {
         List<String> errorMessages = new ArrayList<>();
         if (koreanName != null && !ValidationUtils.isValidKorean(koreanName))
-            errorMessages.add(ErrorCode.INVALID_KOREAN_NAME.getMessage());
+            errorMessages.add(ErrorMessage.INVALID_KOREAN_NAME.getMessage());
         if (englishName != null && !ValidationUtils.isValidEnglish(englishName))
-            errorMessages.add(ErrorCode.INVALID_ENGLISH_NAME.getMessage());
+            errorMessages.add(ErrorMessage.INVALID_ENGLISH_NAME.getMessage());
         if (!errorMessages.isEmpty()) throw new ApiException(INVALID_INPUT, errorMessages);
     }
 
