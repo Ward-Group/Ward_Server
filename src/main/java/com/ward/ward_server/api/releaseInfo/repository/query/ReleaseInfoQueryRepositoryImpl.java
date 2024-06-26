@@ -47,7 +47,7 @@ public class ReleaseInfoQueryRepositoryImpl implements ReleaseInfoQueryRepositor
                 .leftJoin(releaseInfo.drawPlatform, drawPlatform)
                 .leftJoin(releaseInfo.item, item)
                 .leftJoin(item.brand, brand)
-                .where(getSortCondition(userId, homeSort, now), item.category.eq(category))
+                .where(getSortCondition(userId, homeSort, now), getCategoryCondition(category))
                 .orderBy(getSortOrder(homeSort))
                 .limit(HOME_PAGE_SIZE)
                 .fetch();
@@ -80,6 +80,10 @@ public class ReleaseInfoQueryRepositoryImpl implements ReleaseInfoQueryRepositor
             }
         }
         return builder;
+    }
+
+    private BooleanExpression getCategoryCondition(Category category) {
+        return category == Category.ALL ? null : item.category.eq(category);
     }
 
     private OrderSpecifier getSortOrder(HomeSort homeSort) {
