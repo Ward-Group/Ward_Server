@@ -13,6 +13,7 @@ import static com.ward.ward_server.global.response.error.ErrorMessage.CATEGORY_N
 @Getter
 @AllArgsConstructor
 public enum Category {
+    ALL("전체"),
     CLOTHING("의류"),
     FOOTWEAR("신발"),
     ACCESSORY("악세서리"),

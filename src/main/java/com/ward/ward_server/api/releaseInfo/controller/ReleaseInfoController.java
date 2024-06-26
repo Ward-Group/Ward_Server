@@ -1,5 +1,6 @@
 package com.ward.ward_server.api.releaseInfo.controller;
 
+import com.ward.ward_server.api.item.entity.enums.Category;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoDetailResponse;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoRequest;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoSimpleResponse;
@@ -48,8 +49,9 @@ public class ReleaseInfoController {
 
     @GetMapping
     public ApiResponse<List<ReleaseInfoSimpleResponse>> getReleaseInfo10List(@AuthenticationPrincipal CustomUserDetails principal,
-                                                                             @RequestParam("sort") HomeSort sort) {
-        return ApiResponse.ok(RELEASE_INFO_LIST_LOAD_SUCCESS, releaseInfoService.getReleaseInfo10List(principal.getUserId(), sort));
+                                                                             @RequestParam HomeSort sort,
+                                                                             @RequestParam Category category) {
+        return ApiResponse.ok(RELEASE_INFO_LIST_LOAD_SUCCESS, releaseInfoService.getReleaseInfo10List(principal.getUserId(), sort, category));
     }
 
     @GetMapping("/{itemId}/releases")

@@ -1,18 +1,11 @@
 package com.ward.ward_server.global.Object.enums.converter;
 
 import com.ward.ward_server.global.Object.enums.ApiSort;
+import org.springframework.core.convert.converter.Converter;
 
-import java.beans.PropertyEditorSupport;
-
-public class ApiSortConverter<T extends Enum<T>> extends PropertyEditorSupport {
-    private final Class<T> type;
-
-    public ApiSortConverter(Class<T> type){
-        this.type=type;
-    }
-
+public class ApiSortConverter implements Converter<String, ApiSort> {
     @Override
-    public void setAsText(String text) throws IllegalArgumentException {
-        setValue(ApiSort.from(text));
+    public ApiSort convert(String text) {
+        return ApiSort.from(text);
     }
 }

@@ -2,6 +2,7 @@ package com.ward.ward_server.api.releaseInfo.service;
 
 import com.ward.ward_server.api.item.entity.Brand;
 import com.ward.ward_server.api.item.entity.Item;
+import com.ward.ward_server.api.item.entity.enums.Category;
 import com.ward.ward_server.api.item.repository.ItemRepository;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoDetailResponse;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoSimpleResponse;
@@ -71,15 +72,9 @@ public class ReleaseInfoService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReleaseInfoSimpleResponse> getReleaseInfo10List(Long userId, HomeSort homeSort) {
+    public List<ReleaseInfoSimpleResponse> getReleaseInfo10List(Long userId, HomeSort homeSort, Category category) {
         LocalDateTime now = LocalDateTime.now();
-        return switch (homeSort) {
-            case RELEASE_NOW -> releaseInfoRepository.getReleaseTodayReleaseInfoOrdered(now);
-            case RELEASE_WISH -> releaseInfoRepository.getWishItemReleaseInfoOrdered(userId, now);
-            case RELEASE_CONFIRM -> releaseInfoRepository.getJustConfirmReleaseInfoOrdered(now);
-            case REGISTER_TODAY -> releaseInfoRepository.getRegisterTodayReleaseInfoOrdered(now);
-            default -> releaseInfoRepository.getDueTodayReleaseInfoOrdered(now);
-        };
+        return releaseInfoRepository.getHomeSortList(userId, now, category, homeSort);
     }
 
     @Transactional(readOnly = true)
