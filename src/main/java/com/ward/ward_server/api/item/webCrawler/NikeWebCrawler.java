@@ -1,7 +1,6 @@
 package com.ward.ward_server.api.item.webCrawler;
 
 import com.ward.ward_server.api.item.dto.WebProductData;
-import com.ward.ward_server.api.item.entity.enumtype.Status;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -11,7 +10,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -78,9 +76,9 @@ public class NikeWebCrawler {
             LocalDateTime presentationDate = null;
 
             // 5.상태
-            LocalDateTime now = LocalDateTime.now();
-            Status status = Status.IMPOSSIBLE;
-            if (now.isAfter(releaseDate)) status = Status.POSSIBLE;
+            //LocalDateTime now = LocalDateTime.now();
+            //Status status = Status.IMPOSSIBLE;
+            //if (now.isAfter(releaseDate)) status = Status.POSSIBLE;
 
             // 6.브랜드 NIKE
 

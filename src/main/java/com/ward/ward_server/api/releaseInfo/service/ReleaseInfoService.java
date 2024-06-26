@@ -43,7 +43,7 @@ public class ReleaseInfoService {
                 || notificationMethod == null || releaseMethod == null || deliveryMethod == null) {
             throw new ApiException(INVALID_INPUT, REQUIRED_FIELDS_MUST_BE_PROVIDED.getMessage());
         }
-        Item item = itemRepository.findByIdAndDeletedAtIsNull(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
         DrawPlatform platform = drawPlatformRepository.findByName(platformName).orElseThrow(() -> new ApiException(DRAW_PLATFORM_NOT_FOUND));
         if (releaseInfoRepository.existsByItemIdAndDrawPlatform(item.getId(), platform)) {
             throw new ApiException(DUPLICATE_RELEASE_INFO);
@@ -84,14 +84,14 @@ public class ReleaseInfoService {
 
     @Transactional(readOnly = true)
     public Page<ReleaseInfo> getOngoingReleaseInfos(Long itemId, int page, int size) {
-        Item item = itemRepository.findByIdAndDeletedAtIsNull(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
         LocalDateTime now = LocalDateTime.now();
         return releaseInfoRepository.findByItemAndDueDateAfter(item, now, PageRequest.of(page, size));
     }
 
     @Transactional(readOnly = true)
     public Page<ReleaseInfo> getCompletedReleaseInfos(Long itemId, int page, int size) {
-        Item item = itemRepository.findByIdAndDeletedAtIsNull(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
         LocalDateTime now = LocalDateTime.now();
         return releaseInfoRepository.findByItemAndDueDateBefore(item, now, PageRequest.of(page, size));
     }
@@ -108,14 +108,14 @@ public class ReleaseInfoService {
         DrawPlatform targetPlatform = null;
         if (itemId != null && !StringUtils.hasText(platformName)) {
             //상품만 변경
-            targetItem = itemRepository.findByIdAndDeletedAtIsNull(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
+            targetItem = itemRepository.findById(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
             if (releaseInfoRepository.existsByItemIdAndDrawPlatform(targetItem.getId(), originPlatform)) {
                 throw new ApiException(DUPLICATE_RELEASE_INFO);
             }
             origin.updateItem(targetItem);
         } else if (itemId != null && StringUtils.hasText(platformName)) {
             //상품과 플랫폼 변경
-            targetItem = itemRepository.findByIdAndDeletedAtIsNull(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
+            targetItem = itemRepository.findById(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
             targetPlatform = drawPlatformRepository.findByName(platformName).orElseThrow(() -> new ApiException(DRAW_PLATFORM_NOT_FOUND));
             if (releaseInfoRepository.existsByItemIdAndDrawPlatform(targetItem.getId(), targetPlatform)) {
                 throw new ApiException(DUPLICATE_RELEASE_INFO);

@@ -63,7 +63,7 @@ public class ReleaseInfoServiceTest {
 
     @Test
     public void getOngoingReleaseInfos_success() {
-        when(itemRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.of(item));
+        when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
         when(releaseInfoRepository.findByItemAndDueDateAfter(any(Item.class), any(LocalDateTime.class), any(PageRequest.class)))
                 .thenReturn(new PageImpl<>(Arrays.asList(new ReleaseInfo())));
 
@@ -73,13 +73,13 @@ public class ReleaseInfoServiceTest {
 
     @Test
     public void getOngoingReleaseInfos_itemNotFound() {
-        when(itemRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.empty());
+        when(itemRepository.findById(1L)).thenReturn(Optional.empty());
         assertThrows(ApiException.class, () -> releaseInfoService.getOngoingReleaseInfos(1L, 0, 10));
     }
 
     @Test
     public void getCompletedReleaseInfos_success() {
-        when(itemRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.of(item));
+        when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
         when(releaseInfoRepository.findByItemAndDueDateBefore(any(Item.class), any(LocalDateTime.class), any(PageRequest.class)))
                 .thenReturn(new PageImpl<>(Arrays.asList(new ReleaseInfo())));
 
@@ -89,7 +89,7 @@ public class ReleaseInfoServiceTest {
 
     @Test
     public void getCompletedReleaseInfos_itemNotFound() {
-        when(itemRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.empty());
+        when(itemRepository.findById(1L)).thenReturn(Optional.empty());
         assertThrows(ApiException.class, () -> releaseInfoService.getCompletedReleaseInfos(1L, 0, 10));
     }
 
@@ -124,7 +124,7 @@ public class ReleaseInfoServiceTest {
                 .deliveryMethod(DeliveryMethod.DIRECT)
                 .build();
 
-        when(itemRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.of(item));
+        when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
         when(releaseInfoRepository.findByItemAndDueDateAfter(any(Item.class), any(LocalDateTime.class), any(PageRequest.class)))
                 .thenReturn(new PageImpl<>(Arrays.asList(releaseInfo1, releaseInfo2)));
 
@@ -168,7 +168,7 @@ public class ReleaseInfoServiceTest {
                 .deliveryMethod(DeliveryMethod.DIRECT)
                 .build();
 
-        when(itemRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.of(item));
+        when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
         when(releaseInfoRepository.findByItemAndDueDateBefore(any(Item.class), any(LocalDateTime.class), any(PageRequest.class)))
                 .thenReturn(new PageImpl<>(Arrays.asList(releaseInfo1, releaseInfo2)));
 

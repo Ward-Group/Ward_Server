@@ -3,16 +3,18 @@ package com.ward.ward_server.api.item.dto;
 import java.util.List;
 
 public record ItemDetailResponse(
+        long itemId,
         String itemKoreanName,
         String itemEnglishName,
         String itemCode,
-        String MainImage,
+        String mainImage,
         List<String> itemImages,
-        String logoImage,
-        String brandKoreanName,
-        String brandEnglishName,
         long viewCount,
         String category,
-        int price
+        int price,
+        long brandId,
+        String brandLogoImage,
+        String brandKoreanName,
+        String brandEnglishName
 ) {
 }

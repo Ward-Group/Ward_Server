@@ -4,11 +4,12 @@ import com.ward.ward_server.api.item.dto.BrandInfoResponse;
 import com.ward.ward_server.api.item.dto.BrandRecommendedResponse;
 import com.ward.ward_server.api.item.dto.BrandRequest;
 import com.ward.ward_server.api.item.dto.BrandResponse;
+import com.ward.ward_server.global.Object.enums.ApiSort;
 import com.ward.ward_server.api.item.service.BrandService;
+import com.ward.ward_server.global.Object.PageResponse;
 import com.ward.ward_server.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.index.qual.Positive;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,12 +24,13 @@ public class BrandController {
 
     @PostMapping
     public ApiResponse<BrandResponse> createBrand(@RequestBody BrandRequest request) {
-        return ApiResponse.ok(BRAND_CREATE_SUCCESS, brandService.createBrand(request.koreanName(), request.englishName(), request.brandLogoImage()));
+        return ApiResponse.ok(BRAND_CREATE_SUCCESS, brandService.createBrand(request.koreanName(), request.englishName(), request.logoImage()));
     }
 
-    @GetMapping("/top10")
-    public ApiResponse<Page<BrandInfoResponse>> getBrandItemPage(@Positive @RequestParam(value = "page", defaultValue = "1") int page) {
-        return ApiResponse.ok(BRAND_TOP10_WITH_ITEM_LOAD_SUCCESS, brandService.getBrandItemPage(page - 1));
+    @GetMapping
+    public ApiResponse<PageResponse<BrandInfoResponse>> getBrandItemPage(@RequestParam("sort") ApiSort sort,
+                                                                         @Positive @RequestParam(value = "page") int page) {
+        return ApiResponse.ok(BRAND_TOP10_WITH_ITEM_LOAD_SUCCESS, brandService.getBrandItemPageSortedForHomeView(sort, page - 1));
     }
 
     @GetMapping("/recommended")
@@ -36,19 +38,19 @@ public class BrandController {
         return ApiResponse.ok(BRAND_RECOMMENDED_LOAD_SUCCESS, brandService.getRecommendedBrands());
     }
 
-    @PatchMapping("/{originBrandName}")
-    public ApiResponse<BrandResponse> updateBrand(@PathVariable("originBrandName") String originBrandName, @RequestBody BrandRequest request) {
-        return ApiResponse.ok(BRAND_UPDATE_SUCCESS, brandService.updateBrand(originBrandName, request.koreanName(), request.englishName(), request.brandLogoImage()));
+    @PatchMapping("/{brandId}")
+    public ApiResponse<BrandResponse> updateBrand(@PathVariable("brandId") long brandId, @RequestBody BrandRequest request) {
+        return ApiResponse.ok(BRAND_UPDATE_SUCCESS, brandService.updateBrand(brandId, request.koreanName(), request.englishName(), request.logoImage()));
     }
 
-    @DeleteMapping("/{brandName}")
-    public ApiResponse<Void> deleteBrand(@PathVariable("brandName") String brandName) {
-        brandService.deleteBrand(brandName);
+    @DeleteMapping("/{brandId}")
+    public ApiResponse<Void> deleteBrand(@PathVariable("brandId") long brandId) {
+        brandService.deleteBrand(brandId);
         return ApiResponse.ok(BRAND_DELETE_SUCCESS);
     }
 
-    @PatchMapping("/{brandName}/view-counts")
-    public ApiResponse<Long> increaseBrandViewCount(@PathVariable("brandName") String brandName) {
-        return ApiResponse.ok(BRAND_VIEW_COUNT_UP_SUCCESS, brandService.increaseBrandViewCount(brandName));
+    @PatchMapping("/{brandId}/view-counts")
+    public ApiResponse<Long> increaseBrandViewCount(@PathVariable("brandId") long brandId) {
+        return ApiResponse.ok(BRAND_VIEW_COUNT_UP_SUCCESS, brandService.increaseBrandViewCount(brandId));
     }
 }
