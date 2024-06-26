@@ -8,17 +8,22 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.DateTimePath;
 import com.querydsl.core.types.dsl.DateTimeTemplate;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ward.ward_server.api.item.entity.enums.Category;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoSimpleResponse;
 import com.ward.ward_server.global.Object.enums.HomeSort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.ward.ward_server.api.item.entity.QBrand.brand;
 import static com.ward.ward_server.api.item.entity.QItem.item;
@@ -51,6 +56,44 @@ public class ReleaseInfoQueryRepositoryImpl implements ReleaseInfoQueryRepositor
                 .orderBy(getSortOrder(homeSort))
                 .limit(HOME_PAGE_SIZE)
                 .fetch();
+    }
+
+    public Page<ReleaseInfoSimpleResponse> getHomeSortPage(long userId, LocalDateTime now, Category category, HomeSort homeSort, Pageable pageable) {
+        List<ReleaseInfoSimpleResponse> result = queryFactory.select(Projections.constructor(ReleaseInfoSimpleResponse.class,
+                        releaseInfo.id,
+                        drawPlatform.koreanName,
+                        drawPlatform.englishName,
+                        item.id,
+                        item.mainImage,
+                        item.koreanName,
+                        item.englishName,
+                        releaseInfo.releaseMethod,
+                        releaseInfo.dueDate))
+                .from(releaseInfo)
+                .leftJoin(releaseInfo.drawPlatform, drawPlatform)
+                .leftJoin(releaseInfo.item, item)
+                .leftJoin(item.brand, brand)
+                .where(getSortCondition(userId, homeSort, now), getCategoryCondition(category))
+                .orderBy(getSortOrder(homeSort))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        //FIXME info->debug
+        log.info("result size {}", result.size());
+        log.info("\n결과: {}", result.stream()
+                .map(e -> e.toString())
+                .collect(Collectors.joining("\n")));
+
+        JPAQuery<Long> countQuery = queryFactory
+                .select(releaseInfo.count())
+                .from(releaseInfo)
+                .leftJoin(releaseInfo.drawPlatform, drawPlatform)
+                .leftJoin(releaseInfo.item, item)
+                .leftJoin(item.brand, brand)
+                .where(getSortCondition(userId, homeSort, now), getCategoryCondition(category));
+
+        return PageableExecutionUtils.getPage(result, pageable, countQuery::fetchOne);
     }
 
     private BooleanBuilder getSortCondition(long userId, HomeSort homeSort, LocalDateTime now) {
