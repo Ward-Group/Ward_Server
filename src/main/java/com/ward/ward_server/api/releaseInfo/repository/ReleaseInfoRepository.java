@@ -7,6 +7,8 @@ import com.ward.ward_server.api.releaseInfo.repository.query.ReleaseInfoQueryRep
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 
@@ -17,4 +19,7 @@ public interface ReleaseInfoRepository extends JpaRepository<ReleaseInfo, Long>,
     Page<ReleaseInfo> findByItemAndDueDateBefore(Item item, LocalDateTime now, Pageable pageable);
 
     boolean existsByItemIdAndDrawPlatform(long itemId, DrawPlatform drawPlatform);
+
+    @Query("SELECT COUNT(r) FROM ReleaseInfo r WHERE r.item.id = :itemId")
+    int countByItemId(@Param("itemId") Long itemId);
 }
