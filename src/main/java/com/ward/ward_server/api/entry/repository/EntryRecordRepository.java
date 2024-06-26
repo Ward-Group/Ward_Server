@@ -18,9 +18,4 @@ public interface EntryRecordRepository extends JpaRepository<EntryRecord, Long> 
     void deleteByUserIdAndReleaseInfoId(long userId, long releaseInfoId);
 
     Optional<EntryRecord> findByUserIdAndReleaseInfoId(long userId, long releaseInfoId);
-
-    @Query("SELECT DISTINCT e.releaseInfo.id " +
-            "FROM EntryRecord e " +
-            "WHERE e.user.id = :userId ")
-    List<Long> findEntryReleaseInfoIdsByUser(@Param("userId") long userId);
 }

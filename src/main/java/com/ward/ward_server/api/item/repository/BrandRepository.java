@@ -17,29 +17,7 @@ public interface BrandRepository extends JpaRepository<Brand, Long>, BrandQueryR
 
     @Query("SELECT COUNT(b) > 0 " +
             "FROM Brand b " +
-            "WHERE b.englishName = :name OR b.koreanName = :name")
-    boolean existsByName(@Param("name") String name);
-
-    @Query("SELECT COUNT(b) > 0 " +
-            "FROM Brand b " +
             "WHERE (:koreanName IS NULL OR b.koreanName = :koreanName) " +
             "AND (:englishName IS NULL OR b.englishName = :englishName)")
     boolean existsByKoreanNameOrEnglishName(@Param("koreanName") String koreanName, @Param("englishName") String englishName);
-
-    @Query("SELECT b " +
-            "FROM Brand b " +
-            "WHERE b.englishName = :name OR b.koreanName = :name")
-    Optional<Brand> findByName(@Param("name") String name);
-
-    @Query("SELECT b.id " +
-            "FROM Brand b " +
-            "WHERE b.englishName = :name OR b.koreanName = :name")
-    Optional<Long> findIdByName(@Param("name") String name);
-
-    @Modifying
-    @Transactional
-    @Query("DELETE " +
-            "FROM Brand b " +
-            "WHERE b.englishName = :name OR b.koreanName = :name")
-    void deleteByName(@Param("name") String name);
 }

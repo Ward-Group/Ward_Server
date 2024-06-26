@@ -21,8 +21,4 @@ public interface ReleaseInfoRepository extends JpaRepository<ReleaseInfo, Long>,
     Page<ReleaseInfo> findByItemAndDueDateBefore(Item item, LocalDateTime now, Pageable pageable);
 
     boolean existsByItemIdAndDrawPlatform(long itemId, DrawPlatform drawPlatform);
-    @Query("SELECT DISTINCT r.item.id " +
-            "FROM ReleaseInfo r " +
-            "WHERE r.id In :releaseInfoIds ")
-    List<Long> findItemIdsIn(@Param("releaseInfoIds") Set<Long> releaseInfoIds);
 }

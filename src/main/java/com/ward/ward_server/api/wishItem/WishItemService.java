@@ -49,11 +49,6 @@ public class WishItemService {
         return new PageResponse<>(wishItemPage.getContent(), wishItemPage);
     }
 
-    private Set<Long> getEntryItemIdsByUser(long userId) {
-        Set<Long> releaseInfoIds = new HashSet<>(entryRecordRepository.findEntryReleaseInfoIdsByUser(userId));
-        return new HashSet<>(releaseInfoRepository.findItemIdsIn(releaseInfoIds));
-    }
-
     @Transactional
     public void deleteWishItem(long userId, long itemId) {
         if (!wishItemRepository.existsByUserIdAndItemId(userId, itemId)) {
