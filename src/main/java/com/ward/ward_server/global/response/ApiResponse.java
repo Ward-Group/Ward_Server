@@ -1,7 +1,7 @@
 package com.ward.ward_server.global.response;
 
 import com.ward.ward_server.global.exception.ExceptionCode;
-import com.ward.ward_server.global.response.error.ErrorCode;
+import com.ward.ward_server.global.response.error.ErrorMessage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
@@ -78,17 +78,17 @@ public class ApiResponse<T> {
         );
     }
 
-    public static <T> ApiResponse<T> error(ErrorCode errorCode) {
+    public static <T> ApiResponse<T> error(ErrorMessage errorMessage) {
         return new ApiResponse<>(
-                errorCode.getMessage(),
+                errorMessage.getMessage(),
                 500,
                 null
         );
     }
 
-    public static <T> ApiResponse<T> error(ErrorCode errorCode, T data) {
+    public static <T> ApiResponse<T> error(ErrorMessage errorMessage, T data) {
         return new ApiResponse<>(
-                errorCode.getMessage(),
+                errorMessage.getMessage(),
                 500,
                 data
         );

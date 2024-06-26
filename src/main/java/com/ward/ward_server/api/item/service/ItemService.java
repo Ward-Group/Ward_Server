@@ -11,7 +11,7 @@ import com.ward.ward_server.api.item.repository.BrandRepository;
 import com.ward.ward_server.api.item.repository.ItemImageRepository;
 import com.ward.ward_server.api.item.repository.ItemRepository;
 import com.ward.ward_server.api.item.repository.ItemViewCountRepository;
-import com.ward.ward_server.global.Object.enums.Sort;
+import com.ward.ward_server.global.Object.enums.HomeSort;
 import com.ward.ward_server.global.exception.ApiException;
 import com.ward.ward_server.global.util.ValidationUtils;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.ward.ward_server.global.exception.ExceptionCode.*;
-import static com.ward.ward_server.global.response.error.ErrorCode.NAME_MUST_BE_PROVIDED;
-import static com.ward.ward_server.global.response.error.ErrorCode.REQUIRED_FIELDS_MUST_BE_PROVIDED;
+import static com.ward.ward_server.global.response.error.ErrorMessage.NAME_MUST_BE_PROVIDED;
+import static com.ward.ward_server.global.response.error.ErrorMessage.REQUIRED_FIELDS_MUST_BE_PROVIDED;
 
 @Service
 @RequiredArgsConstructor
@@ -87,9 +87,9 @@ public class ItemService {
     }
 
     @Transactional(readOnly = true)
-    public List<ItemSimpleResponse> getItem10ListSortedForHomeView(Long userId, Sort sort) {
+    public List<ItemSimpleResponse> getItem10ListSortedForHomeView(Long userId, HomeSort homeSort) {
         LocalDateTime now = LocalDateTime.now();
-        return switch (sort) {
+        return switch (homeSort) {
             case RELEASE_NOW -> itemRepository.getReleaseTodayItemOrdered(userId, now);
             case RELEASE_WISH -> itemRepository.getReleaseWishItemOrdered(userId, now);
             case RELEASE_CONFIRM -> itemRepository.getJustConfirmReleaseItemOrdered(userId, now);

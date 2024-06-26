@@ -6,7 +6,7 @@ import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoSimpleResponse;
 import com.ward.ward_server.api.releaseInfo.entity.ReleaseInfo;
 import com.ward.ward_server.api.releaseInfo.service.ReleaseInfoService;
 import com.ward.ward_server.api.user.auth.security.CustomUserDetails;
-import com.ward.ward_server.global.Object.enums.Sort;
+import com.ward.ward_server.global.Object.enums.HomeSort;
 import com.ward.ward_server.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,8 +48,8 @@ public class ReleaseInfoController {
 
     @GetMapping
     public ApiResponse<List<ReleaseInfoSimpleResponse>> getReleaseInfo10List(@AuthenticationPrincipal CustomUserDetails principal,
-                                                                             @RequestParam Sort sort) {
-        return ApiResponse.ok(RELEASE_INFO_LIST_LOAD_SUCCESS, releaseInfoService.getReleaseInfo10List(principal.getUserId(), sort));
+                                                                             @RequestParam HomeSort homeSort) {
+        return ApiResponse.ok(RELEASE_INFO_LIST_LOAD_SUCCESS, releaseInfoService.getReleaseInfo10List(principal.getUserId(), homeSort));
     }
 
     @GetMapping("/{itemId}/releases")

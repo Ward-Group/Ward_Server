@@ -8,7 +8,7 @@ import lombok.Getter;
 import java.util.Arrays;
 
 import static com.ward.ward_server.global.exception.ExceptionCode.INVALID_INPUT;
-import static com.ward.ward_server.global.response.error.ErrorCode.NOTIFICATION_METHOD_NOT_EXISTS;
+import static com.ward.ward_server.global.response.error.ErrorMessage.NOTIFICATION_METHOD_NOT_EXISTS;
 
 @Getter
 @AllArgsConstructor
