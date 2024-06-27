@@ -37,10 +37,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     .ifPresent(authentication -> SecurityContextHolder.getContext().setAuthentication(authentication));
         } catch (TokenExpiredException ex) {
             request.setAttribute("JWT_EXCEPTION", ExceptionCode.TOKEN_EXPIRED);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expired");
+            return;
         } catch (JWTVerificationException ex) {
             request.setAttribute("JWT_EXCEPTION", ExceptionCode.INVALID_TOKEN);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
+            return;
         } catch (IllegalArgumentException ex) {
             request.setAttribute("JWT_EXCEPTION", ExceptionCode.MISSING_AUTH_HEADER);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing Authorization header");
+            return;
         }
         filterChain.doFilter(request, response);
     }

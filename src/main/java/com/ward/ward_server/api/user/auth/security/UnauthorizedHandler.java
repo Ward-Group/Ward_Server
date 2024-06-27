@@ -30,12 +30,15 @@ public class UnauthorizedHandler implements AuthenticationEntryPoint {
     }
 
     private ExceptionCode determineExceptionCode(String message) {
-        // 메시지를 기반으로 적절한 예외 코드를 반환합니다.
-        if (message.contains("유효하지 않은 리프레시 토큰")) {
-            return ExceptionCode.INVALID_REFRESH_TOKEN;
+        if (message.contains("Token expired")) {
+            return ExceptionCode.TOKEN_EXPIRED;
+        } else if (message.contains("Invalid token")) {
+            return ExceptionCode.INVALID_TOKEN;
         } else if (message.contains("Missing Authorization header")) {
             return ExceptionCode.MISSING_AUTH_HEADER;
         }
         return ExceptionCode.INVALID_USERNAME_OR_PASSWORD;
     }
 }
+
+

@@ -1,5 +1,7 @@
 package com.ward.ward_server.global.exception.handler;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.ward.ward_server.global.exception.ApiException;
 import com.ward.ward_server.global.exception.ExceptionCode;
 import com.ward.ward_server.global.response.ApiResponse;
@@ -18,18 +20,32 @@ public class ExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @org.springframework.web.bind.annotation.ExceptionHandler(ApiException.class)
-    public ApiResponse handleException(ApiException ex){
+    public ApiResponse handleException(ApiException ex) {
         return ApiResponse.failure(ex.getExceptionCode(), ex.getMessages());
     }
+
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @org.springframework.web.bind.annotation.ExceptionHandler(IllegalArgumentException.class)
-    public ApiResponse handleException(IllegalArgumentException ex){
+    public ApiResponse handleException(IllegalArgumentException ex) {
         return ApiResponse.error(DATA_TYPE_CONVERT_FAIL);
     }
+
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @org.springframework.web.bind.annotation.ExceptionHandler(MethodArgumentNotValidException.class)
     public ApiResponse handleValidationExceptions(MethodArgumentNotValidException ex) {
         return ApiResponse.failure(ExceptionCode.INVALID_INPUT);
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @org.springframework.web.bind.annotation.ExceptionHandler(TokenExpiredException.class)
+    public ApiResponse handleTokenExpiredException(TokenExpiredException ex) {
+        return ApiResponse.failure(ExceptionCode.TOKEN_EXPIRED);
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @org.springframework.web.bind.annotation.ExceptionHandler(JWTVerificationException.class)
+    public ApiResponse handleJWTVerificationException(JWTVerificationException ex) {
+        return ApiResponse.failure(ExceptionCode.INVALID_TOKEN);
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -46,3 +62,4 @@ public class ExceptionHandler {
         return ApiResponse.error(ErrorMessage.SERVER_ERROR);
     }
 }
+

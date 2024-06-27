@@ -33,12 +33,11 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain applicationSecurity(HttpSecurity http) throws Exception {
-
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/auth/logout").authenticated()
-                        .requestMatchers("/","/auth/**", "/v1/wc/**", "/release-infos/**", "/release-infos/{itemId}/releases").permitAll()
+                        .requestMatchers("/", "/auth/**", "/v1/wc/**", "/release-infos/**", "/release-infos/{itemId}/releases").permitAll()
                         .requestMatchers("/items/details").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/items/top10","items/{itemId}/details").permitAll()
                         .requestMatchers(HttpMethod.GET, "/items").hasAnyRole("USER", "ADMIN")
@@ -87,7 +86,6 @@ public class WebSecurityConfig {
         return source;
     }
 
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -100,3 +98,4 @@ public class WebSecurityConfig {
         return authenticationManagerBuilder.build();
     }
 }
+
