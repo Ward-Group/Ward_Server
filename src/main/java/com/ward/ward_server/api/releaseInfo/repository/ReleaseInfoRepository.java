@@ -21,4 +21,7 @@ public interface ReleaseInfoRepository extends JpaRepository<ReleaseInfo, Long>,
     Page<ReleaseInfo> findByItemAndDueDateBefore(Item item, LocalDateTime now, Pageable pageable);
 
     boolean existsByItemIdAndDrawPlatform(long itemId, DrawPlatform drawPlatform);
+
+    @Query("SELECT COUNT(r) FROM ReleaseInfo r WHERE r.item.id = :itemId")
+    int countByItemId(@Param("itemId") Long itemId);
 }
