@@ -35,30 +35,35 @@ public class WebSecurityConfig {
     public SecurityFilterChain applicationSecurity(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/auth/logout").authenticated()
-                        .requestMatchers("/", "/auth/**", "/v1/wc/**", "/release-infos/**", "/release-infos/{itemId}/releases").permitAll()
-                        .requestMatchers("/items/details").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/items/top10","items/{itemId}/details").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/items").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/items/**").hasRole("ADMIN")
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/brands","brands/recommended").permitAll()
-                        .requestMatchers(HttpMethod.PATCH, "/brands/{brandId}/view-counts").permitAll()
-                        .requestMatchers(HttpMethod.PATCH, "/brands/{brandId}").hasRole("ADMIN")
-                        .requestMatchers("/brands/**").hasRole("ADMIN")
-                        .requestMatchers("/draw-platforms/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/release-infos").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/release-infos/details").permitAll()
-                        .requestMatchers("/release-infos/**").hasRole("ADMIN")
-                        .anyRequest().authenticated()
-                )
-                .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(unauthorizedHandler)
-                )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+                .authorizeHttpRequests(authorize -> {
+                    // Authenticated endpoints
+                    authorize.requestMatchers("/auth/logout").authenticated();
+
+                    // User endpoints
+                    authorize
+                            .requestMatchers("/items/details").hasAnyRole("USER", "ADMIN")
+                            .requestMatchers(HttpMethod.GET, "/items").hasAnyRole("USER", "ADMIN");
+
+                    // Public endpoints
+                    authorize
+                            .requestMatchers("/", "/auth/**", "/v1/wc/**", "/items/top10", "/items/{itemId}/details").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/brands", "/brands/recommended").permitAll()
+                            .requestMatchers(HttpMethod.PATCH, "/brands/{brandId}/view-counts").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/release-infos", "/release-infos/details").permitAll();
+
+                    // Admin endpoints
+                    authorize
+                            .requestMatchers("/items/**").hasRole("ADMIN")
+                            .requestMatchers("/admin/**").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.PATCH, "/brands/{brandId}").hasRole("ADMIN")
+                            .requestMatchers("/brands/**").hasRole("ADMIN")
+                            .requestMatchers("/draw-platforms/**").hasRole("ADMIN")
+                            .requestMatchers("/release-infos/**").hasRole("ADMIN");
+
+                    authorize.anyRequest().authenticated();
+                })
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
