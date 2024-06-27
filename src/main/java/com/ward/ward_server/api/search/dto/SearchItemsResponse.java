@@ -13,6 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 public class SearchItemsResponse {
     private long totalCount;
+    private int totalPages;
+    private int currentPage;
     private List<ItemResponse> results;
 
     @Getter
@@ -29,3 +31,4 @@ public class SearchItemsResponse {
         private Long viewCount;
     }
 }
+

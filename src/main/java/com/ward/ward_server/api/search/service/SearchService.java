@@ -23,10 +23,8 @@ public class SearchService {
 
     @Transactional
     public SearchItemsResponse searchItems(String keyword, int page, int size) {
-        // 검색 수행
         Page<Item> items = itemRepository.searchItems(keyword, PageRequest.of(page, size));
 
-        // 검색 결과를 DTO로 변환
         List<SearchItemsResponse.ItemResponse> results = items.getContent().stream().map(item -> {
             int releaseCount = releaseInfoRepository.countByItemId(item.getId());
             return new SearchItemsResponse.ItemResponse(
@@ -40,6 +38,11 @@ public class SearchService {
             );
         }).collect(Collectors.toList());
 
-        return new SearchItemsResponse(items.getTotalElements(), results);
+        return new SearchItemsResponse(
+                items.getTotalElements(),
+                items.getTotalPages(),
+                items.getNumber(),
+                results
+        );
     }
 }
