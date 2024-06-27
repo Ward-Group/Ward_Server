@@ -79,9 +79,8 @@ public class ReleaseInfoQueryRepositoryImpl implements ReleaseInfoQueryRepositor
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        //FIXME info->debug
-        log.info("result size {}", result.size());
-        log.info("\n결과: {}", result.stream()
+        log.debug("result size {}", result.size());
+        log.debug("\n결과: {}", result.stream()
                 .map(e -> e.toString())
                 .collect(Collectors.joining("\n")));
 
