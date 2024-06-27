@@ -1,15 +1,18 @@
 package com.ward.ward_server.api.releaseInfo.controller;
 
+import com.ward.ward_server.api.item.entity.enums.Category;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoDetailResponse;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoRequest;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoSimpleResponse;
 import com.ward.ward_server.api.releaseInfo.entity.ReleaseInfo;
 import com.ward.ward_server.api.releaseInfo.service.ReleaseInfoService;
 import com.ward.ward_server.api.user.auth.security.CustomUserDetails;
+import com.ward.ward_server.global.Object.PageResponse;
 import com.ward.ward_server.global.Object.enums.HomeSort;
 import com.ward.ward_server.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.index.qual.Positive;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -46,10 +49,19 @@ public class ReleaseInfoController {
         return ApiResponse.ok(RELEASE_INFO_DETAIL_LOAD_SUCCESS, releaseInfoService.getReleaseInfo(releaseInfoId));
     }
 
-    @GetMapping
+    @GetMapping("/home")
     public ApiResponse<List<ReleaseInfoSimpleResponse>> getReleaseInfo10List(@AuthenticationPrincipal CustomUserDetails principal,
-                                                                             @RequestParam("sort") HomeSort sort) {
-        return ApiResponse.ok(RELEASE_INFO_LIST_LOAD_SUCCESS, releaseInfoService.getReleaseInfo10List(principal.getUserId(), sort));
+                                                                             @RequestParam HomeSort sort,
+                                                                             @RequestParam Category category) {
+        return ApiResponse.ok(RELEASE_INFO_LIST_LOAD_SUCCESS, releaseInfoService.getReleaseInfo10List(principal.getUserId(), sort, category));
+    }
+
+    @GetMapping
+    public ApiResponse<PageResponse<ReleaseInfoSimpleResponse>> getReleaseInfoPage(@AuthenticationPrincipal CustomUserDetails principal,
+                                                                                   @RequestParam HomeSort sort,
+                                                                                   @RequestParam Category category,
+                                                                                   @Positive @RequestParam(value = "page") int page) {
+        return ApiResponse.ok(RELEASE_INFO_LIST_LOAD_SUCCESS, releaseInfoService.getReleaseInfoPage(principal.getUserId(), sort, category, page - 1));
     }
 
     @GetMapping("/{itemId}/releases")
