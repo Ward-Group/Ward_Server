@@ -15,7 +15,6 @@ import com.ward.ward_server.global.Object.enums.HomeSort;
 import com.ward.ward_server.global.exception.ApiException;
 import com.ward.ward_server.global.util.ValidationUtils;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -88,15 +87,9 @@ public class ItemService {
     }
 
     @Transactional(readOnly = true)
-    public List<ItemSimpleResponse> getItem10ListSortedForHomeView(Long userId, HomeSort homeSort) {
+    public List<ItemSimpleResponse> getItem10List(Long userId, HomeSort homeSort, Category category) {
         LocalDateTime now = LocalDateTime.now();
-        return switch (homeSort) {
-            case RELEASE_NOW -> itemRepository.getReleaseTodayItemOrdered(userId, now);
-            case RELEASE_WISH -> itemRepository.getReleaseWishItemOrdered(userId, now);
-            case RELEASE_CONFIRM -> itemRepository.getJustConfirmReleaseItemOrdered(userId, now);
-            case REGISTER_TODAY -> itemRepository.getRegisterTodayItemOrdered(userId, now);
-            default -> itemRepository.getDueTodayItemOrdered(userId, now);
-        };
+        return itemRepository.getHomeSortList(userId, LocalDateTime.now(), category, homeSort);
     }
 
     @Transactional
