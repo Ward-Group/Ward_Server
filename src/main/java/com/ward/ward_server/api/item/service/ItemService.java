@@ -11,10 +11,13 @@ import com.ward.ward_server.api.item.repository.BrandRepository;
 import com.ward.ward_server.api.item.repository.ItemImageRepository;
 import com.ward.ward_server.api.item.repository.ItemRepository;
 import com.ward.ward_server.api.item.repository.ItemViewCountRepository;
+import com.ward.ward_server.global.Object.PageResponse;
 import com.ward.ward_server.global.Object.enums.HomeSort;
 import com.ward.ward_server.global.exception.ApiException;
 import com.ward.ward_server.global.util.ValidationUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -23,6 +26,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static com.ward.ward_server.global.Object.Constants.API_PAGE_SIZE;
 import static com.ward.ward_server.global.exception.ExceptionCode.*;
 import static com.ward.ward_server.global.response.error.ErrorMessage.NAME_MUST_BE_PROVIDED;
 import static com.ward.ward_server.global.response.error.ErrorMessage.REQUIRED_FIELDS_MUST_BE_PROVIDED;
@@ -88,8 +92,13 @@ public class ItemService {
 
     @Transactional(readOnly = true)
     public List<ItemSimpleResponse> getItem10List(Long userId, HomeSort homeSort, Category category) {
-        LocalDateTime now = LocalDateTime.now();
         return itemRepository.getHomeSortList(userId, LocalDateTime.now(), category, homeSort);
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponse<ItemSimpleResponse> getItemPage(Long userId, HomeSort homeSort, Category category, int page) {
+        Page<ItemSimpleResponse> itemPageInfo = itemRepository.getHomeSortPage(userId, LocalDateTime.now(), category, homeSort, PageRequest.of(page, API_PAGE_SIZE));
+        return new PageResponse<>(itemPageInfo.getContent(), itemPageInfo);
     }
 
     @Transactional
