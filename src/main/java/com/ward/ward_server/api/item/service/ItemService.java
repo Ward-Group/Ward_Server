@@ -92,12 +92,14 @@ public class ItemService {
 
     @Transactional(readOnly = true)
     public List<ItemSimpleResponse> getItem10List(Long userId, HomeSort homeSort, Category category) {
-        return itemRepository.getHomeSortList(userId, LocalDateTime.now(), category, homeSort);
+        //HACK DB 시간 설정 전까지는 -9시간으로 비교해야 한다.
+        return itemRepository.getHomeSortList(userId, LocalDateTime.now().minusHours(9), category, homeSort);
     }
 
     @Transactional(readOnly = true)
     public PageResponse<ItemSimpleResponse> getItemPage(Long userId, HomeSort homeSort, Category category, int page) {
-        Page<ItemSimpleResponse> itemPageInfo = itemRepository.getHomeSortPage(userId, LocalDateTime.now(), category, homeSort, PageRequest.of(page, API_PAGE_SIZE));
+        //HACK DB 시간 설정 전까지는 -9시간으로 비교해야 한다.
+        Page<ItemSimpleResponse> itemPageInfo = itemRepository.getHomeSortPage(userId, LocalDateTime.now().minusHours(9), category, homeSort, PageRequest.of(page, API_PAGE_SIZE));
         return new PageResponse<>(itemPageInfo.getContent(), itemPageInfo);
     }
 

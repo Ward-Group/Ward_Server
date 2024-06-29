@@ -41,6 +41,8 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
                 .where(getSortCondition(homeSort, now, wishItemIds), getCategoryCondition(category))
                 .fetch();
 
+        log.debug("tuples 검사 {}", tuples);
+
         Map<Long, LocalDateTime> itemIdAndDateMap = tuples.stream()
                 .collect(Collectors.groupingBy(
                         tuple -> tuple.get(0, Long.class),
@@ -48,6 +50,8 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
                                 Collectors.mapping(tuple -> tuple.get(1, LocalDateTime.class), Collectors.toList()),
                                 dateList -> dateList.stream().min(Comparator.naturalOrder()).orElse(null))
                 ));
+
+        log.debug("map 검사 {}", itemIdAndDateMap.size());
 
         List<Long> top10 = itemIdAndDateMap.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue())
