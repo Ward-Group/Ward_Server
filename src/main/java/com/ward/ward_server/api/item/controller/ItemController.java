@@ -9,10 +9,12 @@ import com.ward.ward_server.api.item.entity.enums.Category;
 import com.ward.ward_server.api.item.service.ItemService;
 import com.ward.ward_server.api.item.service.TopItemsCacheService;
 import com.ward.ward_server.api.user.auth.security.CustomUserDetails;
+import com.ward.ward_server.global.Object.PageResponse;
 import com.ward.ward_server.global.Object.enums.HomeSort;
 import com.ward.ward_server.global.exception.ApiException;
 import com.ward.ward_server.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.index.qual.Positive;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,10 +42,19 @@ public class ItemController {
         return ApiResponse.ok(ITEM_DETAIL_LOAD_SUCCESS, itemService.getItem(itemId));
     }
 
+    @GetMapping("/home")
+    public ApiResponse<List<ItemSimpleResponse>> getItem10List(@AuthenticationPrincipal CustomUserDetails principal,
+                                                               @RequestParam("sort") HomeSort sort,
+                                                               @RequestParam("category") Category category) {
+        return ApiResponse.ok(ITEM_LIST_LOAD_SUCCESS, itemService.getItem10List(principal.getUserId(), sort, category));
+    }
+
     @GetMapping
-    public ApiResponse<List<ItemSimpleResponse>> getItem10ListSortedForHomeView(@AuthenticationPrincipal CustomUserDetails principal,
-                                                                                @RequestParam("sort") HomeSort sort) {
-        return ApiResponse.ok(ITEM_LIST_LOAD_SUCCESS, itemService.getItem10ListSortedForHomeView(principal.getUserId(), sort));
+    public ApiResponse<PageResponse<ItemSimpleResponse>> getItemPage(@AuthenticationPrincipal CustomUserDetails principal,
+                                                                     @RequestParam("sort") HomeSort sort,
+                                                                     @RequestParam("category") Category category,
+                                                                     @Positive @RequestParam("page") int page) {
+        return ApiResponse.ok(ITEM_LIST_LOAD_SUCCESS, itemService.getItemPage(principal.getUserId(), sort, category, page - 1));
     }
 
     @GetMapping("/top10")

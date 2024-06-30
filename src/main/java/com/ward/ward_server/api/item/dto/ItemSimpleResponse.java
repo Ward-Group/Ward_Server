@@ -11,6 +11,6 @@ public record ItemSimpleResponse(
         long brandId,
         String brandKoreanName,
         String brandEnglishName,
-        boolean wished
+        boolean isWished
 ) {
 }
