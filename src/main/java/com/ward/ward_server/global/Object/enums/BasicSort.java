@@ -14,7 +14,9 @@ import static com.ward.ward_server.global.response.error.ErrorMessage.BASIC_SORT
 public enum BasicSort {
     KOREAN_ALPHABETICAL("한글순"),
     ALPHABETICAL("영문순"),
-    RANKING("랭킹순");
+    RANKING("랭킹순"),
+    VIEW("조회순"),
+    LATEST("최신순");
 
     private String desc;
 
