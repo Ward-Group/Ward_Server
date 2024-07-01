@@ -1,5 +1,6 @@
 package com.ward.ward_server.global.config;
 
+import com.ward.ward_server.api.user.auth.security.CustomAccessDeniedHandler;
 import com.ward.ward_server.api.user.auth.security.CustomUserDetailService;
 import com.ward.ward_server.api.user.auth.security.JwtAuthenticationFilter;
 import com.ward.ward_server.api.user.auth.security.UnauthorizedHandler;
@@ -30,6 +31,7 @@ public class WebSecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomUserDetailService customUserDetailService;
     private final UnauthorizedHandler unauthorizedHandler;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
     @Bean
     public SecurityFilterChain applicationSecurity(HttpSecurity http) throws Exception {
@@ -62,7 +64,10 @@ public class WebSecurityConfig {
 
                     authorize.anyRequest().authenticated();
                 })
-                .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+                .exceptionHandling(exception -> {
+                    exception.authenticationEntryPoint(unauthorizedHandler);
+                    exception.accessDeniedHandler(accessDeniedHandler);
+                })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()));
@@ -103,4 +108,3 @@ public class WebSecurityConfig {
         return authenticationManagerBuilder.build();
     }
 }
-
