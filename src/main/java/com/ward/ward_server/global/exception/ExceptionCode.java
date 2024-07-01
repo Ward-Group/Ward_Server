@@ -13,6 +13,7 @@ public enum ExceptionCode {
     INVALID_TOKEN(5003, "유효하지 않은 토큰입니다."),
     MISSING_AUTH_HEADER(5004, "Authorization 헤더가 누락되었습니다."),
     MISSING_REFRESH_TOKEN(5005, "리프레시 토큰이 누락되었습니다."),
+    ACCESS_DENIED(5006, "접근 권한이 부족합니다."),
 
     //유저 회원가입 및 로그인
     NON_EXISTENT_EMAIL(5201, "존재하지 않는 이메일입니다"),
