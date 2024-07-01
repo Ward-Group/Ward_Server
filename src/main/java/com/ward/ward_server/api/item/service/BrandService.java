@@ -7,6 +7,8 @@ import com.ward.ward_server.api.item.dto.BrandResponse;
 import com.ward.ward_server.api.item.entity.Brand;
 import com.ward.ward_server.api.item.repository.BrandRepository;
 import com.ward.ward_server.api.item.repository.ItemRepository;
+import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoSimpleResponse;
+import com.ward.ward_server.api.releaseInfo.repository.ReleaseInfoRepository;
 import com.ward.ward_server.global.Object.PageResponse;
 import com.ward.ward_server.global.Object.enums.BasicSort;
 import com.ward.ward_server.global.exception.ApiException;
@@ -31,6 +33,7 @@ import static com.ward.ward_server.global.response.error.ErrorMessage.NAME_MUST_
 public class BrandService {
     private final BrandRepository brandRepository;
     private final ItemRepository itemRepository;
+    private final ReleaseInfoRepository releaseInfoRepository;
 
     @Transactional
     public BrandResponse createBrand(String koreanName, String englishName, String brandLogoImage) {
@@ -64,9 +67,15 @@ public class BrandService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<BrandItemResponse> getAllBrandItemPage(long brandId, BasicSort sort, int page) {
+    public PageResponse<BrandItemResponse> getBrandItemPage(long brandId, BasicSort sort, int page) {
         Page<BrandItemResponse> brandInfoPage = itemRepository.getBrandItemPage(brandId, sort, PageRequest.of(page, API_PAGE_SIZE));
         return new PageResponse<>(brandInfoPage.getContent(), brandInfoPage);
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponse<ReleaseInfoSimpleResponse> getBrandReleaseInfoPage(long brandId, int page) {
+        Page<ReleaseInfoSimpleResponse> releaseInfoInfoPage = releaseInfoRepository.getBrandReleaseInfoPage(brandId, PageRequest.of(page, API_PAGE_SIZE));
+        return new PageResponse<>(releaseInfoInfoPage.getContent(), releaseInfoInfoPage);
     }
 
     @Transactional
