@@ -2,7 +2,7 @@ package com.ward.ward_server.api.wishBrand;
 
 import com.ward.ward_server.api.user.auth.security.CustomUserDetails;
 import com.ward.ward_server.global.Object.PageResponse;
-import com.ward.ward_server.global.Object.enums.ApiSort;
+import com.ward.ward_server.global.Object.enums.BasicSort;
 import com.ward.ward_server.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.index.qual.Positive;
@@ -27,7 +27,7 @@ public class WishBrandController {
     @GetMapping
     public ApiResponse<PageResponse<WishBrandResponse>> getWishBrandListByUser(
             @AuthenticationPrincipal CustomUserDetails principal,
-            @RequestParam("sort") ApiSort sort,
+            @RequestParam("sort") BasicSort sort,
             @Positive @RequestParam(value = "page") int page) {
         return ApiResponse.ok(WISH_BRAND_LOAD_SUCCESS, wishBrandService.getWishBrandListByUser(principal.getUserId(), sort, page - 1));
     }

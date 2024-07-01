@@ -6,7 +6,7 @@ import com.ward.ward_server.api.item.dto.BrandResponse;
 import com.ward.ward_server.api.item.entity.Brand;
 import com.ward.ward_server.api.item.repository.BrandRepository;
 import com.ward.ward_server.global.Object.PageResponse;
-import com.ward.ward_server.global.Object.enums.ApiSort;
+import com.ward.ward_server.global.Object.enums.BasicSort;
 import com.ward.ward_server.global.exception.ApiException;
 import com.ward.ward_server.global.exception.ExceptionCode;
 import com.ward.ward_server.global.util.ValidationUtils;
@@ -47,7 +47,7 @@ public class BrandService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<BrandInfoResponse> getBrandItemPageSortedForHomeView(ApiSort sort, int page) {
+    public PageResponse<BrandInfoResponse> getBrandItemPageSortedForHomeView(BasicSort sort, int page) {
         Page<BrandInfoResponse> brandInfoPage = brandRepository.getBrandItemPage(sort, PageRequest.of(page, API_PAGE_SIZE));
         return new PageResponse<>(brandInfoPage.getContent(), brandInfoPage);
     }

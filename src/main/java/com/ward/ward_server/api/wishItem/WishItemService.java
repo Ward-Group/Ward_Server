@@ -8,7 +8,7 @@ import com.ward.ward_server.api.user.entity.User;
 import com.ward.ward_server.api.user.repository.UserRepository;
 import com.ward.ward_server.api.wishItem.repository.WishItemRepository;
 import com.ward.ward_server.global.Object.PageResponse;
-import com.ward.ward_server.global.Object.enums.ApiSort;
+import com.ward.ward_server.global.Object.enums.BasicSort;
 import com.ward.ward_server.global.exception.ApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,9 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashSet;
-import java.util.Set;
 
 import static com.ward.ward_server.global.Object.Constants.API_PAGE_SIZE;
 import static com.ward.ward_server.global.exception.ExceptionCode.*;
@@ -30,8 +27,6 @@ public class WishItemService {
     private final WishItemRepository wishItemRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
-    private final EntryRecordRepository entryRecordRepository;
-    private final ReleaseInfoRepository releaseInfoRepository;
 
     @Transactional
     public void createWishItem(long userId, long itemId) {
@@ -44,7 +39,7 @@ public class WishItemService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<WishItemResponse> getWishItemListByUser(long userId, ApiSort sort, int page) {
+    public PageResponse<WishItemResponse> getWishItemListByUser(long userId, BasicSort sort, int page) {
         Page<WishItemResponse> wishItemPage = wishItemRepository.getWishItemPage(userId, sort, PageRequest.of(page, API_PAGE_SIZE));
         return new PageResponse<>(wishItemPage.getContent(), wishItemPage);
     }

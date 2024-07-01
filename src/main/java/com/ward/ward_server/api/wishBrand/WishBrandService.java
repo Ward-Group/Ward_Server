@@ -6,7 +6,7 @@ import com.ward.ward_server.api.user.entity.User;
 import com.ward.ward_server.api.user.repository.UserRepository;
 import com.ward.ward_server.api.wishBrand.repository.WishBrandRepository;
 import com.ward.ward_server.global.Object.PageResponse;
-import com.ward.ward_server.global.Object.enums.ApiSort;
+import com.ward.ward_server.global.Object.enums.BasicSort;
 import com.ward.ward_server.global.exception.ApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,8 +34,8 @@ public class WishBrandService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<WishBrandResponse> getWishBrandListByUser(long userId, ApiSort apiSort, int page) {
-        Page<WishBrandResponse> wishBrandPage = wishBrandRepository.getWishBrandPage(userId, apiSort, PageRequest.of(page, API_PAGE_SIZE));
+    public PageResponse<WishBrandResponse> getWishBrandListByUser(long userId, BasicSort basicSort, int page) {
+        Page<WishBrandResponse> wishBrandPage = wishBrandRepository.getWishBrandPage(userId, basicSort, PageRequest.of(page, API_PAGE_SIZE));
         return new PageResponse<>(wishBrandPage.getContent(), wishBrandPage);
     }
 
