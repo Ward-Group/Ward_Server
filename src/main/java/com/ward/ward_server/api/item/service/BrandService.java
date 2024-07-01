@@ -47,8 +47,8 @@ public class BrandService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<BrandInfoResponse> getBrandItemPageSortedForHomeView(BasicSort sort, int page) {
-        Page<BrandInfoResponse> brandInfoPage = brandRepository.getBrandItemPage(sort, PageRequest.of(page, API_PAGE_SIZE));
+    public PageResponse<BrandInfoResponse> getBrandAndItem3Page(BasicSort sort, int page) {
+        Page<BrandInfoResponse> brandInfoPage = brandRepository.getBrandAndItem3Page(sort, PageRequest.of(page, API_PAGE_SIZE));
         return new PageResponse<>(brandInfoPage.getContent(), brandInfoPage);
     }
 

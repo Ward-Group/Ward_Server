@@ -7,7 +7,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ward.ward_server.api.item.dto.BrandInfoResponse;
-import com.ward.ward_server.api.item.dto.BrandItemResponse;
+import com.ward.ward_server.api.item.dto.BrandItemMainImageResponse;
 import com.ward.ward_server.global.Object.enums.BasicSort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,7 @@ import static com.ward.ward_server.api.wishItem.QWishItem.wishItem;
 public class BrandQueryRepositoryImpl implements BrandQueryRepository {
     private final JPAQueryFactory queryFactory;
 
-    public Page<BrandInfoResponse> getBrandItemPage(BasicSort basicSort, Pageable pageable) {
+    public Page<BrandInfoResponse> getBrandAndItem3Page(BasicSort basicSort, Pageable pageable) {
         List<Tuple> content = queryFactory.select(
                         brand.id,
                         brand.logoImage,
@@ -45,11 +45,6 @@ public class BrandQueryRepositoryImpl implements BrandQueryRepository {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        log.debug("content size {}", content.size());
-        log.debug("\n결과: {}", content.stream()
-                .map(e -> e.toString())
-                .collect(Collectors.joining("\n")));
-
         List<BrandInfoResponse> result = content.stream()
                 .map(e -> new BrandInfoResponse(
                         e.get(brand.id),
@@ -58,11 +53,8 @@ public class BrandQueryRepositoryImpl implements BrandQueryRepository {
                         e.get(brand.englishName),
                         e.get(brand.viewCount),
                         e.get(5, Long.class),
-                        queryFactory.select(Projections.constructor(BrandItemResponse.class,
+                        queryFactory.select(Projections.constructor(BrandItemMainImageResponse.class,
                                         item.id,
-                                        item.koreanName,
-                                        item.englishName,
-                                        item.code,
                                         item.mainImage,
                                         item.viewCount,
                                         count(wishItem)))

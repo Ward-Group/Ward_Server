@@ -7,5 +7,5 @@ import org.springframework.data.domain.Pageable;
 
 
 public interface BrandQueryRepository {
-    Page<BrandInfoResponse> getBrandItemPage(BasicSort sort, Pageable pageable);
+    Page<BrandInfoResponse> getBrandAndItem3Page(BasicSort sort, Pageable pageable);
 }

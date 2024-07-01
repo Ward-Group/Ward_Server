@@ -4,9 +4,9 @@ import com.ward.ward_server.api.item.dto.BrandInfoResponse;
 import com.ward.ward_server.api.item.dto.BrandRecommendedResponse;
 import com.ward.ward_server.api.item.dto.BrandRequest;
 import com.ward.ward_server.api.item.dto.BrandResponse;
-import com.ward.ward_server.global.Object.enums.BasicSort;
 import com.ward.ward_server.api.item.service.BrandService;
 import com.ward.ward_server.global.Object.PageResponse;
+import com.ward.ward_server.global.Object.enums.BasicSort;
 import com.ward.ward_server.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.index.qual.Positive;
@@ -28,9 +28,9 @@ public class BrandController {
     }
 
     @GetMapping
-    public ApiResponse<PageResponse<BrandInfoResponse>> getBrandItemPage(@RequestParam("sort") BasicSort sort,
-                                                                         @Positive @RequestParam(value = "page") int page) {
-        return ApiResponse.ok(BRAND_TOP10_WITH_ITEM_LOAD_SUCCESS, brandService.getBrandItemPageSortedForHomeView(sort, page - 1));
+    public ApiResponse<PageResponse<BrandInfoResponse>> getBrandAndItem3Page(@RequestParam("sort") BasicSort sort,
+                                                                             @Positive @RequestParam(value = "page") int page) {
+        return ApiResponse.ok(BRAND_TOP10_WITH_ITEM_LOAD_SUCCESS, brandService.getBrandAndItem3Page(sort, page - 1));
     }
 
     @GetMapping("/recommended")
