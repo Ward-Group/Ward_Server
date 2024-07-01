@@ -9,6 +9,7 @@ import com.ward.ward_server.global.response.error.ErrorMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -46,6 +47,13 @@ public class ExceptionHandler {
     @org.springframework.web.bind.annotation.ExceptionHandler(JWTVerificationException.class)
     public ApiResponse handleJWTVerificationException(JWTVerificationException ex) {
         return ApiResponse.failure(ExceptionCode.INVALID_TOKEN);
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @org.springframework.web.bind.annotation.ExceptionHandler(MissingServletRequestParameterException.class)
+    public ApiResponse handleNullPointerException(MissingServletRequestParameterException ex) {
+        log.error("Null Pointer Exception: ", ex);
+        return ApiResponse.error(ErrorMessage.RESOURCE_NOT_FOUND);
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

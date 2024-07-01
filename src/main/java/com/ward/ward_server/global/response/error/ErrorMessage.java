@@ -20,7 +20,8 @@ public enum ErrorMessage {
     SORT_NOT_EXISTS("입력하신 정렬방법이 존재하지 않아요."),
     CATEGORY_NOT_EXISTS("입력하신 카테고리가 존재하지 않아요."),
     BRAND_SORT_NOT_EXISTS("입력하신 브랜드 정렬이 존재하지 않아요."),
-    SERVER_ERROR("서버에서 오류가 발생했습니다.");
+    SERVER_ERROR("서버에서 오류가 발생했습니다."),
+    RESOURCE_NOT_FOUND("요청하신 페이지를 찾을 수 없어요.");
 
     private final String message;
 }

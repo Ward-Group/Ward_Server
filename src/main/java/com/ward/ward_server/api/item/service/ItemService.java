@@ -11,11 +11,13 @@ import com.ward.ward_server.api.item.repository.BrandRepository;
 import com.ward.ward_server.api.item.repository.ItemImageRepository;
 import com.ward.ward_server.api.item.repository.ItemRepository;
 import com.ward.ward_server.api.item.repository.ItemViewCountRepository;
+import com.ward.ward_server.global.Object.PageResponse;
 import com.ward.ward_server.global.Object.enums.HomeSort;
 import com.ward.ward_server.global.exception.ApiException;
 import com.ward.ward_server.global.util.ValidationUtils;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -24,6 +26,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static com.ward.ward_server.global.Object.Constants.API_PAGE_SIZE;
 import static com.ward.ward_server.global.exception.ExceptionCode.*;
 import static com.ward.ward_server.global.response.error.ErrorMessage.NAME_MUST_BE_PROVIDED;
 import static com.ward.ward_server.global.response.error.ErrorMessage.REQUIRED_FIELDS_MUST_BE_PROVIDED;
@@ -88,15 +91,16 @@ public class ItemService {
     }
 
     @Transactional(readOnly = true)
-    public List<ItemSimpleResponse> getItem10ListSortedForHomeView(Long userId, HomeSort homeSort) {
-        LocalDateTime now = LocalDateTime.now();
-        return switch (homeSort) {
-            case RELEASE_NOW -> itemRepository.getReleaseTodayItemOrdered(userId, now);
-            case RELEASE_WISH -> itemRepository.getReleaseWishItemOrdered(userId, now);
-            case RELEASE_CONFIRM -> itemRepository.getJustConfirmReleaseItemOrdered(userId, now);
-            case REGISTER_TODAY -> itemRepository.getRegisterTodayItemOrdered(userId, now);
-            default -> itemRepository.getDueTodayItemOrdered(userId, now);
-        };
+    public List<ItemSimpleResponse> getItem10List(Long userId, HomeSort homeSort, Category category) {
+        //HACK DB 시간 설정 전까지는 -9시간으로 비교해야 한다.
+        return itemRepository.getHomeSortList(userId, LocalDateTime.now().minusHours(9), category, homeSort);
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponse<ItemSimpleResponse> getItemPage(Long userId, HomeSort homeSort, Category category, int page) {
+        //HACK DB 시간 설정 전까지는 -9시간으로 비교해야 한다.
+        Page<ItemSimpleResponse> itemPageInfo = itemRepository.getHomeSortPage(userId, LocalDateTime.now().minusHours(9), category, homeSort, PageRequest.of(page, API_PAGE_SIZE));
+        return new PageResponse<>(itemPageInfo.getContent(), itemPageInfo);
     }
 
     @Transactional

@@ -51,15 +51,15 @@ public class ReleaseInfoController {
 
     @GetMapping("/home")
     public ApiResponse<List<ReleaseInfoSimpleResponse>> getReleaseInfo10List(@AuthenticationPrincipal CustomUserDetails principal,
-                                                                             @RequestParam HomeSort sort,
-                                                                             @RequestParam Category category) {
+                                                                             @RequestParam("sort") HomeSort sort,
+                                                                             @RequestParam("category") Category category) {
         return ApiResponse.ok(RELEASE_INFO_LIST_LOAD_SUCCESS, releaseInfoService.getReleaseInfo10List(principal.getUserId(), sort, category));
     }
 
     @GetMapping
     public ApiResponse<PageResponse<ReleaseInfoSimpleResponse>> getReleaseInfoPage(@AuthenticationPrincipal CustomUserDetails principal,
-                                                                                   @RequestParam HomeSort sort,
-                                                                                   @RequestParam Category category,
+                                                                                   @RequestParam("sort") HomeSort sort,
+                                                                                   @RequestParam("category") Category category,
                                                                                    @Positive @RequestParam(value = "page") int page) {
         return ApiResponse.ok(RELEASE_INFO_LIST_LOAD_SUCCESS, releaseInfoService.getReleaseInfoPage(principal.getUserId(), sort, category, page - 1));
     }
