@@ -1,10 +1,12 @@
 package com.ward.ward_server.api.item.service;
 
 import com.ward.ward_server.api.item.dto.BrandInfoResponse;
+import com.ward.ward_server.api.item.dto.BrandItemResponse;
 import com.ward.ward_server.api.item.dto.BrandRecommendedResponse;
 import com.ward.ward_server.api.item.dto.BrandResponse;
 import com.ward.ward_server.api.item.entity.Brand;
 import com.ward.ward_server.api.item.repository.BrandRepository;
+import com.ward.ward_server.api.item.repository.ItemRepository;
 import com.ward.ward_server.global.Object.PageResponse;
 import com.ward.ward_server.global.Object.enums.BasicSort;
 import com.ward.ward_server.global.exception.ApiException;
@@ -28,6 +30,7 @@ import static com.ward.ward_server.global.response.error.ErrorMessage.NAME_MUST_
 @RequiredArgsConstructor
 public class BrandService {
     private final BrandRepository brandRepository;
+    private final ItemRepository itemRepository;
 
     @Transactional
     public BrandResponse createBrand(String koreanName, String englishName, String brandLogoImage) {
@@ -58,6 +61,12 @@ public class BrandService {
                 .stream()
                 .map(brand -> new BrandRecommendedResponse(brand.getLogoImage(), brand.getKoreanName(), brand.getEnglishName()))
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponse<BrandItemResponse> getAllBrandItemPage(long brandId, BasicSort sort, int page) {
+        Page<BrandItemResponse> brandInfoPage = itemRepository.getBrandItemPage(brandId, sort, PageRequest.of(page, API_PAGE_SIZE));
+        return new PageResponse<>(brandInfoPage.getContent(), brandInfoPage);
     }
 
     @Transactional

@@ -2,19 +2,26 @@ package com.ward.ward_server.api.item.repository.query;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.DateTimePath;
 import com.querydsl.core.types.dsl.DateTimeTemplate;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.ward.ward_server.api.item.dto.BrandItemResponse;
 import com.ward.ward_server.api.item.dto.ItemSimpleResponse;
 import com.ward.ward_server.api.item.entity.enums.Category;
+import com.ward.ward_server.global.Object.enums.BasicSort;
 import com.ward.ward_server.global.Object.enums.HomeSort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -38,10 +45,8 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
                         getField(homeSort)
                 ).from(releaseInfo)
                 .leftJoin(releaseInfo.item, item)
-                .where(getSortCondition(homeSort, now, wishItemIds), getCategoryCondition(category))
+                .where(getHomeSortCondition(homeSort, now, wishItemIds), getCategoryCondition(category))
                 .fetch();
-
-        log.debug("tuples 검사 {}", tuples);
 
         Map<Long, LocalDateTime> itemIdAndDateMap = tuples.stream()
                 .collect(Collectors.groupingBy(
@@ -50,8 +55,6 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
                                 Collectors.mapping(tuple -> tuple.get(1, LocalDateTime.class), Collectors.toList()),
                                 dateList -> dateList.stream().min(Comparator.naturalOrder()).orElse(null))
                 ));
-
-        log.debug("map 검사 {}", itemIdAndDateMap.size());
 
         List<Long> top10 = itemIdAndDateMap.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue())
@@ -85,7 +88,7 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
                         getField(homeSort)
                 ).from(releaseInfo)
                 .leftJoin(releaseInfo.item, item)
-                .where(getSortCondition(homeSort, now, wishItemIds), getCategoryCondition(category))
+                .where(getHomeSortCondition(homeSort, now, wishItemIds), getCategoryCondition(category))
                 .fetch();
 
         Map<Long, LocalDateTime> itemIdAndDateMap = tuples.stream()
@@ -120,6 +123,39 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
         return new PageImpl<>(itemSimpleResponseList(result, wishItemIds), pageable, sortedIds.size());
     }
 
+    public Page<BrandItemResponse> getBrandItemPage(long brandId, BasicSort basicSort, Pageable pageable) {
+        List<BrandItemResponse> content=queryFactory.select(
+                        Projections.constructor(BrandItemResponse.class,
+                                item.id,
+                                item.mainImage,
+                                item.koreanName,
+                                item.englishName,
+                                item.price)
+                ).from(item)
+                .leftJoin(item.brand, brand)
+                .where(brand.id.eq(brandId))
+                .orderBy(getBasicSortOrder(basicSort))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        JPAQuery<Long> countQuery = queryFactory
+                .select(item.count())
+                .from(item)
+                .where(item.brand.id.eq(brandId));
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+    }
+
+    private OrderSpecifier getBasicSortOrder(BasicSort basicSort) {
+        return switch (basicSort) {
+            case KOREAN_ALPHABETICAL -> new OrderSpecifier<>(Order.ASC, item.koreanName);
+            case ALPHABETICAL -> new OrderSpecifier<>(Order.ASC, item.englishName);
+            case LATEST -> new OrderSpecifier<>(Order.DESC, item.createdAt);
+            default -> new OrderSpecifier<>(Order.DESC, item.viewCount); // VIEW, RANKING
+        };
+    }
+
     private List<Long> pageIds(List<Long> itemList, int pageNumber, int pageSize) {
         int fromIndex = pageNumber * pageSize; // 시작 페이지
         int toIndex = Math.min(fromIndex + pageSize, itemList.size()); // 끝 페이지 검사(다음 페이지 or 끝 요소)
@@ -127,7 +163,7 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
         return itemList.subList(fromIndex, toIndex);
     }
 
-    private BooleanBuilder getSortCondition(HomeSort homeSort, LocalDateTime now, Set<Long> wishItemIds) {
+    private BooleanBuilder getHomeSortCondition(HomeSort homeSort, LocalDateTime now, Set<Long> wishItemIds) {
         DateTimeTemplate<LocalDateTime> nowDateTime = Expressions.dateTimeTemplate(LocalDateTime.class, "{0}", now);
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -162,7 +198,7 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
         return category == Category.ALL ? null : item.category.eq(category);
     }
 
-    private DateTimePath<java.time.LocalDateTime> getField(HomeSort homeSort) {
+    private DateTimePath<LocalDateTime> getField(HomeSort homeSort) {
         return switch (homeSort) {
             case REGISTER_TODAY -> releaseInfo.createdAt;
             case RELEASE_CONFIRM -> releaseInfo.releaseDate;
