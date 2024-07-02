@@ -1,9 +1,12 @@
 package com.ward.ward_server.api.item.entity;
 
 import com.ward.ward_server.api.item.entity.enums.Category;
+import com.ward.ward_server.api.releaseInfo.entity.ReleaseInfo;
 import com.ward.ward_server.global.Object.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -35,6 +38,9 @@ public class Item extends BaseTimeEntity {
     private Category category;
 
     private Integer price;
+
+    @OneToMany(mappedBy = "item", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<ReleaseInfo> releaseInfos;
 
     @Builder
     public Item(String code, String koreanName, String englishName, String mainImage, Brand brand, Category category, Integer price) {
