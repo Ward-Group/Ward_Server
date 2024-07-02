@@ -1,24 +1,23 @@
 package com.ward.ward_server.api.item.repository;
 
+import com.ward.ward_server.api.item.dto.BrandItemResponse;
 import com.ward.ward_server.api.item.dto.ItemSimpleResponse;
 import com.ward.ward_server.api.item.entity.Brand;
 import com.ward.ward_server.api.item.entity.Item;
 import com.ward.ward_server.api.item.entity.enums.Category;
-import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoSimpleResponse;
 import com.ward.ward_server.api.releaseInfo.entity.DrawPlatform;
 import com.ward.ward_server.api.releaseInfo.entity.ReleaseInfo;
 import com.ward.ward_server.api.releaseInfo.entity.enums.CurrencyUnit;
 import com.ward.ward_server.api.releaseInfo.entity.enums.DeliveryMethod;
 import com.ward.ward_server.api.releaseInfo.entity.enums.NotificationMethod;
 import com.ward.ward_server.api.releaseInfo.entity.enums.ReleaseMethod;
-import com.ward.ward_server.api.releaseInfo.repository.ReleaseInfoRepository;
 import com.ward.ward_server.api.user.entity.User;
 import com.ward.ward_server.api.wishItem.WishItem;
+import com.ward.ward_server.global.Object.enums.BasicSort;
 import com.ward.ward_server.global.Object.enums.HomeSort;
 import com.ward.ward_server.global.config.QuerydslConfig;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
-import net.bytebuddy.asm.Advice;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +30,9 @@ import org.springframework.data.domain.PageRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.ward.ward_server.global.Object.Constants.*;
-import static com.ward.ward_server.global.Object.Constants.API_PAGE_SIZE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -50,13 +47,14 @@ class ItemRepositoryTest {
     List<Item> items = new ArrayList<>();
     User user;
     DrawPlatform drawPlatform;
+    Brand brand;
 
     @BeforeEach
     public void before() {
         user = new User("이름", "이메일", "비밀번호", "닉네임", true, true, true);
         em.persist(user);
 
-        Brand brand = new Brand("로고이미지", "브랜드이름", "englishName");
+        brand = new Brand("로고이미지", "브랜드이름", "englishName");
         em.persist(brand);
 
         drawPlatform = new DrawPlatform("테스트플랫폼", "testPlatform", "플랫폼이미지");
@@ -299,7 +297,7 @@ class ItemRepositoryTest {
         em.clear();
 
         //when
-        int page = total % API_PAGE_SIZE == 0 ? (total / API_PAGE_SIZE) : (total / API_PAGE_SIZE + 1);
+        int page = total % API_PAGE_SIZE == 0 ? (total / API_PAGE_SIZE) : (total / API_PAGE_SIZE + 1); //마지막 페이지 계산
         Page<ItemSimpleResponse> result = itemRepository.getHomeSortPage(user.getId(), now, Category.ALL, HomeSort.REGISTER_TODAY, PageRequest.of(page - 1, API_PAGE_SIZE));
 
         //then
@@ -325,5 +323,23 @@ class ItemRepositoryTest {
         //then
         assertThat(result.size()).isEqualTo(1);
         assertThat(result.get(0).itemKoreanName()).isEqualTo("상품이름" + (itemIndex + 1));
+    }
+
+    @Test
+    public void 최신순으로_정렬한_브랜드_상품의_마지막_페이지를_가져온다() {
+        //given
+        int total = 60; //before()에서 등록한 브랜드 상품 개수
+        int page = 3;
+
+        //when
+        Page<BrandItemResponse> result = itemRepository.getBrandItemPage(brand.getId(), BasicSort.LATEST, PageRequest.of(page - 1, API_PAGE_SIZE));
+
+        //then
+        assertThat(result.getContent().size()).isEqualTo(20);
+        assertThat(result.getTotalElements()).isEqualTo(total);
+        assertThat(result.getNumber()).isEqualTo(page - 1);
+        assertThat(result.getTotalPages()).isEqualTo(page);
+        //마지막 값을 확인한다.
+        assertThat(result.getContent().get(19).koreanName()).isEqualTo("상품이름" + 1);
     }
 }

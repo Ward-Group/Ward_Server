@@ -13,4 +13,5 @@ public interface ReleaseInfoQueryRepository {
     List<ReleaseInfoSimpleResponse> getHomeSortList(long userId, LocalDateTime now, Category category, HomeSort homeSort);
 
     Page<ReleaseInfoSimpleResponse> getHomeSortPage(long userId, LocalDateTime now, Category category, HomeSort homeSort, Pageable pageable);
+    Page<ReleaseInfoSimpleResponse> getBrandReleaseInfoPage(long brandId, Pageable pageable);
 }

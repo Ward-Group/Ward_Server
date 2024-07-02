@@ -1,12 +1,16 @@
 package com.ward.ward_server.api.item.service;
 
 import com.ward.ward_server.api.item.dto.BrandInfoResponse;
+import com.ward.ward_server.api.item.dto.BrandItemResponse;
 import com.ward.ward_server.api.item.dto.BrandRecommendedResponse;
 import com.ward.ward_server.api.item.dto.BrandResponse;
 import com.ward.ward_server.api.item.entity.Brand;
 import com.ward.ward_server.api.item.repository.BrandRepository;
+import com.ward.ward_server.api.item.repository.ItemRepository;
+import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoSimpleResponse;
+import com.ward.ward_server.api.releaseInfo.repository.ReleaseInfoRepository;
 import com.ward.ward_server.global.Object.PageResponse;
-import com.ward.ward_server.global.Object.enums.ApiSort;
+import com.ward.ward_server.global.Object.enums.BasicSort;
 import com.ward.ward_server.global.exception.ApiException;
 import com.ward.ward_server.global.exception.ExceptionCode;
 import com.ward.ward_server.global.util.ValidationUtils;
@@ -28,6 +32,8 @@ import static com.ward.ward_server.global.response.error.ErrorMessage.NAME_MUST_
 @RequiredArgsConstructor
 public class BrandService {
     private final BrandRepository brandRepository;
+    private final ItemRepository itemRepository;
+    private final ReleaseInfoRepository releaseInfoRepository;
 
     @Transactional
     public BrandResponse createBrand(String koreanName, String englishName, String brandLogoImage) {
@@ -47,8 +53,8 @@ public class BrandService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<BrandInfoResponse> getBrandItemPageSortedForHomeView(ApiSort sort, int page) {
-        Page<BrandInfoResponse> brandInfoPage = brandRepository.getBrandItemPage(sort, PageRequest.of(page, API_PAGE_SIZE));
+    public PageResponse<BrandInfoResponse> getBrandAndItem3Page(BasicSort sort, int page) {
+        Page<BrandInfoResponse> brandInfoPage = brandRepository.getBrandAndItem3Page(sort, PageRequest.of(page, API_PAGE_SIZE));
         return new PageResponse<>(brandInfoPage.getContent(), brandInfoPage);
     }
 
@@ -58,6 +64,18 @@ public class BrandService {
                 .stream()
                 .map(brand -> new BrandRecommendedResponse(brand.getLogoImage(), brand.getKoreanName(), brand.getEnglishName()))
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponse<BrandItemResponse> getBrandItemPage(long brandId, BasicSort sort, int page) {
+        Page<BrandItemResponse> brandInfoPage = itemRepository.getBrandItemPage(brandId, sort, PageRequest.of(page, API_PAGE_SIZE));
+        return new PageResponse<>(brandInfoPage.getContent(), brandInfoPage);
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponse<ReleaseInfoSimpleResponse> getBrandReleaseInfoPage(long brandId, int page) {
+        Page<ReleaseInfoSimpleResponse> releaseInfoInfoPage = releaseInfoRepository.getBrandReleaseInfoPage(brandId, PageRequest.of(page, API_PAGE_SIZE));
+        return new PageResponse<>(releaseInfoInfoPage.getContent(), releaseInfoInfoPage);
     }
 
     @Transactional

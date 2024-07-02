@@ -9,6 +9,6 @@ public record BrandInfoResponse(
         String brandEnglishName,
         long brandViewCount,
         long brandWishCount,
-        List<BrandItemResponse> itemList
+        List<BrandItemMainImageResponse> itemList
 ) {
 }

@@ -19,7 +19,7 @@ public enum ErrorMessage {
     CURRENCY_UNIT_NOT_EXISTS("입력하신 화폐단위가 존재하지 않아요."),
     SORT_NOT_EXISTS("입력하신 정렬방법이 존재하지 않아요."),
     CATEGORY_NOT_EXISTS("입력하신 카테고리가 존재하지 않아요."),
-    BRAND_SORT_NOT_EXISTS("입력하신 브랜드 정렬이 존재하지 않아요."),
+    BASIC_SORT_NOT_EXISTS("입력하신 기본 정렬이 존재하지 않아요."),
     SERVER_ERROR("서버에서 오류가 발생했습니다."),
     RESOURCE_NOT_FOUND("요청하신 페이지를 찾을 수 없어요.");
 

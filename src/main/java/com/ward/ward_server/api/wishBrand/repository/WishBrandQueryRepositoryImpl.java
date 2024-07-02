@@ -7,14 +7,13 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ward.ward_server.api.wishBrand.WishBrandResponse;
-import com.ward.ward_server.global.Object.enums.ApiSort;
+import com.ward.ward_server.global.Object.enums.BasicSort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,7 +27,7 @@ import static com.ward.ward_server.api.wishBrand.QWishBrand.wishBrand;
 public class WishBrandQueryRepositoryImpl implements WishBrandQueryRepository {
     private final JPAQueryFactory queryFactory;
 
-    public Page<WishBrandResponse> getWishBrandPage(long userId, ApiSort apiSort, Pageable pageable) {
+    public Page<WishBrandResponse> getWishBrandPage(long userId, BasicSort basicSort, Pageable pageable) {
         Map<Long, Long> brandWishCountMap=countBrandWish();
         log.info("wish count brand {}", brandWishCountMap);
         List<WishBrandResponse> result = queryFactory.select(
@@ -41,7 +40,7 @@ public class WishBrandQueryRepositoryImpl implements WishBrandQueryRepository {
                 .leftJoin(wishBrand.brand, brand)
                 .where(wishBrand.user.id.eq(userId))
                 .groupBy(wishBrand.id)
-                .orderBy(createOrderSpecifier(apiSort, brandWishCountMap))
+                .orderBy(createOrderSpecifier(basicSort, brandWishCountMap))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -59,8 +58,8 @@ public class WishBrandQueryRepositoryImpl implements WishBrandQueryRepository {
         return PageableExecutionUtils.getPage(result, pageable, countQuery::fetchOne);
     }
 
-    private OrderSpecifier createOrderSpecifier(ApiSort apiSort, Map<Long, Long> map) {
-        return switch (apiSort) {
+    private OrderSpecifier createOrderSpecifier(BasicSort basicSort, Map<Long, Long> map) {
+        return switch (basicSort) {
             case KOREAN_ALPHABETICAL -> new OrderSpecifier<>(Order.ASC, brand.koreanName);
             case ALPHABETICAL -> new OrderSpecifier<>(Order.ASC, brand.englishName);
             default ->  new OrderSpecifier<>(Order.DESC, brand.viewCount);

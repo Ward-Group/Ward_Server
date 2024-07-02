@@ -6,7 +6,7 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ward.ward_server.api.wishItem.WishItemResponse;
-import com.ward.ward_server.global.Object.enums.ApiSort;
+import com.ward.ward_server.global.Object.enums.BasicSort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.querydsl.core.types.ExpressionUtils.count;
 import static com.ward.ward_server.api.entry.entity.QEntryRecord.entryRecord;
 import static com.ward.ward_server.api.item.entity.QBrand.brand;
 import static com.ward.ward_server.api.item.entity.QItem.item;
@@ -30,7 +29,7 @@ import static com.ward.ward_server.api.wishItem.QWishItem.wishItem;
 public class WishItemQueryRepositoryImpl implements WishItemQueryRepository {
     private final JPAQueryFactory queryFactory;
 
-    public Page<WishItemResponse> getWishItemPage(long userId, ApiSort apiSort, Pageable pageable) {
+    public Page<WishItemResponse> getWishItemPage(long userId, BasicSort basicSort, Pageable pageable) {
         List<Tuple> content = queryFactory.select(
                         brand.koreanName,
                         brand.englishName,
@@ -43,7 +42,7 @@ public class WishItemQueryRepositoryImpl implements WishItemQueryRepository {
                 .leftJoin(item.brand, brand)
                 .where(wishItem.user.id.eq(userId))
                 .groupBy(wishItem.id)
-                .orderBy(createOrderSpecifier(apiSort))
+                .orderBy(createOrderSpecifier(basicSort))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -83,8 +82,8 @@ public class WishItemQueryRepositoryImpl implements WishItemQueryRepository {
         );
     }
 
-    private OrderSpecifier createOrderSpecifier(ApiSort apiSort) {
-        return switch (apiSort) {
+    private OrderSpecifier createOrderSpecifier(BasicSort basicSort) {
+        return switch (basicSort) {
             case KOREAN_ALPHABETICAL -> new OrderSpecifier<>(Order.ASC, item.koreanName);
             case ALPHABETICAL -> new OrderSpecifier<>(Order.ASC, item.englishName);
             default -> new OrderSpecifier<>(Order.DESC, item.viewCount);

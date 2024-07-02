@@ -12,6 +12,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ward.ward_server.api.item.entity.enums.Category;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoSimpleResponse;
+import com.ward.ward_server.global.Object.enums.BasicSort;
 import com.ward.ward_server.global.Object.enums.HomeSort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -91,6 +92,40 @@ public class ReleaseInfoQueryRepositoryImpl implements ReleaseInfoQueryRepositor
                 .leftJoin(releaseInfo.item, item)
                 .leftJoin(item.brand, brand)
                 .where(getSortCondition(userId, homeSort, now), getCategoryCondition(category));
+
+        return PageableExecutionUtils.getPage(result, pageable, countQuery::fetchOne);
+    }
+
+    public Page<ReleaseInfoSimpleResponse> getBrandReleaseInfoPage(long brandId, Pageable pageable) {
+        List<Long> itemIds = queryFactory
+                .select(item.id)
+                .from(item)
+                .where(item.brand.id.eq(brandId))
+                .fetch();
+
+        List<ReleaseInfoSimpleResponse> result = queryFactory.select(Projections.constructor(ReleaseInfoSimpleResponse.class,
+                        releaseInfo.id,
+                        drawPlatform.koreanName,
+                        drawPlatform.englishName,
+                        item.id,
+                        item.mainImage,
+                        item.koreanName,
+                        item.englishName,
+                        releaseInfo.releaseMethod,
+                        releaseInfo.dueDate))
+                .from(releaseInfo)
+                .where(releaseInfo.item.id.in(itemIds))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(releaseInfo.dueDate.desc())
+                .fetch();
+
+        log.info("result {}", result.toString());
+
+        JPAQuery<Long> countQuery = queryFactory
+                .select(releaseInfo.count())
+                .from(releaseInfo)
+                .where(releaseInfo.item.id.in(itemIds));
 
         return PageableExecutionUtils.getPage(result, pageable, countQuery::fetchOne);
     }

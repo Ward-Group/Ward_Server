@@ -28,11 +28,13 @@ public enum ApiResponseMessage {
     REALTIME_TOP10_LOAD_SUCCESS("실시간 Top10 조회에 성공하였습니다."),
     //브랜드
     BRAND_CREATE_SUCCESS("브랜드 등록에 성공하였습니다."),
-    BRAND_TOP10_WITH_ITEM_LOAD_SUCCESS("top10 브랜드와 상품 목록 조회에 성공하였습니다."),
+    BRAND_AND_ITEM3_PAGE_LOAD_SUCCESS("브랜드와 상품3 목록 조회에 성공하였습니다."),
     BRAND_RECOMMENDED_LOAD_SUCCESS("추천 브랜드 조회에 성공하였습니다."),
     BRAND_UPDATE_SUCCESS("브랜드 수정에 성공하였습니다."),
     BRAND_DELETE_SUCCESS("브랜드 삭제에 성공하였습니다."),
     BRAND_VIEW_COUNT_UP_SUCCESS("브랜드 조회수 증가에 성공하였습니다."),
+    BRAND_ITEM_PAGE_LOAD_SUCCESS("브랜드 상품 페이지 조회에 성공하였습니다."),
+    BRAND_RELEASE_INFO_PAGE_LOAD_SUCCESS("브랜드 상품 발매정보 페이지 조회에 성공하였습니다."),
     //발매정보
     RELEASE_INFO_CREATE_SUCCESS("발매정보 등록에 성공하였습니다."),
     RELEASE_INFO_DETAIL_LOAD_SUCCESS("발매정보 상세정보 조회에 성공하였습니다."),
