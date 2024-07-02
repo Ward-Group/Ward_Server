@@ -87,13 +87,16 @@ public class SearchService {
         // Item search
         Page<Item> items = itemRepository.searchItems(keyword, PageRequest.of(page, size));
         List<IntegratedSearchResponse.ItemResult> itemResults = items.getContent().stream()
-                .map(item -> new IntegratedSearchResponse.ItemResult(
-                        item.getId(),
-                        item.getMainImage(),
-                        item.getBrand().getKoreanName(),
-                        item.getKoreanName(),
-                        item.getReleaseInfos().size(),
-                        item.getViewCount()))
+                .map(item -> {
+                    int releaseCount = releaseInfoRepository.countByItemId(item.getId());
+                    return new IntegratedSearchResponse.ItemResult(
+                            item.getId(),
+                            item.getMainImage(),
+                            item.getBrand().getKoreanName(),
+                            item.getKoreanName(),
+                            releaseCount,
+                            item.getViewCount());
+                })
                 .collect(Collectors.toList());
         IntegratedSearchResponse.ItemSearchResult itemSearchResult = new IntegratedSearchResponse.ItemSearchResult(
                 items.getTotalElements(),
