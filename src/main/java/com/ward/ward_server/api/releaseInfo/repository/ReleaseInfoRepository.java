@@ -11,8 +11,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
 
 public interface ReleaseInfoRepository extends JpaRepository<ReleaseInfo, Long>, ReleaseInfoQueryRepository {
 
@@ -24,4 +22,17 @@ public interface ReleaseInfoRepository extends JpaRepository<ReleaseInfo, Long>,
 
     @Query("SELECT COUNT(r) FROM ReleaseInfo r WHERE r.item.id = :itemId")
     int countByItemId(@Param("itemId") Long itemId);
+
+    @Query("SELECT ri FROM ReleaseInfo ri " +
+            "JOIN ri.item i " +
+            "JOIN ri.drawPlatform dp " +
+            "JOIN i.brand b " +
+            "WHERE LOWER(i.koreanName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "OR LOWER(i.englishName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "OR LOWER(i.code) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "OR LOWER(b.koreanName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "OR LOWER(b.englishName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "OR LOWER(dp.koreanName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "OR LOWER(dp.englishName) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    Page<ReleaseInfo> searchReleaseInfos(@Param("keyword") String keyword, Pageable pageable);
 }

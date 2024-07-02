@@ -1,6 +1,7 @@
 package com.ward.ward_server.api.search.controller;
 
 import com.ward.ward_server.api.search.dto.SearchItemsResponse;
+import com.ward.ward_server.api.search.dto.SearchReleaseInfoResponse;
 import com.ward.ward_server.api.search.service.SearchService;
 import com.ward.ward_server.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,14 @@ public class SearchController {
                                                         @RequestParam("page") int page,
                                                         @RequestParam("size") int size) {
         SearchItemsResponse searchResults = searchService.searchItems(keyword, page, size);
+        return ApiResponse.ok(searchResults);
+    }
+
+    @GetMapping("/release-infos")
+    public ApiResponse<SearchReleaseInfoResponse> searchReleaseInfos(@RequestParam("keyword") String keyword,
+                                                                     @RequestParam("page") int page,
+                                                                     @RequestParam("size") int size) {
+        SearchReleaseInfoResponse searchResults = searchService.searchReleaseInfos(keyword, page, size);
         return ApiResponse.ok(searchResults);
     }
 }
