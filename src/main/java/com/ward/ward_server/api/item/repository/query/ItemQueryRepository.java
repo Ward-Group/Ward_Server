@@ -12,8 +12,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ItemQueryRepository {
-    List<ItemSimpleResponse> getHomeSortList(Long userId, LocalDateTime now, Category category, Section section);
+    List<ItemSimpleResponse> getItem10List(Long userId, LocalDateTime now, Category category, Section section);
 
-    Page<ItemSimpleResponse> getHomeSortPage(Long userId, LocalDateTime now, Category category, Section section, Pageable pageable);
+    Page<ItemSimpleResponse> getItemPage(Long userId, LocalDateTime now, Category category, Section section, String yearMonth, Pageable pageable);
+
     Page<BrandItemResponse> getBrandItemPage(long brandId, BasicSort basicSort, Pageable pageable);
 }

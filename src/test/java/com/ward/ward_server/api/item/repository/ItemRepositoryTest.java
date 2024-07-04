@@ -92,7 +92,7 @@ class ItemRepositoryTest {
         em.clear();
 
         //when
-        List<ItemSimpleResponse> result = itemRepository.getHomeSortList(user.getId(), now, Category.FOOTWEAR, Section.DUE_TODAY);
+        List<ItemSimpleResponse> result = itemRepository.getItem10List(user.getId(), now, Category.FOOTWEAR, Section.DUE_TODAY);
 
         //then
         assertThat(result.size()).isEqualTo(10);
@@ -129,7 +129,7 @@ class ItemRepositoryTest {
         em.clear();
 
         //when
-        List<ItemSimpleResponse> result = itemRepository.getHomeSortList(user.getId(), now, Category.FOOTWEAR, Section.RELEASE_NOW);
+        List<ItemSimpleResponse> result = itemRepository.getItem10List(user.getId(), now, Category.FOOTWEAR, Section.RELEASE_NOW);
 
         //then
         assertThat(result.size()).isEqualTo(10);
@@ -169,7 +169,7 @@ class ItemRepositoryTest {
         em.clear();
 
         //when
-        List<ItemSimpleResponse> result = itemRepository.getHomeSortList(user.getId(), now, Category.FOOTWEAR, Section.RELEASE_WISH);
+        List<ItemSimpleResponse> result = itemRepository.getItem10List(user.getId(), now, Category.FOOTWEAR, Section.RELEASE_WISH);
 
         //then
         assertThat(result.size()).isEqualTo(10);
@@ -203,7 +203,7 @@ class ItemRepositoryTest {
         em.clear();
 
         //when
-        List<ItemSimpleResponse> result = itemRepository.getHomeSortList(user.getId(), now, Category.FOOTWEAR, Section.RELEASE_CONFIRM);
+        List<ItemSimpleResponse> result = itemRepository.getItem10List(user.getId(), now, Category.FOOTWEAR, Section.RELEASE_SCHEDULE);
 
         //then
         assertThat(result.size()).isEqualTo(HOME_PAGE_SIZE);
@@ -234,7 +234,7 @@ class ItemRepositoryTest {
         em.clear();
 
         //when
-        List<ItemSimpleResponse> result = itemRepository.getHomeSortList(user.getId(), now, Category.FOOTWEAR, Section.REGISTER_TODAY);
+        List<ItemSimpleResponse> result = itemRepository.getItem10List(user.getId(), now, Category.FOOTWEAR, Section.REGISTER_TODAY);
 
         //then
         assertThat(result.size()).isEqualTo(HOME_PAGE_SIZE);
@@ -265,7 +265,7 @@ class ItemRepositoryTest {
         em.clear();
 
         //when
-        List<ItemSimpleResponse> result = itemRepository.getHomeSortList(user.getId(), now, Category.ALL, Section.REGISTER_TODAY);
+        List<ItemSimpleResponse> result = itemRepository.getItem10List(user.getId(), now, Category.ALL, Section.REGISTER_TODAY);
 
         //then
         assertThat(result.size()).isEqualTo(HOME_PAGE_SIZE);
@@ -298,7 +298,7 @@ class ItemRepositoryTest {
 
         //when
         int page = total % API_PAGE_SIZE == 0 ? (total / API_PAGE_SIZE) : (total / API_PAGE_SIZE + 1); //마지막 페이지 계산
-        Page<ItemSimpleResponse> result = itemRepository.getHomeSortPage(user.getId(), now, Category.ALL, Section.REGISTER_TODAY, PageRequest.of(page - 1, API_PAGE_SIZE));
+        Page<ItemSimpleResponse> result = itemRepository.getItemPage(user.getId(), now, Category.ALL, Section.REGISTER_TODAY, "none", PageRequest.of(page - 1, API_PAGE_SIZE));
 
         //then
         assertThat(result.getContent().size()).isEqualTo(total % API_PAGE_SIZE);
@@ -318,7 +318,7 @@ class ItemRepositoryTest {
         em.persist(new ReleaseInfo(items.get(itemIndex), drawPlatform, "주소2", now.plusDays(2).format(DATE_STRING_FORMAT), now.plusDays(4).format(DATE_STRING_FORMAT), now.plusDays(6).format(DATE_STRING_FORMAT), 30000, CurrencyUnit.KRW, NotificationMethod.EMAIL, ReleaseMethod.ENTRY, DeliveryMethod.AGENCY));
 
         //when
-        List<ItemSimpleResponse> result = itemRepository.getHomeSortList(user.getId(), now, Category.FOOTWEAR, Section.REGISTER_TODAY);
+        List<ItemSimpleResponse> result = itemRepository.getItem10List(user.getId(), now, Category.FOOTWEAR, Section.REGISTER_TODAY);
 
         //then
         assertThat(result.size()).isEqualTo(1);

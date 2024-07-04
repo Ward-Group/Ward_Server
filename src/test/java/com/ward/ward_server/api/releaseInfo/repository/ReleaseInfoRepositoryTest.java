@@ -201,7 +201,7 @@ class ReleaseInfoRepositoryTest {
         em.clear();
 
         //when
-        List<ReleaseInfoSimpleResponse> result = releaseInfoRepository.getHomeSortList(user.getId(), now, Category.FOOTWEAR, Section.RELEASE_CONFIRM);
+        List<ReleaseInfoSimpleResponse> result = releaseInfoRepository.getHomeSortList(user.getId(), now, Category.FOOTWEAR, Section.RELEASE_SCHEDULE);
 
         //then
         assertThat(result.size()).isEqualTo(HOME_PAGE_SIZE);

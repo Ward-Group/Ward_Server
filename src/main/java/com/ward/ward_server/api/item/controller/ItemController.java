@@ -53,8 +53,9 @@ public class ItemController {
     public ApiResponse<PageResponse<ItemSimpleResponse>> getItemPage(@AuthenticationPrincipal CustomUserDetails principal,
                                                                      @PathVariable("section") Section section,
                                                                      @RequestParam("category") Category category,
-                                                                     @Positive @RequestParam("page") int page) {
-        return ApiResponse.ok(ITEM_LIST_LOAD_SUCCESS, itemService.getItemPage(principal.getUserId(), section, category, page - 1));
+                                                                     @Positive @RequestParam("page") int page,
+                                                                     @RequestParam(value = "date", defaultValue = "none") String date) {
+        return ApiResponse.ok(ITEM_LIST_LOAD_SUCCESS, itemService.getItemPage(principal.getUserId(), section, category, page - 1, date));
     }
 
     @GetMapping("/top10")

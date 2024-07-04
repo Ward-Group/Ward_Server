@@ -44,7 +44,7 @@ public class ReleaseInfoController {
                 request.deliveryMethod()));
     }
 
-    @GetMapping("/{releaseInfoId}")
+    @GetMapping("/{releaseInfoId}/details")
     public ApiResponse<ReleaseInfoDetailResponse> getReleaseInfo(@PathVariable("releaseInfoId") Long releaseInfoId) {
         return ApiResponse.ok(RELEASE_INFO_DETAIL_LOAD_SUCCESS, releaseInfoService.getReleaseInfo(releaseInfoId));
     }
