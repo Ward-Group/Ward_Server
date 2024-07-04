@@ -37,7 +37,7 @@ import static com.ward.ward_server.global.Object.Constants.HOME_PAGE_SIZE;
 public class ReleaseInfoQueryRepositoryImpl implements ReleaseInfoQueryRepository {
     private final JPAQueryFactory queryFactory;
 
-    public List<ReleaseInfoSimpleResponse> getHomeSortList(long userId, LocalDateTime now, Category category, Section section) {
+    public List<ReleaseInfoSimpleResponse> getReleaseInfo10List(long userId, LocalDateTime now, Category category, Section section) {
         return queryFactory.select(Projections.constructor(ReleaseInfoSimpleResponse.class,
                         releaseInfo.id,
                         drawPlatform.koreanName,
@@ -47,6 +47,7 @@ public class ReleaseInfoQueryRepositoryImpl implements ReleaseInfoQueryRepositor
                         item.koreanName,
                         item.englishName,
                         releaseInfo.releaseMethod,
+                        releaseInfo.releaseDate,
                         releaseInfo.dueDate))
                 .from(releaseInfo)
                 .leftJoin(releaseInfo.drawPlatform, drawPlatform)
@@ -58,7 +59,7 @@ public class ReleaseInfoQueryRepositoryImpl implements ReleaseInfoQueryRepositor
                 .fetch();
     }
 
-    public Page<ReleaseInfoSimpleResponse> getHomeSortPage(long userId, LocalDateTime now, Category category, Section section, Pageable pageable) {
+    public Page<ReleaseInfoSimpleResponse> getReleaseInfoPage(long userId, LocalDateTime now, Category category, Section section, Pageable pageable) {
         List<ReleaseInfoSimpleResponse> result = queryFactory.select(Projections.constructor(ReleaseInfoSimpleResponse.class,
                         releaseInfo.id,
                         drawPlatform.koreanName,
@@ -68,6 +69,7 @@ public class ReleaseInfoQueryRepositoryImpl implements ReleaseInfoQueryRepositor
                         item.koreanName,
                         item.englishName,
                         releaseInfo.releaseMethod,
+                        releaseInfo.releaseDate,
                         releaseInfo.dueDate))
                 .from(releaseInfo)
                 .leftJoin(releaseInfo.drawPlatform, drawPlatform)
@@ -111,6 +113,7 @@ public class ReleaseInfoQueryRepositoryImpl implements ReleaseInfoQueryRepositor
                         item.koreanName,
                         item.englishName,
                         releaseInfo.releaseMethod,
+                        releaseInfo.releaseDate,
                         releaseInfo.dueDate))
                 .from(releaseInfo)
                 .where(releaseInfo.item.id.in(itemIds))
