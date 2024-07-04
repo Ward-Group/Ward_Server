@@ -15,7 +15,7 @@ import com.ward.ward_server.api.item.dto.BrandItemResponse;
 import com.ward.ward_server.api.item.dto.ItemSimpleResponse;
 import com.ward.ward_server.api.item.entity.enums.Category;
 import com.ward.ward_server.global.Object.enums.BasicSort;
-import com.ward.ward_server.global.Object.enums.HomeSort;
+import com.ward.ward_server.global.Object.enums.Section;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -38,14 +38,14 @@ import static com.ward.ward_server.global.Object.Constants.HOME_PAGE_SIZE;
 public class ItemQueryRepositoryImpl implements ItemQueryRepository {
     private final JPAQueryFactory queryFactory;
 
-    public List<ItemSimpleResponse> getHomeSortList(Long userId, LocalDateTime now, Category category, HomeSort homeSort) {
+    public List<ItemSimpleResponse> getHomeSortList(Long userId, LocalDateTime now, Category category, Section section) {
         Set<Long> wishItemIds = wishItemIdListByUser(userId);
         List<Tuple> tuples = queryFactory.select(
                         item.id,
-                        getField(homeSort)
+                        getField(section)
                 ).from(releaseInfo)
                 .leftJoin(releaseInfo.item, item)
-                .where(getHomeSortCondition(homeSort, now, wishItemIds), getCategoryCondition(category))
+                .where(getHomeSortCondition(section, now, wishItemIds), getCategoryCondition(category))
                 .fetch();
 
         Map<Long, LocalDateTime> itemIdAndDateMap = tuples.stream()
@@ -81,14 +81,14 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
         return itemSimpleResponseList(result, wishItemIds);
     }
 
-    public Page<ItemSimpleResponse> getHomeSortPage(Long userId, LocalDateTime now, Category category, HomeSort homeSort, Pageable pageable) {
+    public Page<ItemSimpleResponse> getHomeSortPage(Long userId, LocalDateTime now, Category category, Section section, Pageable pageable) {
         Set<Long> wishItemIds = wishItemIdListByUser(userId);
         List<Tuple> tuples = queryFactory.select(
                         item.id,
-                        getField(homeSort)
+                        getField(section)
                 ).from(releaseInfo)
                 .leftJoin(releaseInfo.item, item)
-                .where(getHomeSortCondition(homeSort, now, wishItemIds), getCategoryCondition(category))
+                .where(getHomeSortCondition(section, now, wishItemIds), getCategoryCondition(category))
                 .fetch();
 
         Map<Long, LocalDateTime> itemIdAndDateMap = tuples.stream()
@@ -163,11 +163,11 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
         return itemList.subList(fromIndex, toIndex);
     }
 
-    private BooleanBuilder getHomeSortCondition(HomeSort homeSort, LocalDateTime now, Set<Long> wishItemIds) {
+    private BooleanBuilder getHomeSortCondition(Section section, LocalDateTime now, Set<Long> wishItemIds) {
         DateTimeTemplate<LocalDateTime> nowDateTime = Expressions.dateTimeTemplate(LocalDateTime.class, "{0}", now);
         BooleanBuilder builder = new BooleanBuilder();
 
-        switch (homeSort) {
+        switch (section) {
             case DUE_TODAY -> {
                 //마감일 = 오늘, 발매일 < 지금 < 마감일, 정렬은 마감일 오름차순
                 builder.and(isSameDay(now, releaseInfo.dueDate))
@@ -182,7 +182,7 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
                 builder.and(nowDateTime.between(releaseInfo.releaseDate, releaseInfo.dueDate))
                         .and(item.id.in(wishItemIds));
             }
-            case RELEASE_CONFIRM -> {
+            case RELEASE_SCHEDULE -> {
                 //지금 < 발매일, 정렬은 발매일 오름차순
                 builder.and(nowDateTime.before(releaseInfo.releaseDate));
             }
@@ -198,10 +198,10 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
         return category == Category.ALL ? null : item.category.eq(category);
     }
 
-    private DateTimePath<LocalDateTime> getField(HomeSort homeSort) {
-        return switch (homeSort) {
+    private DateTimePath<LocalDateTime> getField(Section section) {
+        return switch (section) {
             case REGISTER_TODAY -> releaseInfo.createdAt;
-            case RELEASE_CONFIRM -> releaseInfo.releaseDate;
+            case RELEASE_SCHEDULE -> releaseInfo.releaseDate;
             default -> releaseInfo.dueDate;
         };
     }

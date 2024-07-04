@@ -8,7 +8,7 @@ import com.ward.ward_server.api.releaseInfo.entity.ReleaseInfo;
 import com.ward.ward_server.api.releaseInfo.service.ReleaseInfoService;
 import com.ward.ward_server.api.user.auth.security.CustomUserDetails;
 import com.ward.ward_server.global.Object.PageResponse;
-import com.ward.ward_server.global.Object.enums.HomeSort;
+import com.ward.ward_server.global.Object.enums.Section;
 import com.ward.ward_server.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,19 +49,19 @@ public class ReleaseInfoController {
         return ApiResponse.ok(RELEASE_INFO_DETAIL_LOAD_SUCCESS, releaseInfoService.getReleaseInfo(releaseInfoId));
     }
 
-    @GetMapping("/home")
+    @GetMapping("/{section}/home")
     public ApiResponse<List<ReleaseInfoSimpleResponse>> getReleaseInfo10List(@AuthenticationPrincipal CustomUserDetails principal,
-                                                                             @RequestParam("sort") HomeSort sort,
+                                                                             @PathVariable("section") Section section,
                                                                              @RequestParam("category") Category category) {
-        return ApiResponse.ok(RELEASE_INFO_LIST_LOAD_SUCCESS, releaseInfoService.getReleaseInfo10List(principal.getUserId(), sort, category));
+        return ApiResponse.ok(RELEASE_INFO_LIST_LOAD_SUCCESS, releaseInfoService.getReleaseInfo10List(principal.getUserId(), section, category));
     }
 
-    @GetMapping
+    @GetMapping("/{section}")
     public ApiResponse<PageResponse<ReleaseInfoSimpleResponse>> getReleaseInfoPage(@AuthenticationPrincipal CustomUserDetails principal,
-                                                                                   @RequestParam("sort") HomeSort sort,
+                                                                                   @PathVariable("section") Section section,
                                                                                    @RequestParam("category") Category category,
                                                                                    @Positive @RequestParam(value = "page") int page) {
-        return ApiResponse.ok(RELEASE_INFO_LIST_LOAD_SUCCESS, releaseInfoService.getReleaseInfoPage(principal.getUserId(), sort, category, page - 1));
+        return ApiResponse.ok(RELEASE_INFO_LIST_LOAD_SUCCESS, releaseInfoService.getReleaseInfoPage(principal.getUserId(), section, category, page - 1));
     }
 
     @GetMapping("/{itemId}/releases")

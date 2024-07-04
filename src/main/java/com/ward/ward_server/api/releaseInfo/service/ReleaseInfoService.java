@@ -15,7 +15,7 @@ import com.ward.ward_server.api.releaseInfo.entity.enums.ReleaseMethod;
 import com.ward.ward_server.api.releaseInfo.repository.DrawPlatformRepository;
 import com.ward.ward_server.api.releaseInfo.repository.ReleaseInfoRepository;
 import com.ward.ward_server.global.Object.PageResponse;
-import com.ward.ward_server.global.Object.enums.HomeSort;
+import com.ward.ward_server.global.Object.enums.Section;
 import com.ward.ward_server.global.exception.ApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -74,15 +74,15 @@ public class ReleaseInfoService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReleaseInfoSimpleResponse> getReleaseInfo10List(Long userId, HomeSort homeSort, Category category) {
+    public List<ReleaseInfoSimpleResponse> getReleaseInfo10List(Long userId, Section section, Category category) {
         //HACK DB 시간 설정 전까지는 -9시간으로 비교해야 한다.
-        return releaseInfoRepository.getHomeSortList(userId, LocalDateTime.now().minusHours(9), category, homeSort);
+        return releaseInfoRepository.getHomeSortList(userId, LocalDateTime.now().minusHours(9), category, section);
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<ReleaseInfoSimpleResponse> getReleaseInfoPage(Long userId, HomeSort homeSort, Category category, int page) {
+    public PageResponse<ReleaseInfoSimpleResponse> getReleaseInfoPage(Long userId, Section section, Category category, int page) {
         //HACK DB 시간 설정 전까지는 -9시간으로 비교해야 한다.
-        Page<ReleaseInfoSimpleResponse> releaseInfoPage = releaseInfoRepository.getHomeSortPage(userId, LocalDateTime.now().minusHours(9), category, homeSort, PageRequest.of(page, API_PAGE_SIZE));
+        Page<ReleaseInfoSimpleResponse> releaseInfoPage = releaseInfoRepository.getHomeSortPage(userId, LocalDateTime.now().minusHours(9), category, section, PageRequest.of(page, API_PAGE_SIZE));
         return new PageResponse<>(releaseInfoPage.getContent(), releaseInfoPage);
     }
 

@@ -11,16 +11,17 @@ import static com.ward.ward_server.global.response.error.ErrorMessage.SORT_NOT_E
 
 @Getter
 @AllArgsConstructor
-public enum HomeSort {
-    DUE_TODAY("오늘 마감예정인 상품/발매정보"),
-    RELEASE_NOW("현재 발매중인 상품/발매정보"),
-    RELEASE_WISH("관심상품 중 현재 발매중인 상품/발매정보"),
-    RELEASE_CONFIRM("발매예정인 상품/발매정보"),
-    REGISTER_TODAY("오늘 등록한 상품/발매정보");
+public enum Section {
+    DUE_TODAY("오늘 마감예정"),
+    RELEASE_NOW("현재 발매중"),
+    RELEASE_WISH("관심상품 중 현재 발매중"),
+    RELEASE_SCHEDULE("발매 예정"),
+    REGISTER_TODAY("오늘 등록"),
+    END("발매 종료");
     private final String desc;
 
-    public static HomeSort from(String text) {
-        return Arrays.stream(HomeSort.values())
+    public static Section from(String text) {
+        return Arrays.stream(Section.values())
                 .filter(e -> e.toString().equals(text.replace('-', '_').toUpperCase()))
                 .findAny()
                 .orElseThrow(() -> new ApiException(INVALID_INPUT, SORT_NOT_EXISTS.getMessage()));

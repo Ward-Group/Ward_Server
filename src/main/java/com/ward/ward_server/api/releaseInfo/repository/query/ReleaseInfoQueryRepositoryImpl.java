@@ -12,8 +12,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ward.ward_server.api.item.entity.enums.Category;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoSimpleResponse;
-import com.ward.ward_server.global.Object.enums.BasicSort;
-import com.ward.ward_server.global.Object.enums.HomeSort;
+import com.ward.ward_server.global.Object.enums.Section;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -38,7 +37,7 @@ import static com.ward.ward_server.global.Object.Constants.HOME_PAGE_SIZE;
 public class ReleaseInfoQueryRepositoryImpl implements ReleaseInfoQueryRepository {
     private final JPAQueryFactory queryFactory;
 
-    public List<ReleaseInfoSimpleResponse> getHomeSortList(long userId, LocalDateTime now, Category category, HomeSort homeSort) {
+    public List<ReleaseInfoSimpleResponse> getHomeSortList(long userId, LocalDateTime now, Category category, Section section) {
         return queryFactory.select(Projections.constructor(ReleaseInfoSimpleResponse.class,
                         releaseInfo.id,
                         drawPlatform.koreanName,
@@ -53,13 +52,13 @@ public class ReleaseInfoQueryRepositoryImpl implements ReleaseInfoQueryRepositor
                 .leftJoin(releaseInfo.drawPlatform, drawPlatform)
                 .leftJoin(releaseInfo.item, item)
                 .leftJoin(item.brand, brand)
-                .where(getSortCondition(userId, homeSort, now), getCategoryCondition(category))
-                .orderBy(getSortOrder(homeSort))
+                .where(getSortCondition(userId, section, now), getCategoryCondition(category))
+                .orderBy(getSortOrder(section))
                 .limit(HOME_PAGE_SIZE)
                 .fetch();
     }
 
-    public Page<ReleaseInfoSimpleResponse> getHomeSortPage(long userId, LocalDateTime now, Category category, HomeSort homeSort, Pageable pageable) {
+    public Page<ReleaseInfoSimpleResponse> getHomeSortPage(long userId, LocalDateTime now, Category category, Section section, Pageable pageable) {
         List<ReleaseInfoSimpleResponse> result = queryFactory.select(Projections.constructor(ReleaseInfoSimpleResponse.class,
                         releaseInfo.id,
                         drawPlatform.koreanName,
@@ -74,8 +73,8 @@ public class ReleaseInfoQueryRepositoryImpl implements ReleaseInfoQueryRepositor
                 .leftJoin(releaseInfo.drawPlatform, drawPlatform)
                 .leftJoin(releaseInfo.item, item)
                 .leftJoin(item.brand, brand)
-                .where(getSortCondition(userId, homeSort, now), getCategoryCondition(category))
-                .orderBy(getSortOrder(homeSort))
+                .where(getSortCondition(userId, section, now), getCategoryCondition(category))
+                .orderBy(getSortOrder(section))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -91,7 +90,7 @@ public class ReleaseInfoQueryRepositoryImpl implements ReleaseInfoQueryRepositor
                 .leftJoin(releaseInfo.drawPlatform, drawPlatform)
                 .leftJoin(releaseInfo.item, item)
                 .leftJoin(item.brand, brand)
-                .where(getSortCondition(userId, homeSort, now), getCategoryCondition(category));
+                .where(getSortCondition(userId, section, now), getCategoryCondition(category));
 
         return PageableExecutionUtils.getPage(result, pageable, countQuery::fetchOne);
     }
@@ -130,11 +129,11 @@ public class ReleaseInfoQueryRepositoryImpl implements ReleaseInfoQueryRepositor
         return PageableExecutionUtils.getPage(result, pageable, countQuery::fetchOne);
     }
 
-    private BooleanBuilder getSortCondition(long userId, HomeSort homeSort, LocalDateTime now) {
+    private BooleanBuilder getSortCondition(long userId, Section section, LocalDateTime now) {
         DateTimeTemplate<LocalDateTime> nowDateTime = Expressions.dateTimeTemplate(LocalDateTime.class, "{0}", now);
         BooleanBuilder builder = new BooleanBuilder();
 
-        switch (homeSort) {
+        switch (section) {
             case DUE_TODAY -> {
                 //마감일 = 오늘, 발매일 < 지금 < 마감일, 정렬은 마감일 오름차순
                 builder.and(isSameDay(now, releaseInfo.dueDate)).and(nowDateTime.between(releaseInfo.releaseDate, releaseInfo.dueDate));
@@ -147,7 +146,7 @@ public class ReleaseInfoQueryRepositoryImpl implements ReleaseInfoQueryRepositor
                 //발매일 < 지금 < 마감일, 사용자의 관심 상품, 정렬은 마감일 오름차순
                 builder.and(nowDateTime.between(releaseInfo.releaseDate, releaseInfo.dueDate)).and(item.id.in(wishItemIdListByUser(userId)));
             }
-            case RELEASE_CONFIRM -> {
+            case RELEASE_SCHEDULE -> {
                 //지금 < 발매일, 정렬은 발매일 오름차순
                 builder.and(nowDateTime.before(releaseInfo.releaseDate));
             }
@@ -163,10 +162,10 @@ public class ReleaseInfoQueryRepositoryImpl implements ReleaseInfoQueryRepositor
         return category == Category.ALL ? null : item.category.eq(category);
     }
 
-    private OrderSpecifier getSortOrder(HomeSort homeSort) {
-        return switch (homeSort) {
+    private OrderSpecifier getSortOrder(Section section) {
+        return switch (section) {
             case REGISTER_TODAY -> new OrderSpecifier<>(Order.ASC, releaseInfo.createdAt);
-            case RELEASE_CONFIRM -> new OrderSpecifier<>(Order.ASC, releaseInfo.releaseDate);
+            case RELEASE_SCHEDULE -> new OrderSpecifier<>(Order.ASC, releaseInfo.releaseDate);
             default -> new OrderSpecifier<>(Order.ASC, releaseInfo.dueDate);
         };
     }
