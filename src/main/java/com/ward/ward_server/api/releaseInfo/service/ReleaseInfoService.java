@@ -30,6 +30,7 @@ import java.util.List;
 import static com.ward.ward_server.global.Object.Constants.API_PAGE_SIZE;
 import static com.ward.ward_server.global.exception.ExceptionCode.*;
 import static com.ward.ward_server.global.response.error.ErrorMessage.REQUIRED_FIELDS_MUST_BE_PROVIDED;
+import static com.ward.ward_server.global.response.error.ErrorMessage.SECTION_NOT_AVAILABLE_THIS_PAGE;
 
 @Service
 @RequiredArgsConstructor
@@ -75,15 +76,21 @@ public class ReleaseInfoService {
 
     @Transactional(readOnly = true)
     public List<ReleaseInfoSimpleResponse> getReleaseInfo10List(Long userId, Section section, Category category) {
-        //HACK DB 시간 설정 전까지는 -9시간으로 비교해야 한다.
-        return releaseInfoRepository.getHomeSortList(userId, LocalDateTime.now().minusHours(9), category, section);
+        return switch (section){
+            case DUE_TODAY, RELEASE_WISH, REGISTER_TODAY -> releaseInfoRepository.getHomeSortList(userId, LocalDateTime.now().minusHours(9), category, section); //HACK DB 시간 설정 전까지는 -9시간으로 비교해야 한다.
+            default -> throw new ApiException(INVALID_INPUT, SECTION_NOT_AVAILABLE_THIS_PAGE.getMessage());
+        };
     }
 
     @Transactional(readOnly = true)
     public PageResponse<ReleaseInfoSimpleResponse> getReleaseInfoPage(Long userId, Section section, Category category, int page) {
-        //HACK DB 시간 설정 전까지는 -9시간으로 비교해야 한다.
-        Page<ReleaseInfoSimpleResponse> releaseInfoPage = releaseInfoRepository.getHomeSortPage(userId, LocalDateTime.now().minusHours(9), category, section, PageRequest.of(page, API_PAGE_SIZE));
-        return new PageResponse<>(releaseInfoPage.getContent(), releaseInfoPage);
+        return switch (section){
+            case DUE_TODAY, RELEASE_NOW, REGISTER_TODAY ->{
+                Page<ReleaseInfoSimpleResponse> releaseInfoPage = releaseInfoRepository.getHomeSortPage(userId, LocalDateTime.now().minusHours(9), category, section, PageRequest.of(page, API_PAGE_SIZE)); //HACK DB 시간 설정 전까지는 -9시간으로 비교해야 한다.
+                yield  new PageResponse<>(releaseInfoPage.getContent(), releaseInfoPage);
+            }
+            default -> throw new ApiException(INVALID_INPUT, SECTION_NOT_AVAILABLE_THIS_PAGE.getMessage());
+        };
     }
 
     @Transactional(readOnly = true)
