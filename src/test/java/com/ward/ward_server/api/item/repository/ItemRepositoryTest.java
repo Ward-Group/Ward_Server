@@ -50,7 +50,7 @@ class ItemRepositoryTest {
     Brand brand;
 
     @BeforeEach
-    public void before() {
+    void before() {
         user = new User("이름", "이메일", "비밀번호", "닉네임", true, true, true);
         em.persist(user);
 
@@ -75,7 +75,7 @@ class ItemRepositoryTest {
     }
 
     @Test
-    public void 오늘_마감인_발매정보_중_FOOTWEAR_상품을_가져온다() {
+    void 오늘_마감인_발매정보_중_FOOTWEAR_상품을_가져온다() {
         //given
         LocalDateTime now = LocalDateTime.of(2024, 7, 3, 13, 30);
         for (int itemId = 1; itemId <= 10; itemId++) {
@@ -109,7 +109,7 @@ class ItemRepositoryTest {
     }
 
     @Test
-    public void 현재_발매중인_발매정보_중_FOOTWEAR_상품을_가져온다() {
+    void 현재_발매중인_발매정보_중_FOOTWEAR_상품을_가져온다() {
         //given
         LocalDateTime now = LocalDateTime.of(2024, 7, 3, 13, 30);
         for (int itemId = 1; itemId <= 5; itemId++) {
@@ -145,7 +145,7 @@ class ItemRepositoryTest {
     }
 
     @Test
-    public void FOOTWEAR_관심상품_중에서_현재_발매중인_상품을_가져온다() {
+    void FOOTWEAR_관심상품_중에서_현재_발매중인_상품을_가져온다() {
         //given
         LocalDateTime now = LocalDateTime.of(2024, 7, 3, 13, 30);
         //index가 4~19인 상품이 관심상품이다.
@@ -186,7 +186,7 @@ class ItemRepositoryTest {
 
 
     @Test
-    public void 발매날짜가_확정됐지만_미발매인_FOOTWEAR_상품을_가져온다() {
+    void 발매날짜가_확정됐지만_미발매인_FOOTWEAR_상품을_가져온다() {
         //given
         LocalDateTime now = LocalDateTime.of(2024, 7, 3, 13, 30);
         for (int itemId = 1; itemId <= 10; itemId++) {
@@ -220,7 +220,7 @@ class ItemRepositoryTest {
     }
 
     @Test
-    public void 오늘_등록한_FOOTWEAR_상품을_가져온다() {
+    void 오늘_등록한_FOOTWEAR_상품을_가져온다() {
         LocalDateTime now = LocalDateTime.now();
         //given
         for (int itemId = 1; itemId <= 10; itemId++) {
@@ -251,7 +251,24 @@ class ItemRepositoryTest {
     }
 
     @Test
-    public void ALL_카테고리는_FOOTWEAR과_CLOTHING인_상품을_다_가져온다() {
+    void 입력된_년월에_발매가_종료된_FOOTWEAR_상품을_가져온다() {
+        //given
+        LocalDateTime now = LocalDateTime.of(2024, 7, 13, 13, 30);
+        em.persist(new ReleaseInfo(items.get(1), drawPlatform, "주소", now.minusDays(5).format(DATE_STRING_FORMAT), now.minusDays(3).format(DATE_STRING_FORMAT), now.plusDays(1).format(DATE_STRING_FORMAT), 30000, CurrencyUnit.KRW, NotificationMethod.EMAIL, ReleaseMethod.ENTRY, DeliveryMethod.AGENCY));
+        int page = 1;
+
+        //when
+        Page<ItemSimpleResponse> result = itemRepository.getItemPage(user.getId(), now, Category.ALL, Section.CLOSED, "2024-07", PageRequest.of(page - 1, API_PAGE_SIZE));
+
+        //then
+        assertThat(result.getContent().size()).isEqualTo(1);
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getNumber()).isEqualTo(page - 1);
+        assertThat(result.getTotalPages()).isEqualTo(page);
+    }
+
+    @Test
+    void ALL_카테고리는_FOOTWEAR과_CLOTHING인_상품을_다_가져온다() {
         //given
         LocalDateTime now = LocalDateTime.now();
         for (int itemId = 1; itemId <= 10; itemId++) {
@@ -282,7 +299,7 @@ class ItemRepositoryTest {
     }
 
     @Test
-    public void 총_상품의_개수가_total일때_마지막_페이지를_가져온다() {
+    void 총_상품의_개수가_total일때_마지막_페이지를_가져온다() {
         //given
         LocalDateTime now = LocalDateTime.now();
         int total = 48;
@@ -310,7 +327,7 @@ class ItemRepositoryTest {
     }
 
     @Test
-    public void 중복된_상품을_제거한다() {
+    void 중복된_상품을_제거한다() {
         //given
         LocalDateTime now = LocalDateTime.now();
         int itemIndex = 10;
@@ -326,7 +343,7 @@ class ItemRepositoryTest {
     }
 
     @Test
-    public void 최신순으로_정렬한_브랜드_상품의_마지막_페이지를_가져온다() {
+    void 최신순으로_정렬한_브랜드_상품의_마지막_페이지를_가져온다() {
         //given
         int total = 60; //before()에서 등록한 브랜드 상품 개수
         int page = 3;
