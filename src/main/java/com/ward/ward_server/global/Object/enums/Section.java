@@ -17,7 +17,7 @@ public enum Section {
     RELEASE_WISH("관심상품 중 현재 발매중"),
     RELEASE_SCHEDULE("발매 예정"),
     REGISTER_TODAY("오늘 등록"),
-    END("발매 종료");
+    CLOSED("발매 종료");
     private final String desc;
 
     public static Section from(String text) {
