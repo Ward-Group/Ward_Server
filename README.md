@@ -38,7 +38,8 @@
 ## 📗Architecture
 
 ## 📙DB ERD
-![Ward_v20240616](https://github.com/Ward-Group/Ward_Server/assets/135934401/f992995e-aa6b-4a35-9688-42ead6188b0b)
+![Ward_v20240616 (1)](https://github.com/Ward-Group/Ward_Server/assets/135934401/e034b446-26dd-46ee-8ae7-708e743d0f86)
+[DB 버전 업데이트 정보](https://www.notion.so/ERD-v20240706-616c8f66f6c147b48c625796e1ba5f94?pvs=4)
 
 ## 📕배포
 * AWS EC2 - 클라우드 컴퓨팅 시스템
