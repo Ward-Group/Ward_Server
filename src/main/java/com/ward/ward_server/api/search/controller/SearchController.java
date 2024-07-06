@@ -1,5 +1,6 @@
 package com.ward.ward_server.api.search.controller;
 
+import com.ward.ward_server.api.search.dto.IntegratedSearchResponse;
 import com.ward.ward_server.api.search.dto.SearchItemsResponse;
 import com.ward.ward_server.api.search.dto.SearchReleaseInfoResponse;
 import com.ward.ward_server.api.search.service.SearchService;
@@ -31,5 +32,13 @@ public class SearchController {
                                                                      @RequestParam("size") int size) {
         SearchReleaseInfoResponse searchResults = searchService.searchReleaseInfos(keyword, page, size);
         return ApiResponse.ok(searchResults);
+    }
+
+    @GetMapping("/integrated")
+    public ApiResponse<IntegratedSearchResponse> integratedSearch(@RequestParam("keyword") String keyword,
+                                                                  @RequestParam("page") int page,
+                                                                  @RequestParam("size") int size) {
+        IntegratedSearchResponse response = searchService.integratedSearch(keyword, page, size);
+        return ApiResponse.ok(response);
     }
 }

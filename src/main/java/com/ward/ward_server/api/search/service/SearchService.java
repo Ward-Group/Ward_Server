@@ -1,9 +1,12 @@
 package com.ward.ward_server.api.search.service;
 
+import com.ward.ward_server.api.item.entity.Brand;
 import com.ward.ward_server.api.item.entity.Item;
+import com.ward.ward_server.api.item.repository.BrandRepository;
 import com.ward.ward_server.api.item.repository.ItemRepository;
 import com.ward.ward_server.api.releaseInfo.entity.ReleaseInfo;
 import com.ward.ward_server.api.releaseInfo.repository.ReleaseInfoRepository;
+import com.ward.ward_server.api.search.dto.IntegratedSearchResponse;
 import com.ward.ward_server.api.search.dto.SearchItemsResponse;
 import com.ward.ward_server.api.search.dto.SearchReleaseInfoResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class SearchService {
 
+    private final BrandRepository brandRepository;
     private final ItemRepository itemRepository;
     private final ReleaseInfoRepository releaseInfoRepository;
 
@@ -67,5 +71,54 @@ public class SearchService {
                 releaseInfos.getNumber(),
                 results
         );
+    }
+
+    public IntegratedSearchResponse integratedSearch(String keyword, int page, int size) {
+        // Brand search
+        List<Brand> brands = brandRepository.searchBrands(keyword);
+        List<IntegratedSearchResponse.BrandResult> brandResults = brands.stream()
+                .map(brand -> new IntegratedSearchResponse.BrandResult(
+                        brand.getId(),
+                        brand.getLogoImage(),
+                        brand.getKoreanName(),
+                        brand.getEnglishName()))
+                .collect(Collectors.toList());
+
+        // Item search
+        Page<Item> items = itemRepository.searchItems(keyword, PageRequest.of(page, size));
+        List<IntegratedSearchResponse.ItemResult> itemResults = items.getContent().stream()
+                .map(item -> {
+                    int releaseCount = releaseInfoRepository.countByItemId(item.getId());
+                    return new IntegratedSearchResponse.ItemResult(
+                            item.getId(),
+                            item.getMainImage(),
+                            item.getBrand().getKoreanName(),
+                            item.getKoreanName(),
+                            releaseCount,
+                            item.getViewCount());
+                })
+                .collect(Collectors.toList());
+        IntegratedSearchResponse.ItemSearchResult itemSearchResult = new IntegratedSearchResponse.ItemSearchResult(
+                items.getTotalElements(),
+                itemResults
+        );
+
+        // Release info search
+        Page<ReleaseInfo> releaseInfos = releaseInfoRepository.searchReleaseInfos(keyword, PageRequest.of(page, size));
+        List<IntegratedSearchResponse.ReleaseInfoResult> releaseInfoResults = releaseInfos.getContent().stream()
+                .map(releaseInfo -> new IntegratedSearchResponse.ReleaseInfoResult(
+                        releaseInfo.getId(),
+                        releaseInfo.getItem().getMainImage(),
+                        releaseInfo.getDrawPlatform().getEnglishName(),
+                        releaseInfo.getItem().getKoreanName(),
+                        releaseInfo.getDueFormatDate(),
+                        releaseInfo.getReleaseMethod().getDesc()))
+                .collect(Collectors.toList());
+        IntegratedSearchResponse.ReleaseInfoSearchResult releaseInfoSearchResult = new IntegratedSearchResponse.ReleaseInfoSearchResult(
+                releaseInfos.getTotalElements(),
+                releaseInfoResults
+        );
+
+        return new IntegratedSearchResponse(brandResults, itemSearchResult, releaseInfoSearchResult);
     }
 }
