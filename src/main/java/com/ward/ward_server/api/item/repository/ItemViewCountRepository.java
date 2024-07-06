@@ -13,10 +13,17 @@ import java.util.Optional;
 
 public interface ItemViewCountRepository extends JpaRepository<ItemViewCount, Long> {
     Optional<ItemViewCount> findByItemAndCategory(Item item, Category category);
+
     @Query("SELECT ivc FROM ItemViewCount ivc " +
             "JOIN FETCH ivc.item i " +
             "JOIN FETCH i.brand b " +
             "WHERE ivc.category = :category " +
             "ORDER BY ivc.viewCount DESC")
     List<ItemViewCount> findTopItemsByCategoryWithFetchJoin(@Param("category") Category category, Pageable pageable);
+
+    @Query("SELECT ivc FROM ItemViewCount ivc " +
+            "JOIN FETCH ivc.item i " +
+            "JOIN FETCH i.brand b " +
+            "ORDER BY ivc.viewCount DESC")
+    List<ItemViewCount> findTopItemsForAllCategoriesWithFetchJoin(Pageable pageable);
 }

@@ -108,10 +108,18 @@ public class ItemService {
         return new PageResponse<>(itemPageInfo.getContent(), itemPageInfo);
     }
 
-    @Transactional(readOnly = true)
     public List<ItemTopResponse> getTopItemsResponseByCategory(String category, int limit) {
         Category itemCategory = Category.from(category);
         List<ItemViewCount> topItems = getTopItemsByCategory(itemCategory, limit);
+        return convertToTopResponse(topItems);
+    }
+
+    public List<ItemTopResponse> getTopItemsResponseForAllCategories(int limit) {
+        List<ItemViewCount> topItems = getTopItemsForAllCategories(limit);
+        return convertToTopResponse(topItems);
+    }
+
+    private List<ItemTopResponse> convertToTopResponse(List<ItemViewCount> topItems) {
         return IntStream.range(0, topItems.size())
                 .mapToObj(i -> new ItemTopResponse(
                         i + 1,
@@ -122,10 +130,14 @@ public class ItemService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
     public List<ItemViewCount> getTopItemsByCategory(Category category, int limit) {
         Pageable pageable = PageRequest.of(0, limit);
         return itemViewCountRepository.findTopItemsByCategoryWithFetchJoin(category, pageable);
+    }
+
+    public List<ItemViewCount> getTopItemsForAllCategories(int limit) {
+        Pageable pageable = PageRequest.of(0, limit);
+        return itemViewCountRepository.findTopItemsForAllCategoriesWithFetchJoin(pageable);
     }
 
     @Transactional

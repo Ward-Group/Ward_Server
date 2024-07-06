@@ -60,8 +60,17 @@ public class ItemController {
         if (limit != 10 && limit != 50) {
             throw new ApiException(ExceptionCode.INVALID_INPUT, "Limit 는 10 or 50 이어야합니다.");
         }
-        return ApiResponse.ok(REALTIME_TOP_LOAD_SUCCESS, itemService.getTopItemsResponseByCategory(category, limit));
+
+        List<ItemTopResponse> topItemsResponse;
+        if ("ALL".equalsIgnoreCase(category)) {
+            topItemsResponse = itemService.getTopItemsResponseForAllCategories(limit);
+        } else {
+            topItemsResponse = itemService.getTopItemsResponseByCategory(category, limit);
+        }
+
+        return ApiResponse.ok(REALTIME_TOP_LOAD_SUCCESS, topItemsResponse);
     }
+
 
     @PatchMapping("/{itemId}")
     public ApiResponse<ItemDetailResponse> updateItem(@PathVariable("itemId") Long itemId,
