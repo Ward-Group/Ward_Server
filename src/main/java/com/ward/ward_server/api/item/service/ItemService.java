@@ -2,6 +2,7 @@ package com.ward.ward_server.api.item.service;
 
 import com.ward.ward_server.api.item.dto.ItemDetailResponse;
 import com.ward.ward_server.api.item.dto.ItemSimpleResponse;
+import com.ward.ward_server.api.item.dto.ItemTopResponse;
 import com.ward.ward_server.api.item.entity.Brand;
 import com.ward.ward_server.api.item.entity.Item;
 import com.ward.ward_server.api.item.entity.ItemImage;
@@ -18,6 +19,7 @@ import com.ward.ward_server.global.util.ValidationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -25,6 +27,8 @@ import org.springframework.util.StringUtils;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.ward.ward_server.global.Object.Constants.API_PAGE_SIZE;
 import static com.ward.ward_server.global.exception.ExceptionCode.*;
@@ -33,6 +37,7 @@ import static com.ward.ward_server.global.response.error.ErrorMessage.REQUIRED_F
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ItemService {
     private final ItemRepository itemRepository;
     private final BrandRepository brandRepository;
@@ -101,6 +106,26 @@ public class ItemService {
         //HACK DB 시간 설정 전까지는 -9시간으로 비교해야 한다.
         Page<ItemSimpleResponse> itemPageInfo = itemRepository.getHomeSortPage(userId, LocalDateTime.now().minusHours(9), category, homeSort, PageRequest.of(page, API_PAGE_SIZE));
         return new PageResponse<>(itemPageInfo.getContent(), itemPageInfo);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ItemTopResponse> getTopItemsResponseByCategory(String category, int limit) {
+        Category itemCategory = Category.from(category);
+        List<ItemViewCount> topItems = getTopItemsByCategory(itemCategory, limit);
+        return IntStream.range(0, topItems.size())
+                .mapToObj(i -> new ItemTopResponse(
+                        i + 1,
+                        topItems.get(i).getItem().getMainImage(),
+                        topItems.get(i).getItem().getBrand().getKoreanName(),
+                        topItems.get(i).getItem().getKoreanName()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<ItemViewCount> getTopItemsByCategory(Category category, int limit) {
+        Pageable pageable = PageRequest.of(0, limit);
+        return itemViewCountRepository.findTopItemsByCategoryWithFetchJoin(category, pageable);
     }
 
     @Transactional
@@ -179,3 +204,4 @@ public class ItemService {
                 brand.getEnglishName());
     }
 }
+

@@ -49,7 +49,7 @@ public class WebSecurityConfig {
 
                     // Public endpoints
                     authorize
-                            .requestMatchers("/", "/auth/**", "release-infos/**", "/v1/wc/**", "/items/top10", "/items/{itemId}/details").permitAll()
+                            .requestMatchers("/", "/auth/**", "release-infos/**", "/v1/wc/**", "/items/top10", "/items/top", "/items/{itemId}/details").permitAll()
                             .requestMatchers(HttpMethod.GET, "/brands", "/brands/recommended").permitAll()
                             .requestMatchers(HttpMethod.PATCH, "/brands/{brandId}/view-counts").permitAll()
                             .requestMatchers(HttpMethod.GET, "/release-infos", "/release-infos/details").permitAll();
