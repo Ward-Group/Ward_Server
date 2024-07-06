@@ -71,7 +71,6 @@ public class ItemController {
         return ApiResponse.ok(REALTIME_TOP_LOAD_SUCCESS, topItemsResponse);
     }
 
-
     @PatchMapping("/{itemId}")
     public ApiResponse<ItemDetailResponse> updateItem(@PathVariable("itemId") Long itemId,
                                                       @RequestBody ItemRequest request) {

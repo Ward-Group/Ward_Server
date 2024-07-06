@@ -123,6 +123,7 @@ public class ItemService {
         return IntStream.range(0, topItems.size())
                 .mapToObj(i -> new ItemTopResponse(
                         i + 1,
+                        topItems.get(i).getItem().getId(),
                         topItems.get(i).getItem().getMainImage(),
                         topItems.get(i).getItem().getBrand().getKoreanName(),
                         topItems.get(i).getItem().getKoreanName()
