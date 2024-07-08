@@ -2,33 +2,25 @@ package com.ward.ward_server.api.item.service;
 
 import com.ward.ward_server.api.item.dto.ItemDetailResponse;
 import com.ward.ward_server.api.item.dto.ItemSimpleResponse;
-import com.ward.ward_server.api.item.dto.ItemTopResponse;
-import com.ward.ward_server.api.item.entity.Brand;
-import com.ward.ward_server.api.item.entity.Item;
-import com.ward.ward_server.api.item.entity.ItemImage;
-import com.ward.ward_server.api.item.entity.ItemViewCount;
+import com.ward.ward_server.api.item.dto.ItemTopRankResponse;
+import com.ward.ward_server.api.item.entity.*;
 import com.ward.ward_server.api.item.entity.enums.Category;
-import com.ward.ward_server.api.item.repository.BrandRepository;
-import com.ward.ward_server.api.item.repository.ItemImageRepository;
-import com.ward.ward_server.api.item.repository.ItemRepository;
-import com.ward.ward_server.api.item.repository.ItemViewCountRepository;
+import com.ward.ward_server.api.item.repository.*;
 import com.ward.ward_server.global.Object.PageResponse;
 import com.ward.ward_server.global.Object.enums.HomeSort;
 import com.ward.ward_server.global.exception.ApiException;
 import com.ward.ward_server.global.util.ValidationUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static com.ward.ward_server.global.Object.Constants.API_PAGE_SIZE;
 import static com.ward.ward_server.global.exception.ExceptionCode.*;
@@ -38,11 +30,13 @@ import static com.ward.ward_server.global.response.error.ErrorMessage.REQUIRED_F
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class ItemService {
     private final ItemRepository itemRepository;
     private final BrandRepository brandRepository;
     private final ItemImageRepository itemImageRepository;
     private final ItemViewCountRepository itemViewCountRepository;
+    private final ItemTopRankRepository itemTopRankRepository;
 
     @Transactional
     public ItemDetailResponse createItem(String itemCode, String koreanName, String englishName, String mainImage, List<String> itemImages, Long brandId, Category category, Integer price) throws ApiException {
@@ -72,7 +66,6 @@ public class ItemService {
         ItemViewCount itemViewCount = ItemViewCount.builder()
                 .category(savedItem.getCategory())
                 .item(savedItem)
-                .viewCount(0L)
                 .calculatedAt(LocalDateTime.now())
                 .build();
         itemViewCountRepository.save(itemViewCount);
@@ -80,7 +73,7 @@ public class ItemService {
         return getItemDetailResponse(savedItem, brand);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public ItemDetailResponse getItem(Long itemId) {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
         increaseViewCount(item);
@@ -90,9 +83,11 @@ public class ItemService {
     @Transactional
     public void increaseViewCount(Item item) {
         item.increaseViewCount();
-        // add 손지민: ItemViewCount 의 viewCount 증가
-        Optional<ItemViewCount> itemViewCountOpt = itemViewCountRepository.findByItemAndCategory(item, item.getCategory());
-        itemViewCountOpt.ifPresent(ItemViewCount::increaseViewCount);
+        itemViewCountRepository.save(ItemViewCount.builder()
+                .category(item.getCategory())
+                .item(item)
+                .calculatedAt(LocalDateTime.now())
+                .build());
     }
 
     @Transactional(readOnly = true)
@@ -108,37 +103,28 @@ public class ItemService {
         return new PageResponse<>(itemPageInfo.getContent(), itemPageInfo);
     }
 
-    public List<ItemTopResponse> getTopItemsResponseByCategory(String category, int limit) {
+    @Transactional(readOnly = true)
+    public List<ItemTopRankResponse> getTopItemsResponseByCategory(String category, int limit) {
         Category itemCategory = Category.from(category);
-        List<ItemViewCount> topItems = getTopItemsByCategory(itemCategory, limit);
+        List<ItemTopRank> topItems;
+        if (itemCategory == Category.ALL) {
+            topItems = itemTopRankRepository.findTopItems(PageRequest.of(0, limit));
+        } else {
+            topItems = itemTopRankRepository.findTopItemsByCategory(itemCategory, PageRequest.of(0, limit));
+        }
         return convertToTopResponse(topItems);
     }
 
-    public List<ItemTopResponse> getTopItemsResponseForAllCategories(int limit) {
-        List<ItemViewCount> topItems = getTopItemsForAllCategories(limit);
-        return convertToTopResponse(topItems);
-    }
-
-    private List<ItemTopResponse> convertToTopResponse(List<ItemViewCount> topItems) {
-        return IntStream.range(0, topItems.size())
-                .mapToObj(i -> new ItemTopResponse(
-                        i + 1,
-                        topItems.get(i).getItem().getId(),
-                        topItems.get(i).getItem().getMainImage(),
-                        topItems.get(i).getItem().getBrand().getKoreanName(),
-                        topItems.get(i).getItem().getKoreanName()
+    private List<ItemTopRankResponse> convertToTopResponse(List<ItemTopRank> topItems) {
+        return topItems.stream()
+                .map(itemTopRank -> new ItemTopRankResponse(
+                        itemTopRank.getItemRank(),
+                        itemTopRank.getItem().getId(),
+                        itemTopRank.getItem().getMainImage(),
+                        itemTopRank.getItem().getBrand().getKoreanName(),
+                        itemTopRank.getItem().getKoreanName()
                 ))
                 .collect(Collectors.toList());
-    }
-
-    public List<ItemViewCount> getTopItemsByCategory(Category category, int limit) {
-        Pageable pageable = PageRequest.of(0, limit);
-        return itemViewCountRepository.findTopItemsByCategoryWithFetchJoin(category, pageable);
-    }
-
-    public List<ItemViewCount> getTopItemsForAllCategories(int limit) {
-        Pageable pageable = PageRequest.of(0, limit);
-        return itemViewCountRepository.findTopItemsForAllCategoriesWithFetchJoin(pageable);
     }
 
     @Transactional
@@ -217,4 +203,3 @@ public class ItemService {
                 brand.getEnglishName());
     }
 }
-
