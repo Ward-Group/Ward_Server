@@ -15,6 +15,7 @@ public record ReleaseInfoSimpleResponse(
         String itemKoreanName,
         String itemEnglishName,
         String releaseMethod,
+        String releaseDate,
         String dueDate
 ) {
     public ReleaseInfoSimpleResponse(long releaseInfoId,
@@ -25,6 +26,7 @@ public record ReleaseInfoSimpleResponse(
                                      String itemKoreanName,
                                      String itemEnglishName,
                                      ReleaseMethod releaseMethod,
+                                     LocalDateTime releaseDate,
                                      LocalDateTime dueDate) {
         this(releaseInfoId,
                 platformKoreanName,
@@ -34,6 +36,7 @@ public record ReleaseInfoSimpleResponse(
                 itemKoreanName,
                 itemEnglishName,
                 releaseMethod.getDesc(),
+                releaseDate.format(DATE_STRING_FORMAT),
                 dueDate.format(DATE_STRING_FORMAT));
     }
 }

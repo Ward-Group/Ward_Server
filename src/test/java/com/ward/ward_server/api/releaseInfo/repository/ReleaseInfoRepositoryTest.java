@@ -12,7 +12,7 @@ import com.ward.ward_server.api.releaseInfo.entity.enums.NotificationMethod;
 import com.ward.ward_server.api.releaseInfo.entity.enums.ReleaseMethod;
 import com.ward.ward_server.api.user.entity.User;
 import com.ward.ward_server.api.wishItem.WishItem;
-import com.ward.ward_server.global.Object.enums.HomeSort;
+import com.ward.ward_server.global.Object.enums.Section;
 import com.ward.ward_server.global.config.QuerydslConfig;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
@@ -89,7 +89,7 @@ class ReleaseInfoRepositoryTest {
         em.clear();
 
         //when
-        List<ReleaseInfoSimpleResponse> result = releaseInfoRepository.getHomeSortList(user.getId(), now, Category.FOOTWEAR, HomeSort.DUE_TODAY);
+        List<ReleaseInfoSimpleResponse> result = releaseInfoRepository.getReleaseInfo10List(user.getId(), now, Category.FOOTWEAR, Section.DUE_TODAY);
 
         //then
         assertThat(result.size()).isEqualTo(10);
@@ -126,7 +126,7 @@ class ReleaseInfoRepositoryTest {
         em.clear();
 
         //when
-        List<ReleaseInfoSimpleResponse> result = releaseInfoRepository.getHomeSortList(user.getId(), now, Category.FOOTWEAR, HomeSort.RELEASE_NOW);
+        List<ReleaseInfoSimpleResponse> result = releaseInfoRepository.getReleaseInfo10List(user.getId(), now, Category.FOOTWEAR, Section.RELEASE_NOW);
 
         //then
         assertThat(result.size()).isEqualTo(10);
@@ -167,7 +167,7 @@ class ReleaseInfoRepositoryTest {
         em.clear();
 
         //when
-        List<ReleaseInfoSimpleResponse> result = releaseInfoRepository.getHomeSortList(user.getId(), now, Category.FOOTWEAR, HomeSort.RELEASE_WISH);
+        List<ReleaseInfoSimpleResponse> result = releaseInfoRepository.getReleaseInfo10List(user.getId(), now, Category.FOOTWEAR, Section.RELEASE_WISH);
 
         //then
         assertThat(result.size()).isEqualTo(10);
@@ -201,7 +201,7 @@ class ReleaseInfoRepositoryTest {
         em.clear();
 
         //when
-        List<ReleaseInfoSimpleResponse> result = releaseInfoRepository.getHomeSortList(user.getId(), now, Category.FOOTWEAR, HomeSort.RELEASE_CONFIRM);
+        List<ReleaseInfoSimpleResponse> result = releaseInfoRepository.getReleaseInfo10List(user.getId(), now, Category.FOOTWEAR, Section.RELEASE_SCHEDULE);
 
         //then
         assertThat(result.size()).isEqualTo(HOME_PAGE_SIZE);
@@ -232,7 +232,7 @@ class ReleaseInfoRepositoryTest {
         em.clear();
 
         //when
-        List<ReleaseInfoSimpleResponse> result = releaseInfoRepository.getHomeSortList(user.getId(), now, Category.FOOTWEAR, HomeSort.REGISTER_TODAY);
+        List<ReleaseInfoSimpleResponse> result = releaseInfoRepository.getReleaseInfo10List(user.getId(), now, Category.FOOTWEAR, Section.REGISTER_TODAY);
 
         //then
         assertThat(result.size()).isEqualTo(HOME_PAGE_SIZE);
@@ -263,7 +263,7 @@ class ReleaseInfoRepositoryTest {
         em.clear();
 
         //when
-        List<ReleaseInfoSimpleResponse> result = releaseInfoRepository.getHomeSortList(user.getId(), now, Category.ALL, HomeSort.REGISTER_TODAY);
+        List<ReleaseInfoSimpleResponse> result = releaseInfoRepository.getReleaseInfo10List(user.getId(), now, Category.ALL, Section.REGISTER_TODAY);
 
         //then
         assertThat(result.size()).isEqualTo(HOME_PAGE_SIZE);
@@ -297,7 +297,7 @@ class ReleaseInfoRepositoryTest {
 
         //when
         int page = total % API_PAGE_SIZE == 0 ? (total / API_PAGE_SIZE) : (total / API_PAGE_SIZE + 1); //마지막 페이지 계산
-        Page<ReleaseInfoSimpleResponse> result = releaseInfoRepository.getHomeSortPage(user.getId(), now, Category.ALL, HomeSort.REGISTER_TODAY, PageRequest.of(page - 1, API_PAGE_SIZE));
+        Page<ReleaseInfoSimpleResponse> result = releaseInfoRepository.getReleaseInfoPage(user.getId(), now, Category.ALL, Section.REGISTER_TODAY, PageRequest.of(page - 1, API_PAGE_SIZE));
         //then
         assertThat(result.getContent().size()).isEqualTo(total % API_PAGE_SIZE);
         assertThat(result.getTotalElements()).isEqualTo(total);

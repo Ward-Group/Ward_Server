@@ -15,7 +15,7 @@ import com.ward.ward_server.api.item.dto.BrandItemResponse;
 import com.ward.ward_server.api.item.dto.ItemSimpleResponse;
 import com.ward.ward_server.api.item.entity.enums.Category;
 import com.ward.ward_server.global.Object.enums.BasicSort;
-import com.ward.ward_server.global.Object.enums.HomeSort;
+import com.ward.ward_server.global.Object.enums.Section;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -24,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,6 +32,7 @@ import static com.ward.ward_server.api.item.entity.QBrand.brand;
 import static com.ward.ward_server.api.item.entity.QItem.item;
 import static com.ward.ward_server.api.releaseInfo.entity.QReleaseInfo.releaseInfo;
 import static com.ward.ward_server.api.wishItem.QWishItem.wishItem;
+import static com.ward.ward_server.global.Object.Constants.DATE_YEAR_MONTH_FORMAT;
 import static com.ward.ward_server.global.Object.Constants.HOME_PAGE_SIZE;
 
 @RequiredArgsConstructor
@@ -38,14 +40,14 @@ import static com.ward.ward_server.global.Object.Constants.HOME_PAGE_SIZE;
 public class ItemQueryRepositoryImpl implements ItemQueryRepository {
     private final JPAQueryFactory queryFactory;
 
-    public List<ItemSimpleResponse> getHomeSortList(Long userId, LocalDateTime now, Category category, HomeSort homeSort) {
+    public List<ItemSimpleResponse> getItem10List(Long userId, LocalDateTime now, Category category, Section section) {
         Set<Long> wishItemIds = wishItemIdListByUser(userId);
         List<Tuple> tuples = queryFactory.select(
                         item.id,
-                        getField(homeSort)
+                        getField(section)
                 ).from(releaseInfo)
                 .leftJoin(releaseInfo.item, item)
-                .where(getHomeSortCondition(homeSort, now, wishItemIds), getCategoryCondition(category))
+                .where(getSectionCondition(section, now, null, wishItemIds), getCategoryCondition(category))
                 .fetch();
 
         Map<Long, LocalDateTime> itemIdAndDateMap = tuples.stream()
@@ -67,7 +69,7 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
                                 item.id,
                                 item.koreanName,
                                 item.englishName,
-                                item.code,
+                                item.price,
                                 item.mainImage,
                                 brand.id,
                                 brand.koreanName,
@@ -81,14 +83,14 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
         return itemSimpleResponseList(result, wishItemIds);
     }
 
-    public Page<ItemSimpleResponse> getHomeSortPage(Long userId, LocalDateTime now, Category category, HomeSort homeSort, Pageable pageable) {
+    public Page<ItemSimpleResponse> getItemPage(Long userId, LocalDateTime now, Category category, Section section, String yearMonth, Pageable pageable) {
         Set<Long> wishItemIds = wishItemIdListByUser(userId);
         List<Tuple> tuples = queryFactory.select(
                         item.id,
-                        getField(homeSort)
+                        getField(section)
                 ).from(releaseInfo)
                 .leftJoin(releaseInfo.item, item)
-                .where(getHomeSortCondition(homeSort, now, wishItemIds), getCategoryCondition(category))
+                .where(getSectionCondition(section, now, yearMonth, wishItemIds), getCategoryCondition(category))
                 .fetch();
 
         Map<Long, LocalDateTime> itemIdAndDateMap = tuples.stream()
@@ -110,7 +112,7 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
                                 item.id,
                                 item.koreanName,
                                 item.englishName,
-                                item.code,
+                                item.price,
                                 item.mainImage,
                                 brand.id,
                                 brand.koreanName,
@@ -124,7 +126,7 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
     }
 
     public Page<BrandItemResponse> getBrandItemPage(long brandId, BasicSort basicSort, Pageable pageable) {
-        List<BrandItemResponse> content=queryFactory.select(
+        List<BrandItemResponse> content = queryFactory.select(
                         Projections.constructor(BrandItemResponse.class,
                                 item.id,
                                 item.mainImage,
@@ -163,11 +165,11 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
         return itemList.subList(fromIndex, toIndex);
     }
 
-    private BooleanBuilder getHomeSortCondition(HomeSort homeSort, LocalDateTime now, Set<Long> wishItemIds) {
+    private BooleanBuilder getSectionCondition(Section section, LocalDateTime now, String yearMonthString, Set<Long> wishItemIds) {
         DateTimeTemplate<LocalDateTime> nowDateTime = Expressions.dateTimeTemplate(LocalDateTime.class, "{0}", now);
         BooleanBuilder builder = new BooleanBuilder();
 
-        switch (homeSort) {
+        switch (section) {
             case DUE_TODAY -> {
                 //마감일 = 오늘, 발매일 < 지금 < 마감일, 정렬은 마감일 오름차순
                 builder.and(isSameDay(now, releaseInfo.dueDate))
@@ -182,13 +184,18 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
                 builder.and(nowDateTime.between(releaseInfo.releaseDate, releaseInfo.dueDate))
                         .and(item.id.in(wishItemIds));
             }
-            case RELEASE_CONFIRM -> {
+            case RELEASE_SCHEDULE -> {
                 //지금 < 발매일, 정렬은 발매일 오름차순
                 builder.and(nowDateTime.before(releaseInfo.releaseDate));
             }
-            default -> {
+            case REGISTER_TODAY -> {
                 //생성일 = 지금, 정렬은 생성일 오름차순
                 builder.and(isSameDay(now, releaseInfo.createdAt));
+            }
+            default -> {
+                //마감일 < 지금, date = 마감날짜 년월
+                builder.and(releaseInfo.dueDate.before(nowDateTime))
+                        .and(isSameYearAndMonth(YearMonth.parse(yearMonthString, DATE_YEAR_MONTH_FORMAT), releaseInfo.dueDate));
             }
         }
         return builder;
@@ -198,10 +205,10 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
         return category == Category.ALL ? null : item.category.eq(category);
     }
 
-    private DateTimePath<LocalDateTime> getField(HomeSort homeSort) {
-        return switch (homeSort) {
+    private DateTimePath<LocalDateTime> getField(Section section) {
+        return switch (section) {
             case REGISTER_TODAY -> releaseInfo.createdAt;
-            case RELEASE_CONFIRM -> releaseInfo.releaseDate;
+            case RELEASE_SCHEDULE -> releaseInfo.releaseDate;
             default -> releaseInfo.dueDate;
         };
     }
@@ -211,6 +218,12 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
         return Expressions.numberTemplate(Integer.class, "YEAR({0})", datePath).eq(dateTime.getYear())
                 .and(Expressions.numberTemplate(Integer.class, "MONTH({0})", datePath).eq(dateTime.getMonthValue()))
                 .and(Expressions.numberTemplate(Integer.class, "DAY({0})", datePath).eq(dateTime.getDayOfMonth()));
+    }
+
+    private BooleanExpression isSameYearAndMonth(YearMonth yearMonth, DateTimePath<LocalDateTime> datePath) {
+        log.info("yearMonth : {}", yearMonth);
+        return Expressions.numberTemplate(Integer.class, "YEAR({0})", datePath).eq(yearMonth.getYear())
+                .and(Expressions.numberTemplate(Integer.class, "MONTH({0})", datePath).eq(yearMonth.getMonthValue()));
     }
 
     private Set<Long> wishItemIdListByUser(Long userId) {
@@ -229,7 +242,7 @@ public class ItemQueryRepositoryImpl implements ItemQueryRepository {
                         e.get(item.id),
                         e.get(item.koreanName),
                         e.get(item.englishName),
-                        e.get(item.code),
+                        e.get(item.price),
                         e.get(item.mainImage),
                         e.get(brand.id),
                         e.get(brand.koreanName),

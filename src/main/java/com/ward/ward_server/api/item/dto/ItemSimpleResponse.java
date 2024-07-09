@@ -6,7 +6,7 @@ public record ItemSimpleResponse(
         long itemId,
         String itemKoreanName,
         String itemEnglishName,
-        String itemCode,
+        Integer price,
         String itemMainImage,
         long brandId,
         String brandKoreanName,
