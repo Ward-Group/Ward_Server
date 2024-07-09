@@ -25,7 +25,7 @@ public enum ApiResponseMessage {
     ITEM_DELETE_SUCCESS("상품 삭제에 성공하였습니다."),
     ITEM_LIST_LOAD_SUCCESS("상품 목록 조회에 성공하였습니다."),
     ITEM_PAGE_LOAD_SUCCESS("상품 페이지 조회에 성공하였습니다."),
-    REALTIME_TOP10_LOAD_SUCCESS("실시간 Top10 조회에 성공하였습니다."),
+    REALTIME_TOP_LOAD_SUCCESS("실시간 Top10 조회에 성공하였습니다."),
     //브랜드
     BRAND_CREATE_SUCCESS("브랜드 등록에 성공하였습니다."),
     BRAND_AND_ITEM3_PAGE_LOAD_SUCCESS("브랜드와 상품3 목록 조회에 성공하였습니다."),

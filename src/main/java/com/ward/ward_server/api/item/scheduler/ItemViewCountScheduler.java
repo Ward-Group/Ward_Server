@@ -1,15 +1,15 @@
 package com.ward.ward_server.api.item.scheduler;
 
 import com.ward.ward_server.api.item.entity.Item;
+import com.ward.ward_server.api.item.entity.ItemTopRank;
 import com.ward.ward_server.api.item.entity.ItemViewCount;
 import com.ward.ward_server.api.item.entity.enums.Category;
-import com.ward.ward_server.api.item.repository.ItemRepository;
+import com.ward.ward_server.api.item.repository.ItemTopRankRepository;
 import com.ward.ward_server.api.item.repository.ItemViewCountRepository;
-import com.ward.ward_server.api.item.service.TopItemsCacheService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,42 +18,47 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class ItemViewCountScheduler {
 
-    private final ItemRepository itemRepository;
     private final ItemViewCountRepository itemViewCountRepository;
-    private final TopItemsCacheService topItemsCacheService;
+    private final ItemTopRankRepository itemTopRankRepository;
 
     @Scheduled(cron = "0 0 * * * *") // 매 정각마다 실행
+    @Transactional
     public void updateViewCounts() {
+        executeUpdateViewCounts();
+    }
+
+    @Transactional
+    public void executeUpdateViewCounts() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startTime = now.minusDays(1);
 
-        List<Item> items = itemRepository.findAll();
+        List<ItemViewCount> viewCounts = itemViewCountRepository.findViewCountsBetween(startTime, now);
 
-        // 그룹별 아이템 조회수 집계
-        Map<Category, Map<Long, Long>> viewCountMap = items.stream()
-                .collect(Collectors.groupingBy(Item::getCategory,
-                        Collectors.groupingBy(Item::getId, Collectors.summingLong(Item::getViewCount))));
+        // 카테고리별 아이템 조회수 합계 계산
+        Map<Category, Map<Item, Long>> categoryItemViewCounts = viewCounts.stream()
+                .collect(Collectors.groupingBy(
+                        ItemViewCount::getCategory,
+                        Collectors.groupingBy(ItemViewCount::getItem, Collectors.counting())
+                ));
 
-        // ItemViewCount 테이블 업데이트
-        viewCountMap.forEach((category, itemViewCounts) -> {
-            itemViewCounts.forEach((itemId, viewCount) -> {
-                Item item = itemRepository.findById(itemId).orElseThrow();
-                ItemViewCount itemViewCount = ItemViewCount.builder()
+        // 기존 ItemTopRank 데이터 삭제
+        itemTopRankRepository.deleteAll();
+
+        // 새로운 순위 데이터를 삽입
+        categoryItemViewCounts.forEach((category, itemViewCounts) -> {
+            int rank = 1;
+            for (Map.Entry<Item, Long> entry : itemViewCounts.entrySet()) {
+                ItemTopRank itemTopRank = ItemTopRank.builder()
+                        .item(entry.getKey())
                         .category(category)
-                        .item(item)
-                        .viewCount(viewCount)
+                        .itemRank(rank++)
                         .calculatedAt(now)
                         .build();
-                itemViewCountRepository.save(itemViewCount);
-            });
+                itemTopRankRepository.save(itemTopRank);
+            }
         });
-
-        // 캐시 업데이트
-        topItemsCacheService.updateTopItemsCache(viewCountMap);
-
-        log.info("View counts updated at {}", now);
     }
 }
+
