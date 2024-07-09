@@ -5,6 +5,7 @@ import com.ward.ward_server.api.item.dto.ItemRequest;
 import com.ward.ward_server.api.item.dto.ItemSimpleResponse;
 import com.ward.ward_server.api.item.dto.ItemTopRankResponse;
 import com.ward.ward_server.api.item.entity.enums.Category;
+import com.ward.ward_server.api.item.scheduler.ItemViewCountScheduler;
 import com.ward.ward_server.api.item.service.ItemService;
 import com.ward.ward_server.api.user.auth.security.CustomUserDetails;
 import com.ward.ward_server.global.Object.PageResponse;
@@ -27,6 +28,14 @@ import static com.ward.ward_server.global.response.ApiResponseMessage.*;
 public class ItemController {
 
     private final ItemService itemService;
+    private final ItemViewCountScheduler itemViewCountScheduler;
+
+    @PostMapping("/execute-update-view-counts")
+    public ApiResponse<String> abc() {
+        itemViewCountScheduler.executeUpdateViewCounts();
+        return ApiResponse.ok("성공");
+    }
+
 
     @PostMapping
     public ApiResponse<ItemDetailResponse> createItem(@RequestBody ItemRequest request) throws ApiException {
@@ -56,7 +65,7 @@ public class ItemController {
     }
 
     @GetMapping("/top")
-    public ApiResponse<List<ItemTopRankResponse>> getTopItemsByCategory(@RequestParam("category") String category,
+    public ApiResponse<List<ItemTopRankResponse>> getTopItemsByCategory(@RequestParam("category") Category category,
                                                                         @RequestParam("limit") int limit) {
         if (limit != 10 && limit != 50) {
             throw new ApiException(ExceptionCode.INVALID_INPUT, "Limit 는 10 or 50 이어야합니다.");

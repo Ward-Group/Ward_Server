@@ -111,13 +111,12 @@ public class ItemService {
     }
 
     @Transactional(readOnly = true)
-    public List<ItemTopRankResponse> getTopItemsResponseByCategory(String category, int limit) {
-        Category itemCategory = Category.from(category);
+    public List<ItemTopRankResponse> getTopItemsResponseByCategory(Category category, int limit) {
         List<ItemTopRank> topItems;
-        if (itemCategory == Category.ALL) {
+        if (category == Category.ALL) {
             topItems = itemTopRankRepository.findTopItems(PageRequest.of(0, limit));
         } else {
-            topItems = itemTopRankRepository.findTopItemsByCategory(itemCategory, PageRequest.of(0, limit));
+            topItems = itemTopRankRepository.findTopItemsByCategory(category, PageRequest.of(0, limit));
         }
         return convertToTopResponse(topItems);
     }
