@@ -21,7 +21,8 @@ public enum ErrorMessage {
     CATEGORY_NOT_EXISTS("입력하신 카테고리가 존재하지 않아요."),
     BASIC_SORT_NOT_EXISTS("입력하신 기본 정렬이 존재하지 않아요."),
     SERVER_ERROR("서버에서 오류가 발생했습니다."),
-    RESOURCE_NOT_FOUND("요청하신 페이지를 찾을 수 없어요.");
+    RESOURCE_NOT_FOUND("요청하신 페이지를 찾을 수 없어요."),
+    SECTION_NOT_AVAILABLE_THIS_PAGE("해당 페이지에서는 제공하지 않는 구분입니다.");
 
     private final String message;
 }
