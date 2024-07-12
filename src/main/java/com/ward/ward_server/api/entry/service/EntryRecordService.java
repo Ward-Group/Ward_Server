@@ -1,9 +1,9 @@
 package com.ward.ward_server.api.entry.service;
 
+import com.ward.ward_server.api.entry.dto.EntryCountResponse;
 import com.ward.ward_server.api.entry.dto.EntryRecordResponse;
 import com.ward.ward_server.api.entry.entity.EntryRecord;
 import com.ward.ward_server.api.entry.repository.EntryRecordRepository;
-import com.ward.ward_server.api.releaseInfo.entity.DrawPlatform;
 import com.ward.ward_server.api.releaseInfo.entity.ReleaseInfo;
 import com.ward.ward_server.api.releaseInfo.repository.DrawPlatformRepository;
 import com.ward.ward_server.api.releaseInfo.repository.ReleaseInfoRepository;
@@ -43,6 +43,16 @@ public class EntryRecordService {
         return entryRecord.map(record -> new EntryRecordResponse(true, record.getEntryDate())).orElseGet(() -> new EntryRecordResponse(false, null));
     }
 
+    @Transactional(readOnly = true)
+    public EntryCountResponse getEntryCounts(Long userId) {
+        long total = entryRecordRepository.countByUserId(userId);
+        long inProgress = entryRecordRepository.countInProgressByUserId(userId); // 진행
+        long announcement = entryRecordRepository.countAnnouncementByUserId(userId); // 당첨자 발표
+        long closed = entryRecordRepository.countClosedByUserId(userId); // 마감
+
+        return new EntryCountResponse(total, inProgress, announcement, closed);
+    }
+
     @Transactional
     public void deleteEntryRecord(Long userId, Long releaseInfoId) {
         if (!entryRecordRepository.existsByUserIdAndReleaseInfoId(userId, releaseInfoId)) {
@@ -50,4 +60,6 @@ public class EntryRecordService {
         }
         entryRecordRepository.deleteByUserIdAndReleaseInfoId(userId, releaseInfoId);
     }
+
+
 }

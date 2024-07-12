@@ -1,21 +1,14 @@
 package com.ward.ward_server.api.item.controller;
 
-import com.ward.ward_server.api.item.service.WebCrawlingService;
-import com.ward.ward_server.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-
-import static com.ward.ward_server.global.response.ApiResponseMessage.WEBCRAWLING_KASINA_SUCCESS;
-import static com.ward.ward_server.global.response.ApiResponseMessage.WEBCRAWLING_NIKE_SUCCESS;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/wc")
 public class WebCrawlingController {
+    //TODO 선착순 크롤링 시 발매일,마감일,당첨자 발표일 동일하게 입력 필수
 //    private final WebCrawlingService webCrawlingService;
 //
 //    @GetMapping("/nike")
