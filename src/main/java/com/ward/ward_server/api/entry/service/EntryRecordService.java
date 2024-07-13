@@ -1,6 +1,7 @@
 package com.ward.ward_server.api.entry.service;
 
 import com.ward.ward_server.api.entry.dto.EntryCountResponse;
+import com.ward.ward_server.api.entry.dto.EntryDetailResponse;
 import com.ward.ward_server.api.entry.dto.EntryRecordResponse;
 import com.ward.ward_server.api.entry.entity.EntryRecord;
 import com.ward.ward_server.api.entry.repository.EntryRecordRepository;
@@ -11,6 +12,8 @@ import com.ward.ward_server.api.user.entity.User;
 import com.ward.ward_server.api.user.repository.UserRepository;
 import com.ward.ward_server.global.exception.ApiException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,5 +64,19 @@ public class EntryRecordService {
         entryRecordRepository.deleteByUserIdAndReleaseInfoId(userId, releaseInfoId);
     }
 
+    @Transactional(readOnly = true)
+    public Page<EntryDetailResponse> getEntryRecordsByStatus(Long userId, String status, Pageable pageable) {
+        switch (status) {
+            case "in-progress":
+                return entryRecordRepository.findInProgressByUserId(userId, pageable);
+            case "announcement":
+                return entryRecordRepository.findAnnouncementByUserId(userId, pageable);
+            case "closed":
+                return entryRecordRepository.findClosedByUserId(userId, pageable);
+            case "all":
+            default:
+                return entryRecordRepository.findAllByUserId(userId, pageable);
+        }
+    }
 
 }
