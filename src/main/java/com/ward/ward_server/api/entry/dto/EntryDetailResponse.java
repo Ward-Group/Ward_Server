@@ -4,6 +4,7 @@ public record EntryDetailResponse(
         String mainImage,
         String englishName,
         String koreanName,
-        String code
+        String code,
+        Long releaseInfoId
 ) {
 }
