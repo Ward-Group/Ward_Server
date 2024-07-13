@@ -6,7 +6,6 @@ import com.ward.ward_server.api.entry.dto.EntryRecordResponse;
 import com.ward.ward_server.api.entry.entity.EntryRecord;
 import com.ward.ward_server.api.entry.repository.EntryRecordRepository;
 import com.ward.ward_server.api.releaseInfo.entity.ReleaseInfo;
-import com.ward.ward_server.api.releaseInfo.repository.DrawPlatformRepository;
 import com.ward.ward_server.api.releaseInfo.repository.ReleaseInfoRepository;
 import com.ward.ward_server.api.user.entity.User;
 import com.ward.ward_server.api.user.repository.UserRepository;
@@ -25,7 +24,6 @@ import static com.ward.ward_server.global.exception.ExceptionCode.*;
 @RequiredArgsConstructor
 public class EntryRecordService {
     private final EntryRecordRepository entryRecordRepository;
-    private final DrawPlatformRepository drawPlatformRepository;
     private final ReleaseInfoRepository releaseInfoRepository;
     private final UserRepository userRepository;
 
@@ -66,17 +64,12 @@ public class EntryRecordService {
 
     @Transactional(readOnly = true)
     public Page<EntryDetailResponse> getEntryRecordsByStatus(Long userId, String status, Pageable pageable) {
-        switch (status) {
-            case "in-progress":
-                return entryRecordRepository.findInProgressByUserId(userId, pageable);
-            case "announcement":
-                return entryRecordRepository.findAnnouncementByUserId(userId, pageable);
-            case "closed":
-                return entryRecordRepository.findClosedByUserId(userId, pageable);
-            case "all":
-            default:
-                return entryRecordRepository.findAllByUserId(userId, pageable);
-        }
+        return switch (status) {
+            case "in-progress" -> entryRecordRepository.findInProgressByUserId(userId, pageable);
+            case "announcement" -> entryRecordRepository.findAnnouncementByUserId(userId, pageable);
+            case "closed" -> entryRecordRepository.findClosedByUserId(userId, pageable);
+            default -> entryRecordRepository.findAllByUserId(userId, pageable);
+        };
     }
 
 }
