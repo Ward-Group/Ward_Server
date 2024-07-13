@@ -22,6 +22,7 @@ import static com.ward.ward_server.global.exception.ExceptionCode.*;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class EntryRecordService {
     private final EntryRecordRepository entryRecordRepository;
     private final ReleaseInfoRepository releaseInfoRepository;
@@ -38,13 +39,11 @@ public class EntryRecordService {
         return new EntryRecordResponse(true, savedEntryRecord.getEntryDate());
     }
 
-    @Transactional(readOnly = true)
     public EntryRecordResponse getEntryRecordByReleaseInfo(Long userId, Long releaseInfoId) {
         Optional<EntryRecord> entryRecord = entryRecordRepository.findByUserIdAndReleaseInfoId(userId, releaseInfoId);
         return entryRecord.map(record -> new EntryRecordResponse(true, record.getEntryDate())).orElseGet(() -> new EntryRecordResponse(false, null));
     }
 
-    @Transactional(readOnly = true)
     public EntryCountResponse getEntryCounts(Long userId) {
         long total = entryRecordRepository.countByUserId(userId);
         long inProgress = entryRecordRepository.countInProgressByUserId(userId); // 진행
@@ -62,7 +61,6 @@ public class EntryRecordService {
         entryRecordRepository.deleteByUserIdAndReleaseInfoId(userId, releaseInfoId);
     }
 
-    @Transactional(readOnly = true)
     public Page<EntryDetailResponse> getEntryRecordsByStatus(Long userId, String status, Pageable pageable) {
         return switch (status) {
             case "in-progress" -> entryRecordRepository.findInProgressByUserId(userId, pageable);
