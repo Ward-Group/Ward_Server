@@ -64,10 +64,6 @@ public class User {
         this.snsNotification = snsNotification;
     }
 
-    public void updateEmail(String email) {
-        this.email = email;
-    }
-
     public void updateNickname(String newNickname) {
         this.nickname = newNickname;
     }
