@@ -3,6 +3,8 @@ package com.ward.ward_server.api.user.entity;
 import com.ward.ward_server.api.entry.entity.EntryRecord;
 import com.ward.ward_server.api.user.entity.enumtype.Role;
 import com.ward.ward_server.api.wishItem.WishItem;
+import com.ward.ward_server.global.exception.ApiException;
+import com.ward.ward_server.global.exception.ExceptionCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -68,5 +70,12 @@ public class User {
 
     public void updateNickname(String newNickname) {
         this.nickname = newNickname;
+    }
+
+    public void changeNickname(String newNickname, boolean isNicknameDuplicate) {
+        if (isNicknameDuplicate) {
+            throw new ApiException(ExceptionCode.DUPLICATE_NICKNAME);
+        }
+        updateNickname(newNickname);
     }
 }

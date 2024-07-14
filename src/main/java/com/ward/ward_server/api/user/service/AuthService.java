@@ -206,10 +206,6 @@ public class AuthService {
         refreshTokenService.invalidateRefreshToken(refreshToken);
     }
 
-    public boolean checkDuplicateNickname(String nickname) {
-        return userRepository.existsByNickname(nickname);
-    }
-
     private void updateSocialLogin(User user, String provider, String providerId, String email) {
         Optional<SocialLogin> socialLoginOptional = socialLoginRepository.findByProviderAndProviderIdAndEmail(provider, providerId, email);
 

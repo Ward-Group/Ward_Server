@@ -1,6 +1,7 @@
 package com.ward.ward_server.api.user.controller;
 
 import com.ward.ward_server.api.user.auth.security.CustomUserDetails;
+import com.ward.ward_server.api.user.dto.UpdateNicknameRequest;
 import com.ward.ward_server.api.user.service.UserService;
 import com.ward.ward_server.global.response.ApiResponse;
 import com.ward.ward_server.global.response.ApiResponseMessage;
@@ -21,9 +22,15 @@ public class UserController {
         return ApiResponse.ok(nickname);
     }
 
-    @PatchMapping("/updateNickname")
-    public ApiResponse<Void> updateNickname(@AuthenticationPrincipal CustomUserDetails principal, @RequestParam("newNickname") String newNickname) {
-        userService.updateNickname(principal.getUserId(), newNickname);
+    @PatchMapping("/nickname")
+    public ApiResponse<Void> updateNickname(@AuthenticationPrincipal CustomUserDetails principal, @RequestBody UpdateNicknameRequest request) {
+        userService.updateNickname(principal.getUserId(), request.newNickname());
         return ApiResponse.ok(ApiResponseMessage.UPDATE_NICKNAME_SUCCESS);
+    }
+
+    @GetMapping("/check-nickname")
+    public ApiResponse<Boolean> checkDuplicateNickname(@RequestParam("nickname") String nickname) {
+        boolean isDuplicate = userService.checkDuplicateNickname(nickname);
+        return ApiResponse.ok(ApiResponseMessage.NICKNAME_CHECK_SUCCESS, isDuplicate);
     }
 }
