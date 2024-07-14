@@ -27,7 +27,6 @@ public class UserService {
         User user = userRepository.findById(userId).orElseThrow(() -> new ApiException(ExceptionCode.USER_NOT_FOUND));
         boolean isNicknameDuplicate = checkDuplicateNickname(newNickname);
         user.changeNickname(newNickname, isNicknameDuplicate);
-        userRepository.save(user);
     }
 
     public boolean checkDuplicateNickname(String nickname) {
