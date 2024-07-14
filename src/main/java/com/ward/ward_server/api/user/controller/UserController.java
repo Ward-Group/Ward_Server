@@ -27,4 +27,10 @@ public class UserController {
         userService.updateNickname(principal.getUserId(), request.newNickname());
         return ApiResponse.ok(ApiResponseMessage.UPDATE_NICKNAME_SUCCESS);
     }
+
+    @DeleteMapping("/delete-account")
+    public ApiResponse<Void> deleteUserAccount(@AuthenticationPrincipal CustomUserDetails principal) {
+        userService.deleteUser(principal.getUserId());
+        return ApiResponse.ok(ApiResponseMessage.ACCOUNT_DELETION_SUCCESS);
+    }
 }
