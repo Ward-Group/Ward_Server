@@ -4,7 +4,6 @@ import com.ward.ward_server.api.item.dto.ItemDetailResponse;
 import com.ward.ward_server.api.item.dto.ItemSimpleResponse;
 import com.ward.ward_server.api.item.dto.ItemTopRankResponse;
 import com.ward.ward_server.api.item.entity.enums.Category;
-import com.ward.ward_server.api.item.scheduler.ItemViewCountScheduler;
 import com.ward.ward_server.api.item.service.ItemService;
 import com.ward.ward_server.api.user.auth.security.CustomUserDetails;
 import com.ward.ward_server.global.Object.PageResponse;
@@ -27,7 +26,6 @@ import static com.ward.ward_server.global.response.ApiResponseMessage.*;
 public class PublicItemController {
 
     private final ItemService itemService;
-    private final ItemViewCountScheduler itemViewCountScheduler;
 
     @GetMapping("/{itemId}/details")
     public ApiResponse<ItemDetailResponse> getItem(@PathVariable("itemId") Long itemId) {
