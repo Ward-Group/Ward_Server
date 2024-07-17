@@ -44,6 +44,7 @@ public class WebSecurityConfig {
                     // User endpoints
                     authorize
                             .requestMatchers("/items/details", "/entry-records/count").hasAnyRole("USER", "ADMIN")
+                            .requestMatchers(HttpMethod.GET,"/entry-records").hasAnyRole("USER", "ADMIN")
                             .requestMatchers(HttpMethod.GET,"/items/{section}/home").hasAnyRole("USER", "ADMIN")
                             .requestMatchers(HttpMethod.GET, "/items/{section}").hasAnyRole("USER", "ADMIN");
 
