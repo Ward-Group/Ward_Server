@@ -13,7 +13,7 @@ import static com.ward.ward_server.global.response.ApiResponseMessage.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/wish-brands")
+@RequestMapping("/user/wish-brands")
 public class WishBrandController {
     private final WishBrandService wishBrandService;
 

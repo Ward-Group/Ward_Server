@@ -1,6 +1,5 @@
 package com.ward.ward_server.api.entry.controller;
 
-import com.ward.ward_server.api.entry.dto.EntryCountResponse;
 import com.ward.ward_server.api.entry.dto.EntryRecordRequest;
 import com.ward.ward_server.api.entry.dto.EntryRecordResponse;
 import com.ward.ward_server.api.entry.service.EntryRecordService;
@@ -14,8 +13,8 @@ import static com.ward.ward_server.global.response.ApiResponseMessage.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/entry-records")
-public class EntryRecordController {
+@RequestMapping("/user/entry-records")
+public class UserEntryRecordController {
 
     private final EntryRecordService entryRecordService;
 
@@ -23,11 +22,6 @@ public class EntryRecordController {
     public ApiResponse<EntryRecordResponse> createEntryRecord(@AuthenticationPrincipal CustomUserDetails principal,
                                                               @RequestBody EntryRecordRequest request) {
         return ApiResponse.ok(ENTRY_RECORD_CREATE_SUCCESS, entryRecordService.createEntryRecord(principal.getUserId(), request.releaseInfoId()));
-    }
-
-    @GetMapping("/count")
-    public ApiResponse<EntryCountResponse> getEntryCounts(@AuthenticationPrincipal CustomUserDetails principal) {
-        return ApiResponse.ok(ENTRY_COUNTS_FETCH_SUCCESS, entryRecordService.getEntryCounts(principal.getUserId()));
     }
 
     @GetMapping("/release-infos/{releaseInfoId}")

@@ -16,7 +16,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/nickname")
-    public ApiResponse<String> nickname(@AuthenticationPrincipal CustomUserDetails principal) {
+    public ApiResponse<String> getNickname(@AuthenticationPrincipal CustomUserDetails principal) {
         String nickname = userService.getNickname(principal.getUserId());
         return ApiResponse.ok(nickname);
     }
