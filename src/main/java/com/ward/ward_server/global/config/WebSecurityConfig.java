@@ -7,7 +7,6 @@ import com.ward.ward_server.api.user.auth.security.UnauthorizedHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -58,8 +57,7 @@ public class WebSecurityConfig {
 
     private void configurePublicEndpoints(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry authorize) {
         authorize
-                .requestMatchers("/", "/public/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/brands", "/brands/recommended").permitAll();
+                .requestMatchers("/", "/public/**").permitAll();
     }
 
     private void configureUserEndpoints(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry authorize) {

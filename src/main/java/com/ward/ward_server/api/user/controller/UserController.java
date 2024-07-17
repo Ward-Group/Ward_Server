@@ -27,10 +27,4 @@ public class UserController {
         userService.updateNickname(principal.getUserId(), request.newNickname());
         return ApiResponse.ok(ApiResponseMessage.UPDATE_NICKNAME_SUCCESS);
     }
-
-    @GetMapping("/check-nickname")
-    public ApiResponse<Boolean> checkDuplicateNickname(@RequestParam("nickname") String nickname) {
-        boolean isDuplicate = userService.checkDuplicateNickname(nickname);
-        return ApiResponse.ok(ApiResponseMessage.NICKNAME_CHECK_SUCCESS, isDuplicate);
-    }
 }

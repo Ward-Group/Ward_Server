@@ -51,12 +51,6 @@ public class PublicAuthController {
         return ApiResponse.ok(ApiResponseMessage.TOKEN_REFRESH_SUCCESS, tokens);
     }
 
-    @GetMapping("/checkNickname")
-    public ApiResponse<Boolean> checkDuplicateNickname(@RequestParam("nickname") String nickname) {
-        boolean checkDuplicateNickname = authService.checkDuplicateNickname(nickname);
-        return ApiResponse.ok(ApiResponseMessage.NICKNAME_CHECK_SUCCESS, checkDuplicateNickname);
-    }
-
     //TODO 소셜 계정 이메일 정보 변경 시 정보 받을 경로
 
 }
