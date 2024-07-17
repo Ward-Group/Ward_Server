@@ -51,12 +51,6 @@ public class AuthController {
         return ApiResponse.ok(ApiResponseMessage.TOKEN_REFRESH_SUCCESS, tokens);
     }
 
-    @GetMapping("/checkNickname")
-    public ApiResponse<Boolean> checkDuplicateNickname(@RequestParam("nickname") String nickname) {
-        boolean checkDuplicateNickname = authService.checkDuplicateNickname(nickname);
-        return ApiResponse.ok(ApiResponseMessage.NICKNAME_CHECK_SUCCESS, checkDuplicateNickname);
-    }
-
     @PostMapping("/logout")
     public ApiResponse<Void> logout(@RequestParam("refreshToken") String refreshToken) {
         authService.invalidateRefreshToken(refreshToken);

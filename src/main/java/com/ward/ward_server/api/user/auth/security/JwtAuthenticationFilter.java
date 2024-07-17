@@ -30,7 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtProperties properties;
     private static final List<String> EXCLUDED_URLS = Arrays.asList(
             "/", "/auth/**", "/v1/wc/**", "/release-infos/{itemId}/releases", "/items/top10", "/items/{itemId}/details",
-            "/brands", "/brands/recommended", "/release-infos/details"
+            "/brands", "/brands/recommended", "/release-infos/details", "/user/check-nickname"
     );
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
