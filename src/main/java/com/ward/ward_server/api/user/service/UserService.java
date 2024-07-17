@@ -25,12 +25,11 @@ public class UserService {
     @Transactional
     public void updateNickname(Long userId, String newNickname) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ApiException(ExceptionCode.USER_NOT_FOUND));
+        boolean isNicknameDuplicate = checkDuplicateNickname(newNickname);
+        user.changeNickname(newNickname, isNicknameDuplicate);
+    }
 
-        if (userRepository.existsByNickname(newNickname)) {
-            throw new ApiException(ExceptionCode.DUPLICATE_NICKNAME);
-        }
-
-        user.updateNickname(newNickname);
-        userRepository.save(user);
+    public boolean checkDuplicateNickname(String nickname) {
+        return userRepository.existsByNickname(nickname);
     }
 }
