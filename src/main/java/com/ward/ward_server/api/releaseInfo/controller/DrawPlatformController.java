@@ -11,7 +11,7 @@ import static com.ward.ward_server.global.response.ApiResponseMessage.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/draw-platforms")
+@RequestMapping("/admin/draw-platforms")
 public class DrawPlatformController {
     private final DrawPlatformService drawPlatformService;
 

@@ -2,7 +2,6 @@ package com.ward.ward_server.api.releaseInfo.controller;
 
 import com.ward.ward_server.api.item.entity.enums.Category;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoDetailResponse;
-import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoRequest;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoSimpleResponse;
 import com.ward.ward_server.api.releaseInfo.entity.ReleaseInfo;
 import com.ward.ward_server.api.releaseInfo.service.ReleaseInfoService;
@@ -23,26 +22,10 @@ import static com.ward.ward_server.global.response.ApiResponseMessage.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/release-infos")
+@RequestMapping("/public/release-infos")
 @Slf4j
-public class ReleaseInfoController {
+public class PublicReleaseInfoController {
     private final ReleaseInfoService releaseInfoService;
-
-    @PostMapping
-    public ApiResponse<ReleaseInfoDetailResponse> createReleaseInfo(@RequestBody ReleaseInfoRequest request) {
-        return ApiResponse.ok(RELEASE_INFO_CREATE_SUCCESS, releaseInfoService.createReleaseInfo(
-                request.itemId(),
-                request.platformName(),
-                request.siteUrl(),
-                request.releaseDate(),
-                request.dueDate(),
-                request.presentationDate(),
-                request.releasePrice(),
-                request.currencyUnit(),
-                request.notificationMethod(),
-                request.releaseMethod(),
-                request.deliveryMethod()));
-    }
 
     @GetMapping("/{releaseInfoId}/details")
     public ApiResponse<ReleaseInfoDetailResponse> getReleaseInfo(@PathVariable("releaseInfoId") Long releaseInfoId) {
@@ -80,29 +63,4 @@ public class ReleaseInfoController {
         }
         return ApiResponse.ok(releaseInfos);
     }
-
-    @PatchMapping("/{releaseInfoId}")
-    public ApiResponse<ReleaseInfoDetailResponse> updateReleaseInfo(@PathVariable("releaseInfoId") Long releaseInfoId,
-                                                                    @RequestBody ReleaseInfoRequest request) {
-        return ApiResponse.ok(RELEASE_INFO_UPDATE_SUCCESS, releaseInfoService.updateReleaseInfo(
-                releaseInfoId,
-                request.itemId(),
-                request.platformName(),
-                request.siteUrl(),
-                request.releaseDate(),
-                request.dueDate(),
-                request.presentationDate(),
-                request.releasePrice(),
-                request.currencyUnit(),
-                request.notificationMethod(),
-                request.releaseMethod(),
-                request.deliveryMethod()));
-    }
-
-    @DeleteMapping("/{releaseInfoId}")
-    public ApiResponse<Void> deleteReleaseInfo(@PathVariable("releaseInfoId") Long releaseInfoId) {
-        releaseInfoService.deleteReleaseInfo(releaseInfoId);
-        return ApiResponse.ok(RELEASE_INFO_DELETE_SUCCESS);
-    }
-
 }

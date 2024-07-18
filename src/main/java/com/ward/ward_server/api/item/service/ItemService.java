@@ -92,7 +92,7 @@ public class ItemService {
     @Transactional(readOnly = true)
     public List<ItemSimpleResponse> getItem10List(Long userId, Section section, Category category) {
         return switch (section) {
-            case RELEASE_NOW, RELEASE_SCHEDULE ->
+            case DUE_TODAY, RELEASE_NOW, RELEASE_SCHEDULE ->
                     itemRepository.getItem10List(userId, LocalDateTime.now().minusHours(9), category, section); //HACK DB 시간 설정 전까지는 -9시간으로 비교해야 한다.
             default -> throw new ApiException(INVALID_INPUT, SECTION_NOT_AVAILABLE_THIS_PAGE.getMessage());
         };

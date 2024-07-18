@@ -7,12 +7,12 @@ import com.ward.ward_server.api.user.auth.security.UnauthorizedHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,6 +28,7 @@ import java.util.Arrays;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig {
+
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomUserDetailService customUserDetailService;
     private final UnauthorizedHandler unauthorizedHandler;
@@ -38,31 +39,9 @@ public class WebSecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> {
-                    // Authenticated endpoints
-                    authorize.requestMatchers("/auth/logout").authenticated();
-
-                    // User endpoints
-                    authorize
-                            .requestMatchers("/items/details", "/entry-records/count", "/user/delete-account").hasAnyRole("USER", "ADMIN")
-                            .requestMatchers(HttpMethod.GET,"/items/{section}/home").hasAnyRole("USER", "ADMIN")
-                            .requestMatchers(HttpMethod.GET, "/items/{section}").hasAnyRole("USER", "ADMIN");
-
-                    // Public endpoints
-                    authorize
-                            .requestMatchers("/", "/auth/**", "release-infos/**", "/v1/wc/**", "/items/top10", "/items/top", "/items/execute-update-view-counts", "/items/{itemId}/details").permitAll()
-                            .requestMatchers(HttpMethod.GET, "/brands", "/brands/recommended").permitAll()
-                            .requestMatchers(HttpMethod.PATCH, "/brands/{brandId}/view-counts").permitAll()
-                            .requestMatchers(HttpMethod.GET, "/release-infos", "/release-infos/details").permitAll();
-
-                    // Admin endpoints
-                    authorize
-                            .requestMatchers("/items/**").hasRole("ADMIN")
-                            .requestMatchers("/admin/**").hasRole("ADMIN")
-                            .requestMatchers(HttpMethod.PATCH, "/brands/{brandId}").hasRole("ADMIN")
-                            .requestMatchers("/brands/**").hasRole("ADMIN")
-                            .requestMatchers("/draw-platforms/**").hasRole("ADMIN")
-                            .requestMatchers("/release-infos/**").hasRole("ADMIN");
-
+                    configurePublicEndpoints(authorize);
+                    configureUserEndpoints(authorize);
+                    configureAdminEndpoints(authorize);
                     authorize.anyRequest().authenticated();
                 })
                 .exceptionHandling(exception -> {
@@ -74,6 +53,21 @@ public class WebSecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
         return http.build();
+    }
+
+    private void configurePublicEndpoints(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry authorize) {
+        authorize
+                .requestMatchers("/", "/public/**").permitAll();
+    }
+
+    private void configureUserEndpoints(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry authorize) {
+        authorize
+                .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN");
+    }
+
+    private void configureAdminEndpoints(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry authorize) {
+        authorize
+                .requestMatchers("/admin/**").hasRole("ADMIN");
     }
 
     @Bean
