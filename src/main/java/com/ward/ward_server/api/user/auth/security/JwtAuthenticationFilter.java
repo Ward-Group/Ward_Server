@@ -11,15 +11,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.time.Duration;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -28,22 +24,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtDecoder jwtDecoder;
     private final JwtToPrincipalConverter jwtToPrincipalConverter;
     private final JwtProperties properties;
-    private static final List<String> EXCLUDED_URLS = Arrays.asList(
-            "/", "/auth/**", "/v1/wc/**", "/release-infos/{itemId}/releases", "/items/top10", "/items/{itemId}/details",
-            "/brands", "/brands/recommended", "/release-infos/details", "/user/check-nickname"
-    );
-    private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (shouldNotFilter(request)) {
+        Optional<String> token = extractTokenFromRequest(request);
+
+        if (token.isEmpty()) {
+            // 비회원일 경우 SecurityContextHolder에 아무것도 설정하지 않고 필터를 통과하게 함
             filterChain.doFilter(request, response);
             return;
         }
 
         try {
-            extractTokenFromRequest(request)
-                    .map(jwtDecoder::decode)
+            token.map(jwtDecoder::decode)
                     .filter(this::isAccessToken)
                     .map(jwtToPrincipalConverter::convert)
                     .map(UserPrincipalAuthenticationToken::new)
@@ -70,19 +63,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(token) && token.startsWith("Bearer ")) {
             return Optional.of(token.substring(7));
         }
-        if (!StringUtils.hasText(token)) {
-            throw new IllegalArgumentException("Missing Authorization header");
-        }
         return Optional.empty();
     }
 
     private boolean isAccessToken(DecodedJWT decodedJWT) {
-        return decodedJWT.getExpiresAt().before(new Date(System.currentTimeMillis() + Duration.ofMinutes(properties.getAccessTokenValidity()).toMillis()));
-    }
-
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        return EXCLUDED_URLS.stream()
-                .anyMatch(excludedUrl -> pathMatcher.match(excludedUrl, request.getRequestURI()));
+        return decodedJWT.getExpiresAt().after(new Date());
     }
 }

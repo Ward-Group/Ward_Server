@@ -16,14 +16,9 @@ import static com.ward.ward_server.global.response.ApiResponseMessage.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/brands")
-public class BrandController {
+@RequestMapping("/public/brands")
+public class PublicBrandController {
     private final BrandService brandService;
-
-    @PostMapping
-    public ApiResponse<BrandResponse> createBrand(@RequestBody BrandRequest request) {
-        return ApiResponse.ok(BRAND_CREATE_SUCCESS, brandService.createBrand(request.koreanName(), request.englishName(), request.logoImage()));
-    }
 
     @GetMapping
     public ApiResponse<PageResponse<BrandInfoResponse>> getBrandAndItem3Page(@RequestParam("sort") BasicSort sort,
@@ -47,17 +42,6 @@ public class BrandController {
     public ApiResponse<PageResponse<ReleaseInfoSimpleResponse>> getBrandReleaseInfoPage(@PathVariable("brandId") long brandId,
                                                                                         @Positive @RequestParam(value = "page") int page) {
         return ApiResponse.ok(BRAND_RELEASE_INFO_PAGE_LOAD_SUCCESS, brandService.getBrandReleaseInfoPage(brandId, page - 1));
-    }
-
-    @PatchMapping("/{brandId}")
-    public ApiResponse<BrandResponse> updateBrand(@PathVariable("brandId") long brandId, @RequestBody BrandRequest request) {
-        return ApiResponse.ok(BRAND_UPDATE_SUCCESS, brandService.updateBrand(brandId, request.koreanName(), request.englishName(), request.logoImage()));
-    }
-
-    @DeleteMapping("/{brandId}")
-    public ApiResponse<Void> deleteBrand(@PathVariable("brandId") long brandId) {
-        brandService.deleteBrand(brandId);
-        return ApiResponse.ok(BRAND_DELETE_SUCCESS);
     }
 
     @PatchMapping("/{brandId}/view-counts")

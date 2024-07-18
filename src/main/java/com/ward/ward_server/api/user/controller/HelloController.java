@@ -17,7 +17,7 @@ public class HelloController {
         return ApiResponse.ok(helloWorld);
     }
 
-    @GetMapping("/secured")
+    @GetMapping("/user/secured")
     public ApiResponse secured(@AuthenticationPrincipal CustomUserDetails principal) {
         String secured = "If you see this, then you're logged in as user " + principal.getEmail()
                 + " User ID: " + principal.getUserId();

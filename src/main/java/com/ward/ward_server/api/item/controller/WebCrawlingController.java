@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/wc")
+@RequestMapping("/admin/v1/wc")
 public class WebCrawlingController {
     //TODO 선착순 크롤링 시 발매일,마감일,당첨자 발표일 동일하게 입력 필수
 //    private final WebCrawlingService webCrawlingService;

@@ -17,7 +17,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/nickname")
-    public ApiResponse<String> nickname(@AuthenticationPrincipal CustomUserDetails principal) {
+    public ApiResponse<String> getNickname(@AuthenticationPrincipal CustomUserDetails principal) {
         String nickname = userService.getNickname(principal.getUserId());
         return ApiResponse.ok(nickname);
     }
@@ -26,11 +26,5 @@ public class UserController {
     public ApiResponse<Void> updateNickname(@AuthenticationPrincipal CustomUserDetails principal, @RequestBody UpdateNicknameRequest request) {
         userService.updateNickname(principal.getUserId(), request.newNickname());
         return ApiResponse.ok(ApiResponseMessage.UPDATE_NICKNAME_SUCCESS);
-    }
-
-    @GetMapping("/check-nickname")
-    public ApiResponse<Boolean> checkDuplicateNickname(@RequestParam("nickname") String nickname) {
-        boolean isDuplicate = userService.checkDuplicateNickname(nickname);
-        return ApiResponse.ok(ApiResponseMessage.NICKNAME_CHECK_SUCCESS, isDuplicate);
     }
 }

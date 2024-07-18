@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/apple")
+@RequestMapping("/admin/apple")
 public class AppleUserController {
 
     private final AppleUserService appleUserService;
