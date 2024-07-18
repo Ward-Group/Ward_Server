@@ -2,12 +2,16 @@ package com.ward.ward_server.api.user.controller;
 
 import com.ward.ward_server.api.user.auth.security.JwtTokens;
 import com.ward.ward_server.api.user.dto.AddSocialLoginRequest;
+import com.ward.ward_server.api.user.dto.LogoutRequest;
 import com.ward.ward_server.api.user.service.AuthService;
 import com.ward.ward_server.global.response.ApiResponse;
 import com.ward.ward_server.global.response.ApiResponseMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,8 +26,8 @@ public class UserAuthController {
     }
 
     @PostMapping("/logout")
-    public ApiResponse<Void> logout(@RequestParam("refreshToken") String refreshToken) {
-        authService.invalidateRefreshToken(refreshToken);
+    public ApiResponse<Void> logout(@RequestBody @Validated LogoutRequest request) {
+        authService.invalidateRefreshToken(request.refreshToken());
         return ApiResponse.ok(ApiResponseMessage.LOGOUT_SUCCESS);
     }
 
