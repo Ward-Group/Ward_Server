@@ -51,6 +51,8 @@ dependencies {
 	annotationProcessor("com.querydsl:querydsl-apt:${dependencyManagement.importedProperties["querydsl.version"]}:jakarta")
 	annotationProcessor("jakarta.annotation:jakarta.annotation-api")
 	annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+	//s3
+	implementation("io.awspring.cloud:spring-cloud-starter-aws:2.4.4")
 	//test
 	testImplementation ("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly ("com.h2database:h2")
