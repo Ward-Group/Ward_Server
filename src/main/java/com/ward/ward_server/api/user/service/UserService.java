@@ -1,20 +1,29 @@
 package com.ward.ward_server.api.user.service;
 
+import com.ward.ward_server.api.entry.entity.EntryRecord;
+import com.ward.ward_server.api.entry.repository.EntryRecordRepository;
+import com.ward.ward_server.api.user.entity.RefreshToken;
 import com.ward.ward_server.api.user.entity.SocialLogin;
 import com.ward.ward_server.api.user.entity.User;
 import com.ward.ward_server.api.user.repository.RefreshTokenRepository;
 import com.ward.ward_server.api.user.repository.SocialLoginRepository;
 import com.ward.ward_server.api.user.repository.UserRepository;
+import com.ward.ward_server.api.wishBrand.WishBrand;
+import com.ward.ward_server.api.wishBrand.repository.WishBrandRepository;
+import com.ward.ward_server.api.wishItem.WishItem;
+import com.ward.ward_server.api.wishItem.repository.WishItemRepository;
 import com.ward.ward_server.global.exception.ApiException;
 import com.ward.ward_server.global.exception.ExceptionCode;
 import com.ward.ward_server.global.util.ValidationUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,14 +33,27 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final EntryRecordRepository entryRecordRepository;
+    private final WishItemRepository wishItemRepository;
+    private final WishBrandRepository wishBrandRepository;
     private final SocialLoginRepository socialLoginRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final RestTemplate restTemplate;
 
-    private final String KAKAO_UNLINK_URL = "https://kapi.kakao.com/v1/user/unlink";
-    private final String APPLE_UNLINK_URL = "https://appleid.apple.com/auth/revoke";
-    private final String APPLE_CLIENT_ID = "your-apple-client-id";
-    private final String APPLE_CLIENT_SECRET = "your-apple-client-secret";
+    @Value("${kakao.unlink-url}")
+    private String kakaoUnlinkUrl;
+
+    @Value("${kakao.service-app-admin-key}")
+    private String serviceAppAdminKey;
+
+    @Value("${apple.unlink-url}")
+    private String appleUnlinkUrl;
+
+    @Value("${apple.client-id}")
+    private String appleClientId;
+
+    @Value("${apple.client-secret}")
+    private String appleClientSecret;
 
     public String getNickname(Long userId) {
         return userRepository.findNicknameById(userId)
@@ -55,33 +77,58 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ExceptionCode.USER_NOT_FOUND));
 
-        // 소셜 로그인 정보 삭제 (카카오)
-        disconnectKakao(user);
+        List<EntryRecord> entryRecords = entryRecordRepository.findByUserId(userId);
+        List<WishItem> wishItems = wishItemRepository.findByUserId(userId);
+        List<WishBrand> wishBrands = wishBrandRepository.findByUserId(userId);
+        List<RefreshToken> refreshTokens = refreshTokenRepository.findByUserId(userId);
 
-        // 소셜 로그인 정보 삭제 (애플)
-        disconnectApple(user);
+        try {
+            // 소셜 로그인 정보 삭제 (카카오)
+            disconnectKakao(user);
 
-        // 리프레시 토큰 삭제
-        refreshTokenRepository.deleteByUser(user);
+            // 소셜 로그인 정보 삭제 (애플)
+            disconnectApple(user);
 
-        // 유저 데이터 삭제 (Cascade 설정에 따라 연관 데이터도 삭제됨)
-        userRepository.delete(user);
+            // 연관 데이터 일괄 삭제
+            userRepository.deleteRefreshTokensByUserId(userId);
+            userRepository.deleteWishItemsByUserId(userId);
+            userRepository.deleteWishBrandsByUserId(userId);
+            userRepository.deleteEntryRecordsByUserId(userId);
+
+            // 유저 데이터 삭제
+            userRepository.delete(user);
+        } catch (ApiException e) {
+            log.error("유저 삭제 중 오류 발생: {}", e.getMessage());
+            throw e;
+        }
     }
 
     private void disconnectKakao(User user) {
         Optional<SocialLogin> socialLogin = socialLoginRepository.findByUserAndProvider(user, "kakao");
         if (socialLogin.isPresent()) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Authorization", "Bearer " + socialLogin.get().getProviderId());
-            HttpEntity<String> entity = new HttpEntity<>(headers);
+            try {
+                Long providerId = Long.parseLong(socialLogin.get().getProviderId());
 
-            ResponseEntity<String> response = restTemplate.exchange(KAKAO_UNLINK_URL, HttpMethod.POST, entity, String.class);
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+                headers.set("Authorization", "KakaoAK " + serviceAppAdminKey);
 
-            if (response.getStatusCode() != HttpStatus.OK) {
-                throw new ApiException(ExceptionCode.SOCIAL_DISCONNECT_FAILED, "카카오 계정 연동 해제 실패");
+                String body = "target_id_type=user_id&target_id=" + providerId;
+                HttpEntity<String> entity = new HttpEntity<>(body, headers);
+
+                ResponseEntity<String> response = restTemplate.exchange(kakaoUnlinkUrl, HttpMethod.POST, entity, String.class);
+
+                //todo 동작 확인
+                if (response.getStatusCode() != HttpStatus.OK) {
+                    log.error("카카오 계정 연동 해제 실패: {}", response.getStatusCode());
+                    throw new ApiException(ExceptionCode.SOCIAL_DISCONNECT_FAILED, "카카오 계정 연동 해제 실패");
+                }
+
+                socialLoginRepository.delete(socialLogin.get());
+            } catch (NumberFormatException e) {
+                log.error("유효하지 않은 카카오 providerId입니다: {}", e.getMessage());
+                throw new ApiException(ExceptionCode.INVALID_PROVIDER_ID, "유효하지 않은 카카오 providerId입니다.");
             }
-
-            socialLoginRepository.delete(socialLogin.get());
         }
     }
 
@@ -90,12 +137,12 @@ public class UserService {
         if (socialLogin.isPresent()) {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-            String body = "client_id=" + APPLE_CLIENT_ID +
-                    "&client_secret=" + APPLE_CLIENT_SECRET +
+            String body = "client_id=" + appleClientId +
+                    "&client_secret=" + appleClientSecret +
                     "&token=" + socialLogin.get().getProviderId();
             HttpEntity<String> entity = new HttpEntity<>(body, headers);
 
-            ResponseEntity<String> response = restTemplate.exchange(APPLE_UNLINK_URL, HttpMethod.POST, entity, String.class);
+            ResponseEntity<String> response = restTemplate.exchange(appleUnlinkUrl, HttpMethod.POST, entity, String.class);
 
             if (response.getStatusCode() != HttpStatus.OK) {
                 throw new ApiException(ExceptionCode.SOCIAL_DISCONNECT_FAILED, "애플 계정 연동 해제 실패");
