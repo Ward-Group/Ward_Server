@@ -33,4 +33,8 @@ public class UserController {
         userService.deleteUser(principal.getUserId());
         return ApiResponse.ok(ApiResponseMessage.ACCOUNT_DELETION_SUCCESS);
     }
+
+    //TODO 소셜 계정 이메일 정보 변경 시 정보 받을 경로
+
+    //TODO 소셜 계정 회원 탈퇴 시 정보 받을 경로
 }
