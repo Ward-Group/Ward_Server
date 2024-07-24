@@ -145,6 +145,7 @@ public class UserService {
             ResponseEntity<String> response = restTemplate.exchange(appleUnlinkUrl, HttpMethod.POST, entity, String.class);
 
             if (response.getStatusCode() != HttpStatus.OK) {
+                log.error("애플 계정 연동 해제 실패: {}", response.getStatusCode());
                 throw new ApiException(ExceptionCode.SOCIAL_DISCONNECT_FAILED, "애플 계정 연동 해제 실패");
             }
 
