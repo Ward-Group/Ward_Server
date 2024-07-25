@@ -131,9 +131,8 @@ public class AuthService {
                 throw new ApiException(ExceptionCode.EXISTENT_USER_AT_REGISTER_WITH_PROVIDER_PID);
             }
 
-            if (userRepository.existsByNickname(nickname)) {
-                throw new ApiException(ExceptionCode.DUPLICATE_NICKNAME);
-            }
+            boolean isNicknameDuplicate = userRepository.existsByNickname(nickname);
+            ValidationUtils.validateNickname(nickname, isNicknameDuplicate);
 
             User user = new User(
                     name,
