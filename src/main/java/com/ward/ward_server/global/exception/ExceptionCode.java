@@ -32,6 +32,12 @@ public enum ExceptionCode {
     EXISTENT_USER_KAKAO(5215,"해당 이메일은 카카오 계정으로 가입한 내역이 존재합니다. 기존 계정으로 로그인 안내 혹은 계정 통합 의사를 확인 후 기존 소셜 로그인 진행 후 통합합니다."),
     EXISTENT_USER_APPLE(5216,"해당 이메일은 애플 계정으로 가입한 내역이 존재합니다. 기존 계정으로 로그인 안내 혹은 계정 통합 의사를 확인 후 기존 소셜 로그인 진행 후 통합합니다."),
 
+    // 닉네임 관련 오류 코드
+    NICKNAME_REQUIRED(5217, "필수 입력 사항입니다."),
+    NICKNAME_DUPLICATE(5218, "이미 사용 중인 닉네임입니다."),
+    NICKNAME_INVALID_FORMAT(5219, "한글/영문/숫자만 입력 가능합니다."),
+    NICKNAME_TOO_LONG(5220, "최대 8자까지 작성 가능합니다."),
+
     //아이템
     ITEM_NOT_FOUND(5300, "상품을 찾을 수 없습니다."),
     DUPLICATE_ITEM(5309, "이미 등록된 상품입니다."),

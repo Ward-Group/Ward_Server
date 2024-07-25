@@ -45,16 +45,16 @@ public class ValidationUtils {
 
     public static void validateNickname(String nickname, boolean isNicknameDuplicate) {
         if (nickname == null || nickname.isEmpty()) {
-            throw new ApiException(ExceptionCode.INVALID_INPUT, "필수 입력 사항입니다.");
+            throw new ApiException(ExceptionCode.NICKNAME_REQUIRED);
         }
         if (isNicknameDuplicate) {
-            throw new ApiException(ExceptionCode.DUPLICATE_NICKNAME, "이미 사용중인 닉네임입니다.");
+            throw new ApiException(ExceptionCode.NICKNAME_DUPLICATE);
         }
         if (!nickname.matches(NICKNAME_REGEX)) {
-            throw new ApiException(ExceptionCode.INVALID_INPUT, "한글/영문/숫자만 입력 가능합니다.");
+            throw new ApiException(ExceptionCode.NICKNAME_INVALID_FORMAT);
         }
         if (nickname.length() > 8) {
-            throw new ApiException(ExceptionCode.INVALID_INPUT, "최대 8자까지 작성 가능합니다.");
+            throw new ApiException(ExceptionCode.NICKNAME_TOO_LONG);
         }
     }
 }
