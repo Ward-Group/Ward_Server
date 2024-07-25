@@ -34,6 +34,12 @@ public enum ExceptionCode {
     SOCIAL_DISCONNECT_FAILED(5217, "소셜 계정 연동 해제에 실패하였습니다."),
     INVALID_PROVIDER_ID(5218, "유효하지 않은 카카오 providerId입니다."),
 
+    // 닉네임 관련 오류 코드
+    NICKNAME_REQUIRED(5217, "필수 입력 사항입니다."),
+    NICKNAME_DUPLICATE(5218, "이미 사용 중인 닉네임입니다."),
+    NICKNAME_INVALID_FORMAT(5219, "한글/영문/숫자만 입력 가능합니다."),
+    NICKNAME_TOO_LONG(5220, "최대 8자까지 작성 가능합니다."),
+
     //아이템
     ITEM_NOT_FOUND(5300, "상품을 찾을 수 없습니다."),
     DUPLICATE_ITEM(5309, "이미 등록된 상품입니다."),
