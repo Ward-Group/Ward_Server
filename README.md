@@ -22,7 +22,7 @@
 * 기획(기능 정의서, 화면 설계서)
 * DB 설계 및 구축 / API 명세서 작성
 * AWS EC2 연결
-* 회원가입/로그인 기능 구현( Spring Security/JWT )
+* 회원가입/소셜 로그인 기능 구현( Spring Security/JWT )
 * 유저 관련 기능 ( CRUD ) 기능 구현
 * 응모 내역 기능 ( CRUD ) 구현
 * 관심 목록 기능 ( CRUD ) 구현
