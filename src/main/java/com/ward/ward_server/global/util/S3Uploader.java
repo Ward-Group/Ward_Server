@@ -5,6 +5,7 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.ward.ward_server.global.exception.ApiException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,6 +20,8 @@ import static com.ward.ward_server.global.response.error.ErrorMessage.FILE_CONVE
 
 @RequiredArgsConstructor
 @Component
+@Slf4j
+//todo 삭제필요
 public class S3Uploader {
 
     private final AmazonS3Client amazonS3Client;
@@ -27,9 +30,10 @@ public class S3Uploader {
     private String bucket;
 
     public String upload(MultipartFile multipartFile, String dirName) throws IOException {
-        File uploadFile = convert(multipartFile)
-                .orElseThrow(() -> new ApiException(INVALID_INPUT, FILE_CONVERT_FAIL.getMessage()));
-
+        //File uploadFile = convert(multipartFile)
+         //       .orElseThrow(() -> new ApiException(INVALID_INPUT, FILE_CONVERT_FAIL.getMessage()));
+        File uploadFile=new File(multipartFile.getOriginalFilename());
+        log.info("upfiel {}", uploadFile.getName());
         String fileName = dirName + "/" + uploadFile.getName();
         String uploadImageUrl = putS3(uploadFile, fileName);
         uploadFile.delete();
