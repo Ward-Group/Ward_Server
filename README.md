@@ -38,7 +38,7 @@
 ## 📗Architecture
 
 ## 📙DB ERD
-![Ward_v20240616 (1)](https://github.com/Ward-Group/Ward_Server/assets/135934401/e034b446-26dd-46ee-8ae7-708e743d0f86)
+![Ward_v20240616 (2)](https://github.com/user-attachments/assets/d100339f-20fa-4562-a04d-70a9deb11b2f)
 [DB 버전 업데이트 정보](https://www.notion.so/ERD-v20240706-616c8f66f6c147b48c625796e1ba5f94?pvs=4)
 
 ## 📕배포
