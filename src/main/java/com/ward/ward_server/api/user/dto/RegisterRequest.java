@@ -8,6 +8,7 @@ public record RegisterRequest(
         @NotBlank(message = "Provider ID cannot be empty") String providerId,
         @NotBlank(message = "Name cannot be empty") String name,
         @Email(message = "Email should be valid") String email,
+        String appleRefreshToken,
         @NotBlank(message = "Nickname cannot be empty") String nickname,
         Boolean emailNotification,
         Boolean appPushNotification,

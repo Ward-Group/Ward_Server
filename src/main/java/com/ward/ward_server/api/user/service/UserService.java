@@ -14,6 +14,7 @@ import com.ward.ward_server.api.wishItem.WishItem;
 import com.ward.ward_server.api.wishItem.repository.WishItemRepository;
 import com.ward.ward_server.global.exception.ApiException;
 import com.ward.ward_server.global.exception.ExceptionCode;
+import com.ward.ward_server.global.util.AppleClientSecretGenerator;
 import com.ward.ward_server.global.util.ValidationUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,8 +53,14 @@ public class UserService {
     @Value("${apple.client-id}")
     private String appleClientId;
 
-    @Value("${apple.client-secret}")
-    private String appleClientSecret;
+    @Value("${apple.key-id}")
+    private String appleKeyId;
+
+    @Value("${apple.team-id}")
+    private String appleTeamId;
+
+    @Value("${apple.private-key}")
+    private String applePrivateKey;
 
     public String getNickname(Long userId) {
         return userRepository.findNicknameById(userId)
@@ -118,7 +125,6 @@ public class UserService {
 
                 ResponseEntity<String> response = restTemplate.exchange(kakaoUnlinkUrl, HttpMethod.POST, entity, String.class);
 
-                //todo 동작 확인
                 if (response.getStatusCode() != HttpStatus.OK) {
                     log.error("카카오 계정 연동 해제 실패: {}", response.getStatusCode());
                     throw new ApiException(ExceptionCode.SOCIAL_DISCONNECT_FAILED, "카카오 계정 연동 해제 실패");
@@ -135,21 +141,34 @@ public class UserService {
     private void disconnectApple(User user) {
         Optional<SocialLogin> socialLogin = socialLoginRepository.findByUserAndProvider(user, "apple");
         if (socialLogin.isPresent()) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-            String body = "client_id=" + appleClientId +
-                    "&client_secret=" + appleClientSecret +
-                    "&token=" + socialLogin.get().getProviderId();
-            HttpEntity<String> entity = new HttpEntity<>(body, headers);
+            try {
+                String appleRefreshToken = socialLogin.get().getAppleRefreshToken();
+                if (appleRefreshToken == null || appleRefreshToken.isBlank()) {
+                    log.error("애플 리프레시 토큰이 없습니다: {}", user.getId());
+                    throw new ApiException(ExceptionCode.MISSING_REFRESH_TOKEN);
+                }
 
-            ResponseEntity<String> response = restTemplate.exchange(appleUnlinkUrl, HttpMethod.POST, entity, String.class);
+                String clientSecret = AppleClientSecretGenerator.generateClientSecret(appleTeamId, appleClientId, appleKeyId, applePrivateKey);
 
-            if (response.getStatusCode() != HttpStatus.OK) {
-                log.error("애플 계정 연동 해제 실패: {}", response.getStatusCode());
-                throw new ApiException(ExceptionCode.SOCIAL_DISCONNECT_FAILED, "애플 계정 연동 해제 실패");
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+                String body = "client_id=" + appleClientId +
+                        "&client_secret=" + clientSecret +
+                        "&token=" + appleRefreshToken;
+                HttpEntity<String> entity = new HttpEntity<>(body, headers);
+
+                ResponseEntity<String> response = restTemplate.exchange(appleUnlinkUrl, HttpMethod.POST, entity, String.class);
+
+                if (response.getStatusCode() != HttpStatus.OK) {
+                    log.error("애플 계정 연동 해제 실패: {}", response.getStatusCode());
+                    throw new ApiException(ExceptionCode.SOCIAL_DISCONNECT_FAILED, "애플 계정 연동 해제 실패");
+                }
+
+                socialLoginRepository.delete(socialLogin.get());
+            } catch (Exception e) {
+                log.error("애플 계정 연동 해제 중 오류 발생: {}", e.getMessage());
+                throw new ApiException(ExceptionCode.SERVER_ERROR, "애플 계정 연동 해제 중 오류 발생");
             }
-
-            socialLoginRepository.delete(socialLogin.get());
         }
     }
 }

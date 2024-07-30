@@ -25,7 +25,7 @@ public class PublicAuthController {
 
     @PostMapping("/addSocialLogin")
     public ApiResponse<JwtTokens> addSocialLogin(@RequestBody @Validated AddSocialLoginRequest request) {
-        JwtTokens tokens = authService.addSocialLogin(request.provider(), request.providerId(), request.email());
+        JwtTokens tokens = authService.addSocialLogin(request.provider(), request.providerId(), request.email(), request.appleRefreshToken());
         return ApiResponse.ok(ApiResponseMessage.ADD_SOCIALLOGIN_SUCCESS, tokens);
     }
 
@@ -36,6 +36,7 @@ public class PublicAuthController {
                 request.providerId(),
                 request.name(),
                 request.email(),
+                request.appleRefreshToken(),
                 request.nickname(),
                 request.emailNotification(),
                 request.appPushNotification(),
