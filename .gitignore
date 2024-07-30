@@ -331,7 +331,8 @@ gradle-app.setting
 
 #yml
 *.yml
-application.properties
+!application.yml
+!application-dev.yml
 
 #SQL files
 *.sql

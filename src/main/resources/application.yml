@@ -1,0 +1,62 @@
+spring:
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
+
+  jwt:
+    secretKey: ${JWT_SECRET_KEY}
+    password: ${JWT_PASSWORD}
+    accessTokenValidity: 15 # 분 단위
+    refreshTokenValidity: 30 # 일 단위
+
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/ward_dev?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&useLegacyDatetimeCode=false}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database: mysql
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+server:
+  port: ${SERVER_PORT:8080}
+  ssl:
+    enabled: ${SSL_ENABLED:false}
+    key-store: ${SSL_KEY_STORE_PATH}
+    key-store-password: ${SSL_KEY_STORE_PASSWORD}
+    key-store-type: PKCS12
+
+kakao:
+  unlink-url: https://kapi.kakao.com/v1/user/unlink
+  service-app-admin-key: ${KAKAO_SERVICE_APP_ADMIN_KEY}
+
+apple:
+  unlink-url: https://appleid.apple.com/auth/revoke  # 애플 계정 연동 해제 요청을 보내는 URL
+  client-id: ${APPLE_CLIENT_ID}         # 애플 개발자 포털에서 생성한 서비스 ID
+  key-id: ${APPLE_KEY_ID}                         # JWT 서명에 사용되는 키의 ID
+  team-id: ${APPLE_TEAM_ID}                       # 애플 개발자 계정의 팀 ID
+  private-key: ${APPLE_PRIVATE_KEY}
+
+crawler:
+  chromeDriverPath: ${CHROME_DRIVER_PATH}
+
+logging:
+  level:
+    root: INFO
+    com.ward.ward_server: DEBUG
+    org:
+      springframework:
+        web: DEBUG
+        transaction: DEBUG
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql: TRACE
