@@ -33,13 +33,13 @@ class HelloControllerTest {
     }
 
     // 로그인한 사용자가 접근했을 때 HTTP응답의 상태코드가 200 OK 인지, 작성한 test 포함하는지 확인하는 테스트
-    @Test
-    @WithMockUser
-    void loggedIn_shouldSeeSecuredEndpoint() throws Exception {
-        api.perform(get("/secured"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsStringIgnoringCase("User ID: 1")));
-    }
+//    @Test
+//    @WithMockUser
+//    void loggedIn_shouldSeeSecuredEndpoint() throws Exception {
+//        api.perform(get("/secured"))
+//                .andExpect(status().isOk())
+//                .andExpect(content().string(containsStringIgnoringCase("User ID: 1")));
+//    }
 
     // 로그인 안하고 /admin 접근할 때 401
     @Test

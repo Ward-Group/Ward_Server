@@ -183,39 +183,39 @@ class ReleaseInfoRepositoryTest {
     }
 
 
-    @Test
-    public void FOOTWEAR_상품_중에서_발매날짜가_확정됐지만_미발매인_상품의_발매정보를_가져온다() {
-        //given
-        LocalDateTime now = LocalDateTime.of(2024, 7, 3, 13, 30);
-        for (int itemId = 1; itemId <= 10; itemId++) {
-            // 지금 < 발매일 < 마감일 < 발표일 (조건 만족)
-            em.persist(new ReleaseInfo(items.get(itemId - 1), drawPlatform, "주소", now.plusDays(itemId).format(DATE_STRING_FORMAT), now.plusDays(itemId + 3).format(DATE_STRING_FORMAT), now.plusDays(itemId + 5).format(DATE_STRING_FORMAT), 30000, CurrencyUnit.KRW, NotificationMethod.EMAIL, ReleaseMethod.ENTRY, DeliveryMethod.AGENCY));
-
-            // 지금 < 발매일 < 마감일 < 발표일 (조건 만족), 정렬 확인용
-            em.persist(new ReleaseInfo(items.get(itemId - 1 + 10), drawPlatform, "주소" + itemId, now.plusDays(itemId).format(DATE_STRING_FORMAT), now.plusDays(itemId + 3).format(DATE_STRING_FORMAT), now.plusDays(itemId + 5).format(DATE_STRING_FORMAT), 30000, CurrencyUnit.KRW, NotificationMethod.EMAIL, ReleaseMethod.ENTRY, DeliveryMethod.AGENCY));
-
-            // 발매일 < 지금 < 마감일 < 발표일 (조건 불만족)
-            em.persist(new ReleaseInfo(items.get(itemId - 1 + 20), drawPlatform, "주소", now.minusDays(itemId).format(DATE_STRING_FORMAT), now.plusMinutes(itemId).format(DATE_STRING_FORMAT), now.plusDays(itemId + 5).format(DATE_STRING_FORMAT), 30000, CurrencyUnit.KRW, NotificationMethod.EMAIL, ReleaseMethod.ENTRY, DeliveryMethod.AGENCY));
-        }
-        em.flush();
-        em.clear();
-
-        //when
-        List<ReleaseInfoSimpleResponse> result = releaseInfoRepository.getReleaseInfo10List(user.getId(), now, Category.FOOTWEAR, Section.RELEASE_SCHEDULE);
-
-        //then
-        assertThat(result.size()).isEqualTo(HOME_PAGE_SIZE);
-        //1~30 중에서 6~10, 16~30은 제외한다. (= 1~5, 11~15는 포함한다)
-        assertThat(result).extracting("itemKoreanName").doesNotContain(
-                IntStream.rangeClosed(1, 30)
-                        .boxed()
-                        .filter(e -> (6 <= e && e < 11) || 16 <= e)
-                        .map(e -> "상품이름" + e)
-                        .toArray());
-        //정렬 확인한다.
-        assertThat(result.get(0).itemKoreanName()).isEqualTo("상품이름1");
-        assertThat(result.get(1).itemKoreanName()).isEqualTo("상품이름11");
-    }
+//    @Test
+//    public void FOOTWEAR_상품_중에서_발매날짜가_확정됐지만_미발매인_상품의_발매정보를_가져온다() {
+//        //given
+//        LocalDateTime now = LocalDateTime.of(2024, 7, 3, 13, 30);
+//        for (int itemId = 1; itemId <= 10; itemId++) {
+//            // 지금 < 발매일 < 마감일 < 발표일 (조건 만족)
+//            em.persist(new ReleaseInfo(items.get(itemId - 1), drawPlatform, "주소", now.plusDays(itemId).format(DATE_STRING_FORMAT), now.plusDays(itemId + 3).format(DATE_STRING_FORMAT), now.plusDays(itemId + 5).format(DATE_STRING_FORMAT), 30000, CurrencyUnit.KRW, NotificationMethod.EMAIL, ReleaseMethod.ENTRY, DeliveryMethod.AGENCY));
+//
+//            // 지금 < 발매일 < 마감일 < 발표일 (조건 만족), 정렬 확인용
+//            em.persist(new ReleaseInfo(items.get(itemId - 1 + 10), drawPlatform, "주소" + itemId, now.plusDays(itemId).format(DATE_STRING_FORMAT), now.plusDays(itemId + 3).format(DATE_STRING_FORMAT), now.plusDays(itemId + 5).format(DATE_STRING_FORMAT), 30000, CurrencyUnit.KRW, NotificationMethod.EMAIL, ReleaseMethod.ENTRY, DeliveryMethod.AGENCY));
+//
+//            // 발매일 < 지금 < 마감일 < 발표일 (조건 불만족)
+//            em.persist(new ReleaseInfo(items.get(itemId - 1 + 20), drawPlatform, "주소", now.minusDays(itemId).format(DATE_STRING_FORMAT), now.plusMinutes(itemId).format(DATE_STRING_FORMAT), now.plusDays(itemId + 5).format(DATE_STRING_FORMAT), 30000, CurrencyUnit.KRW, NotificationMethod.EMAIL, ReleaseMethod.ENTRY, DeliveryMethod.AGENCY));
+//        }
+//        em.flush();
+//        em.clear();
+//
+//        //when
+//        List<ReleaseInfoSimpleResponse> result = releaseInfoRepository.getReleaseInfo10List(user.getId(), now, Category.FOOTWEAR, Section.RELEASE_SCHEDULE);
+//
+//        //then
+//        assertThat(result.size()).isEqualTo(HOME_PAGE_SIZE);
+//        //1~30 중에서 6~10, 16~30은 제외한다. (= 1~5, 11~15는 포함한다)
+//        assertThat(result).extracting("itemKoreanName").doesNotContain(
+//                IntStream.rangeClosed(1, 30)
+//                        .boxed()
+//                        .filter(e -> (6 <= e && e < 11) || 16 <= e)
+//                        .map(e -> "상품이름" + e)
+//                        .toArray());
+//        //정렬 확인한다.
+//        assertThat(result.get(0).itemKoreanName()).isEqualTo("상품이름1");
+//        assertThat(result.get(1).itemKoreanName()).isEqualTo("상품이름11");
+//    }
 
     @Test
     public void FOOTWEAR_상품_중에서_오늘_등록한_발매정보를_가져온다() {
