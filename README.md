@@ -27,7 +27,7 @@
 * 응모 내역 기능 ( CRUD ) 구현
 * 관심 목록 기능 ( CRUD ) 구현
 * 상품 조회 기능 구현
-* GitHub Actions 를 활용한 CI/CD
+* GitHub Actions 를 활용한 CI/CD Pipeline
 ### 🏄‍♂️진하늘
 * DB 설계 및 구축
 * 웹 크롤링 기능 구현 ( Selenium/Jsoup )
