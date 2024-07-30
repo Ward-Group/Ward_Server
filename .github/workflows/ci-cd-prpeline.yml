@@ -22,6 +22,11 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: '8.5'
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
@@ -30,7 +35,7 @@ jobs:
 
       - name: Archive production artifacts
         if: success()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: jar-file
           path: build/libs/ward_server-0.0.1-SNAPSHOT.jar
@@ -41,7 +46,7 @@ jobs:
 
     steps:
       - name: Download build artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
           name: jar-file
 
@@ -61,6 +66,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
+            sudo systemctl disable ward_server
             sudo systemctl stop ward_server
-            sudo cp /home/ec2-user/ward_server-0.0.1-SNAPSHOT.jar /home/ec2-user/app/
+            sudo systemctl enable ward_server
             sudo systemctl start ward_server
