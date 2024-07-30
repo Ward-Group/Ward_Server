@@ -114,7 +114,7 @@ public class UserService {
         Optional<SocialLogin> socialLogin = socialLoginRepository.findByUserAndProvider(user, "kakao");
         if (socialLogin.isPresent()) {
             try {
-                Long providerId = Long.parseLong(socialLogin.get().getProviderId());
+                long providerId = Long.parseLong(socialLogin.get().getProviderId());
 
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
