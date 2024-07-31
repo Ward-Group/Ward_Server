@@ -50,65 +50,6 @@ jobs:
         with:
           name: jar-file
 
-      - name: Create application.yml
-        run: |
-          cat <<EOT > application.yml
-          spring:
-            profiles:
-              active: dev
-            datasource:
-              url: '${{ secrets.DB_URL }}'
-              username: '${{ secrets.DB_USERNAME }}'
-              password: '${{ secrets.DB_PASSWORD }}'
-              driver-class-name: com.mysql.cj.jdbc.Driver
-            jwt:
-              secretKey: '${{ secrets.JWT_SECRET_KEY }}'
-              password: '${{ secrets.JWT_PASSWORD }}'
-              accessTokenValidity: 15 # 분 단위
-              refreshTokenValidity: 30 # 일 단위
-            jpa:
-              hibernate:
-                ddl-auto: update
-              show-sql: true
-              database: mysql
-              properties:
-                hibernate:
-                  show_sql: true
-                  format_sql: true
-                  dialect: org.hibernate.dialect.MySQLDialect
-          server:
-            port: '${{ secrets.SERVER_PORT }}'
-            ssl:
-              enabled: '${{ secrets.SSL_ENABLED }}'
-              key-store: '${{ secrets.SSL_KEY_STORE_PATH }}'
-              key-store-password: '${{ secrets.SSL_KEY_STORE_PASSWORD }}'
-              key-store-type: PKCS12
-          kakao:
-            unlink-url: https://kapi.kakao.com/v1/user/unlink
-            service-app-admin-key: '${{ secrets.KAKAO_SERVICE_APP_ADMIN_KEY }}'
-          apple:
-            unlink-url: https://appleid.apple.com/auth/revoke
-            client-id: '${{ secrets.APPLE_CLIENT_ID }}'
-            key-id: '${{ secrets.APPLE_KEY_ID }}'
-            team-id: '${{ secrets.APPLE_TEAM_ID }}'
-            private-key: '${{ secrets.APPLE_PRIVATE_KEY }}'
-          crawler:
-            chromeDriverPath: '${{ secrets.CHROME_DRIVER_PATH }}'
-          logging:
-            level:
-              root: INFO
-              com.ward.ward_server: DEBUG
-              org:
-                springframework:
-                  web: DEBUG
-                  transaction: DEBUG
-                hibernate:
-                  SQL: DEBUG
-                  type:
-                    descriptor:
-                      sql: TRACE
-          EOT
-
       - name: Copy files via SSH
         uses: appleboy/scp-action@v0.1.1
         with:
@@ -116,15 +57,6 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           source: "ward_server-0.0.1-SNAPSHOT.jar"
-          target: "/home/ec2-user/"
-
-      - name: Copy application.yml via SSH
-        uses: appleboy/scp-action@v0.1.1
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
-          source: "application.yml"
           target: "/home/ec2-user/"
 
       - name: Restart application on EC2
