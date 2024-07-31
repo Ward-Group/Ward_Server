@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17.0.7' # 로컬에서 사용한 JDK 버전
+          java-version: '17.0.7'
 
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v3
@@ -52,8 +52,7 @@ jobs:
 
       - name: Create application.yml
         run: |
-          cat <<EOF > application.yml
-          spring:
+          echo "spring:
             profiles:
               active: dev
             datasource:
@@ -106,8 +105,7 @@ jobs:
                   SQL: DEBUG
                   type:
                     descriptor:
-                      sql: TRACE
-          EOF
+                      sql: TRACE" > application.yml
 
       - name: Copy files via SSH
         uses: appleboy/scp-action@v0.1.1
@@ -117,7 +115,7 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           source: "ward_server-0.0.1-SNAPSHOT.jar"
           target: "/home/ec2-user/"
-          
+
       - name: Copy application.yml via SSH
         uses: appleboy/scp-action@v0.1.1
         with:
@@ -125,7 +123,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           source: "application.yml"
-          target: "/home/ec2-user/"
+          target: "/home/ec2-user/app/"
 
       - name: Restart application on EC2
         uses: appleboy/ssh-action@v0.1.1
@@ -136,6 +134,5 @@ jobs:
           script: |
             sudo systemctl disable ward_server
             sudo systemctl stop ward_server
-            sudo mv /home/ec2-user/application.yml /home/ec2-user/app/
             sudo systemctl enable ward_server
             sudo systemctl start ward_server
