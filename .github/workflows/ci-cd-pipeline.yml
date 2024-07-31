@@ -12,6 +12,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:8.0
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+          MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -30,7 +41,30 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      - name: Wait for MySQL to start
+        run: |
+          echo "Waiting for MySQL to start..."
+          while ! nc -z localhost 3306; do   
+            sleep 1
+          done
+
       - name: Build with Gradle
+        env:
+          DB_URL: jdbc:mysql://localhost:3306/${{ secrets.MYSQL_DATABASE }}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&useLegacyDatetimeCode=false
+          DB_USERNAME: ${{ secrets.MYSQL_USER }}
+          DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          JWT_PASSWORD: ${{ secrets.JWT_PASSWORD }}
+          SERVER_PORT: ${{ secrets.SERVER_PORT }}
+          SSL_ENABLED: ${{ secrets.SSL_ENABLED }}
+          SSL_KEY_STORE_PATH: ${{ secrets.SSL_KEY_STORE_PATH }}
+          SSL_KEY_STORE_PASSWORD: ${{ secrets.SSL_KEY_STORE_PASSWORD }}
+          KAKAO_SERVICE_APP_ADMIN_KEY: ${{ secrets.KAKAO_SERVICE_APP_ADMIN_KEY }}
+          APPLE_CLIENT_ID: ${{ secrets.APPLE_CLIENT_ID }}
+          APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_PRIVATE_KEY: ${{ secrets.APPLE_PRIVATE_KEY }}
+          CHROME_DRIVER_PATH: ${{ secrets.CHROME_DRIVER_PATH }}
         run: ./gradlew build --stacktrace --info
 
       - name: Archive production artifacts
