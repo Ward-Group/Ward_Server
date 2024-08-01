@@ -56,6 +56,7 @@ dependencies {
 	//test
 	testImplementation ("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly ("com.h2database:h2")
+	implementation ("io.findify:s3mock_2.13:0.2.6")
 }
 
 tasks.withType<Test> {

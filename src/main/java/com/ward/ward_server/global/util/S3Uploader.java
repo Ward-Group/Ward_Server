@@ -30,10 +30,9 @@ public class S3Uploader {
     private String bucket;
 
     public String upload(MultipartFile multipartFile, String dirName) throws IOException {
-        //File uploadFile = convert(multipartFile)
-         //       .orElseThrow(() -> new ApiException(INVALID_INPUT, FILE_CONVERT_FAIL.getMessage()));
-        File uploadFile=new File(multipartFile.getOriginalFilename());
-        log.info("upfiel {}", uploadFile.getName());
+        File uploadFile = convert(multipartFile)
+                .orElseThrow(() -> new ApiException(INVALID_INPUT, FILE_CONVERT_FAIL.getMessage()));
+        log.info("upfile {}", uploadFile.getName());
         String fileName = dirName + "/" + uploadFile.getName();
         String uploadImageUrl = putS3(uploadFile, fileName);
         uploadFile.delete();
