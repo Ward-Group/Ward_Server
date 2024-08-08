@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface ReleaseInfoRepository extends JpaRepository<ReleaseInfo, Long>, ReleaseInfoQueryRepository {
 
@@ -35,4 +36,11 @@ public interface ReleaseInfoRepository extends JpaRepository<ReleaseInfo, Long>,
             "OR LOWER(dp.koreanName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             "OR LOWER(dp.englishName) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<ReleaseInfo> searchReleaseInfos(@Param("keyword") String keyword, Pageable pageable);
+
+    @Query("SELECT DISTINCT r.item.id, r.item.mainImage, MIN(r.dueDate) as dueDate " +
+            "FROM ReleaseInfo r " +
+            "WHERE r.dueDate > :now " +
+            "GROUP BY r.item.id, r.item.mainImage " +
+            "ORDER BY dueDate ASC")
+    List<Object[]> findExpiringItems(@Param("now") LocalDateTime now, Pageable pageable);
 }

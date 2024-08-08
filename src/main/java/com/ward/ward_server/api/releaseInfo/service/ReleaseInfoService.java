@@ -4,6 +4,7 @@ import com.ward.ward_server.api.item.entity.Brand;
 import com.ward.ward_server.api.item.entity.Item;
 import com.ward.ward_server.api.item.entity.enums.Category;
 import com.ward.ward_server.api.item.repository.ItemRepository;
+import com.ward.ward_server.api.releaseInfo.dto.ExpiringItemResponse;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoDetailResponse;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoSimpleResponse;
 import com.ward.ward_server.api.releaseInfo.entity.DrawPlatform;
@@ -20,12 +21,14 @@ import com.ward.ward_server.global.exception.ApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.ward.ward_server.global.Object.Constants.API_PAGE_SIZE;
 import static com.ward.ward_server.global.exception.ExceptionCode.*;
@@ -192,5 +195,19 @@ public class ReleaseInfoService {
                 releaseInfo.getReleaseFormatDate(), releaseInfo.getDueFormatDate(), releaseInfo.getPresentationFormatDate(),
                 releaseInfo.getReleasePrice(), releaseInfo.getCurrencyUnit().toString(),
                 releaseInfo.getNotificationMethod().getDesc(), releaseInfo.getReleaseMethod().getDesc(), releaseInfo.getDeliveryMethod().getDesc());
+    }
+
+    @Transactional(readOnly = true)
+    public List<ExpiringItemResponse> getExpiringItems(int limit) {
+        LocalDateTime now = LocalDateTime.now();
+        Pageable pageable = PageRequest.of(0, limit);
+
+        List<Object[]> results = releaseInfoRepository.findExpiringItems(now, pageable);
+
+        return results.stream()
+                .map(result -> new ExpiringItemResponse(
+                        (Long) result[0],
+                        (String) result[1]))
+                .collect(Collectors.toList());
     }
 }
