@@ -85,7 +85,7 @@ public class AuthService {
     }
 
     @Transactional
-    public JwtTokens addSocialLogin(String provider, String providerId, String email) {
+    public JwtTokens addSocialLogin(String provider, String providerId, String email, String appleRefreshToken) {
 
         if (!ValidationUtils.isValidEmail(email)) {
             throw new ApiException(ExceptionCode.INVALID_EMAIL_FORMAT);
@@ -102,7 +102,7 @@ public class AuthService {
         }
 
         User user = userOptional.get();
-        updateSocialLogin(user, provider, providerId, email);
+        updateSocialLogin(user, provider, providerId, email, appleRefreshToken);
 
         return generateJwtTokens(user);
     }
@@ -113,6 +113,7 @@ public class AuthService {
             String providerId,
             String name,
             String email,
+            String appleRefreshToken,
             String nickname,
             Boolean emailNotification,
             Boolean appPushNotification,
@@ -143,7 +144,7 @@ public class AuthService {
                     appPushNotification,
                     snsNotification
             );
-            SocialLogin socialLogin = new SocialLogin(provider, providerId, email);
+            SocialLogin socialLogin = new SocialLogin(provider, providerId, email, appleRefreshToken);
             socialLogin.setUser(user);
 
             socialLoginRepository.save(socialLogin);
@@ -205,14 +206,14 @@ public class AuthService {
         refreshTokenService.invalidateRefreshToken(refreshToken);
     }
 
-    private void updateSocialLogin(User user, String provider, String providerId, String email) {
+    private void updateSocialLogin(User user, String provider, String providerId, String email, String appleRefreshToken) {
         Optional<SocialLogin> socialLoginOptional = socialLoginRepository.findByProviderAndProviderIdAndEmail(provider, providerId, email);
 
         if (socialLoginOptional.isPresent()) {
             SocialLogin socialLogin = socialLoginOptional.get();
             socialLogin.setUser(user);
         } else {
-            SocialLogin socialLogin = new SocialLogin(provider, providerId, email);
+            SocialLogin socialLogin = new SocialLogin(provider, providerId, email, appleRefreshToken);
             socialLogin.setUser(user);
             socialLoginRepository.save(socialLogin);
         }

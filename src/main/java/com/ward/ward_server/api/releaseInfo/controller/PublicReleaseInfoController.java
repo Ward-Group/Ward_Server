@@ -1,6 +1,7 @@
 package com.ward.ward_server.api.releaseInfo.controller;
 
 import com.ward.ward_server.api.item.entity.enums.Category;
+import com.ward.ward_server.api.releaseInfo.dto.ExpiringItemResponse;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoDetailResponse;
 import com.ward.ward_server.api.releaseInfo.dto.ReleaseInfoSimpleResponse;
 import com.ward.ward_server.api.releaseInfo.entity.ReleaseInfo;
@@ -18,7 +19,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.ward.ward_server.global.response.ApiResponseMessage.*;
+import static com.ward.ward_server.global.response.ApiResponseMessage.RELEASE_INFO_DETAIL_LOAD_SUCCESS;
+import static com.ward.ward_server.global.response.ApiResponseMessage.RELEASE_INFO_LIST_LOAD_SUCCESS;
 
 @RestController
 @RequiredArgsConstructor
@@ -62,5 +64,11 @@ public class PublicReleaseInfoController {
             throw new IllegalArgumentException("Invalid status: " + status);
         }
         return ApiResponse.ok(releaseInfos);
+    }
+
+    @GetMapping("/expiring-items")
+    public ApiResponse<List<ExpiringItemResponse>> getExpiringItems() {
+        List<ExpiringItemResponse> items = releaseInfoService.getExpiringItems(10);
+        return ApiResponse.ok(RELEASE_INFO_LIST_LOAD_SUCCESS, items);
     }
 }

@@ -22,14 +22,18 @@ public class SocialLogin {
     @Column
     private String email;
 
+    @Column
+    private String appleRefreshToken;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    public SocialLogin(String provider, String providerId, String email) {
+    public SocialLogin(String provider, String providerId, String email, String appleRefreshToken) {
         this.provider = provider;
         this.providerId = providerId;
         this.email = email;
+        this.appleRefreshToken = appleRefreshToken;
     }
 
     public void setUser(User user) {

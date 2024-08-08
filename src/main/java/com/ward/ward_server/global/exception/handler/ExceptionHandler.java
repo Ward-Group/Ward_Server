@@ -22,6 +22,7 @@ public class ExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @org.springframework.web.bind.annotation.ExceptionHandler(ApiException.class)
     public ApiResponse handleException(ApiException ex) {
+        log.error("ApiException 발생: {}", ex.getMessage());
         return ApiResponse.failure(ex.getExceptionCode(), ex.getMessages());
     }
 
