@@ -38,11 +38,10 @@ public interface ReleaseInfoRepository extends JpaRepository<ReleaseInfo, Long>,
             "OR LOWER(dp.englishName) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<ReleaseInfo> searchReleaseInfos(@Param("keyword") String keyword, Pageable pageable);
 
-    @Query("SELECT new com.ward.ward_server.api.releaseInfo.dto.ExpiringItemResponse(r.item.id, r.item.mainImage, MIN(r.dueDate) as dueDate) " +
+    @Query("SELECT new com.ward.ward_server.api.releaseInfo.dto.ExpiringItemResponse(r.item.id, r.item.mainImage) " +
             "FROM ReleaseInfo r " +
             "WHERE r.dueDate > :now " +
             "GROUP BY r.item.id, r.item.mainImage " +
-            "ORDER BY dueDate ASC")
+            "ORDER BY MIN(r.dueDate) ASC")
     List<ExpiringItemResponse> findExpiringItems(@Param("now") LocalDateTime now, Pageable pageable);
-
 }
