@@ -28,7 +28,6 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.ward.ward_server.global.Object.Constants.API_PAGE_SIZE;
 import static com.ward.ward_server.global.exception.ExceptionCode.*;
@@ -202,12 +201,6 @@ public class ReleaseInfoService {
         LocalDateTime now = LocalDateTime.now();
         Pageable pageable = PageRequest.of(0, limit);
 
-        List<Object[]> results = releaseInfoRepository.findExpiringItems(now, pageable);
-
-        return results.stream()
-                .map(result -> new ExpiringItemResponse(
-                        (Long) result[0],
-                        (String) result[1]))
-                .collect(Collectors.toList());
+        return releaseInfoRepository.findExpiringItems(now, pageable);
     }
 }
