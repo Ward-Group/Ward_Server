@@ -31,7 +31,7 @@ public class S3ImageUploader {
     public String upload(MultipartFile multipartFile, String dirName) throws IOException {
         File uploadFile = convert(multipartFile)
                 .orElseThrow(() -> new ApiException(INVALID_INPUT, FILE_CONVERT_FAIL.getMessage()));
-        log.info("uploadFile name: {}", uploadFile.getName()); //fixme debuf로 고치기
+        log.debug("uploadFile name: {}", uploadFile.getName());
         String fileName = dirName + "/" + uploadFile.getName();
         String uploadImageUrl = putS3(uploadFile, fileName);
         uploadFile.delete();
@@ -52,14 +52,13 @@ public class S3ImageUploader {
 
     private Optional<File> convert(MultipartFile file) throws IOException {
         File convertFile = new File(file.getOriginalFilename());
-        log.info("convertFile name: {}", convertFile.getName());
+        log.debug("convertFile name: {}", convertFile.getName());
         if (convertFile.createNewFile()) {
-            log.info("create new file");
+            log.debug("create new file");
             try (FileOutputStream fos = new FileOutputStream(convertFile)) {
                 fos.write(file.getBytes());
             }
-            return Optional.of(convertFile);
         }
-        return Optional.empty();
+        return Optional.of(convertFile);
     }
 }

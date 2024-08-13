@@ -22,18 +22,18 @@ public class S3MockConfig {
 
     @Bean(name = "s3Mock")
     public S3Mock s3Mock() {
-        log.info("s3 mock 빈 생성"); //fixme debug로 고치기
+        log.debug("s3 mock 빈 생성");
         S3Mock s3Mock = S3Mock.create(0, "s3mock");
         Http.ServerBinding binding = s3Mock.start();
         port = binding.localAddress().getPort();
-        log.info("port:{}", port);
+        log.debug("port:{}", port);
         return s3Mock;
     }
 
     @Bean
     @DependsOn("s3Mock")
     public AmazonS3Client amazonS3() {
-        log.info("amazon client 빈 생성");
+        log.debug("amazon client 빈 생성");
         AwsClientBuilder.EndpointConfiguration endpoint =
                 new AwsClientBuilder.EndpointConfiguration(
                         "http://127.0.0.1:" + port, Regions.AP_NORTHEAST_2.name());

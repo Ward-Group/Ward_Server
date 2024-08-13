@@ -7,6 +7,8 @@ import com.ward.ward_server.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 import static com.ward.ward_server.global.response.ApiResponseMessage.*;
 
 @RestController
@@ -16,12 +18,12 @@ public class AdminBrandController {
     private final BrandService brandService;
 
     @PostMapping
-    public ApiResponse<BrandResponse> createBrand(@RequestBody BrandRequest request) {
+    public ApiResponse<BrandResponse> createBrand(@ModelAttribute BrandRequest request) throws IOException {
         return ApiResponse.ok(BRAND_CREATE_SUCCESS, brandService.createBrand(request.koreanName(), request.englishName(), request.logoImage()));
     }
 
     @PatchMapping("/{brandId}")
-    public ApiResponse<BrandResponse> updateBrand(@PathVariable("brandId") long brandId, @RequestBody BrandRequest request) {
+    public ApiResponse<BrandResponse> updateBrand(@PathVariable("brandId") long brandId, @ModelAttribute BrandRequest request) throws IOException {
         return ApiResponse.ok(BRAND_UPDATE_SUCCESS, brandService.updateBrand(brandId, request.koreanName(), request.englishName(), request.logoImage()));
     }
 

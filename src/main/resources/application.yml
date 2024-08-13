@@ -2,7 +2,7 @@ spring:
   jwt:
     secretKey: ${JWT_SECRET_KEY}
     password: ${JWT_PASSWORD}
-    accessTokenValidity: 15 # 분 단위
+    accessTokenValidity: 1500 # 분 단위
     refreshTokenValidity: 30 # 일 단위
 
   datasource:
@@ -57,3 +57,15 @@ logging:
         type:
           descriptor:
             sql: TRACE
+
+cloud:
+  aws:
+    s3:
+      bucket: ${S3_BUCKET_NAME}
+    stack.auto: false
+    region.static: ${S3_BUCKET_REGION}
+    credentials:
+      accessKey: ${S3_ACCESS_KEY}
+      secretKey: ${S3_SECRET_KEY}
+    cloudFront:
+      domain: https://d95395pkgpbo8.cloudfront.net

@@ -21,15 +21,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+
 @Slf4j
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @Import(S3MockConfig.class)
 @ContextConfiguration(classes = S3ImageUploader.class)
 class S3ImageUploaderTest {
-
-
     @Autowired
     private S3Mock s3Mock;
     @Autowired
