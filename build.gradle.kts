@@ -55,9 +55,12 @@ dependencies {
 	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
 	implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
 	implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
+	//s3
+	implementation("io.awspring.cloud:spring-cloud-starter-aws:2.4.4")
 	//test
 	testImplementation ("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly ("com.h2database:h2")
+	implementation ("io.findify:s3mock_2.13:0.2.6")
 }
 
 tasks.withType<Test> {

@@ -326,9 +326,6 @@ gradle-app.setting
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij,gradle,java,windows,macos,intellij+all
 
-# ----- 하늘님 gitignore 추가 요청 20231204.1641
-.DS_store
-
 #yml
 *.yml
 !application.yml
@@ -348,3 +345,6 @@ gradlew
 
 # QueryDSL Q-classes
 src/main/generated/
+
+# s3 test folder
+s3mock
