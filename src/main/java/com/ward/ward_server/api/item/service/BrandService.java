@@ -12,8 +12,7 @@ import com.ward.ward_server.api.releaseInfo.repository.ReleaseInfoRepository;
 import com.ward.ward_server.global.Object.PageResponse;
 import com.ward.ward_server.global.Object.enums.BasicSort;
 import com.ward.ward_server.global.exception.ApiException;
-import com.ward.ward_server.global.exception.ExceptionCode;
-import com.ward.ward_server.global.util.S3ImageUploader;
+import com.ward.ward_server.global.util.S3ImageManager;
 import com.ward.ward_server.global.util.ValidationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -37,8 +36,9 @@ public class BrandService {
     private final BrandRepository brandRepository;
     private final ItemRepository itemRepository;
     private final ReleaseInfoRepository releaseInfoRepository;
-    private final S3ImageUploader imageUploader;
-    private final String DIR_NAME="brand/logo";
+    private final S3ImageManager imageManager;
+    private final String DIR_NAME = "brand/logo";
+
     @Transactional
     public BrandResponse createBrand(String koreanName, String englishName, MultipartFile brandLogoImage) throws IOException {
         if (!StringUtils.hasText(koreanName) && !StringUtils.hasText(englishName)) {
@@ -48,7 +48,7 @@ public class BrandService {
         if (brandRepository.existsByKoreanNameOrEnglishName(koreanName, englishName)) {
             throw new ApiException(DUPLICATE_BRAND);
         }
-        String uploadedImageUrl=imageUploader.upload(brandLogoImage, DIR_NAME);
+        String uploadedImageUrl = brandLogoImage != null ? imageManager.upload(brandLogoImage, DIR_NAME) : null;
         Brand savedBrand = brandRepository.save(Brand.builder()
                 .logoImage(uploadedImageUrl)
                 .koreanName(koreanName)
@@ -85,14 +85,13 @@ public class BrandService {
 
     @Transactional
     public BrandResponse updateBrand(long brandId, String koreanName, String englishName, MultipartFile brandLogoImage) throws IOException {
-        if (koreanName == null && englishName == null && brandLogoImage == null)
-            throw new ApiException(ExceptionCode.INVALID_INPUT);
         ValidationUtils.validationNames(koreanName, englishName);
         Brand origin = brandRepository.findById(brandId).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
-        if (brandLogoImage!=null) {
-            //TODO 기존 로고이미지 s3에서 삭제 로직 추가
-            String uploadedImageUrl=imageUploader.upload(brandLogoImage, DIR_NAME);
-            origin.updateLogoImage(uploadedImageUrl);
+        if (brandLogoImage != null) {
+            String originLogoImage = brandRepository.findLogoImageByBrandId(brandId);
+            imageManager.delete(originLogoImage);
+            String uploadedLogoImageUrl = imageManager.upload(brandLogoImage, DIR_NAME);
+            origin.updateLogoImage(uploadedLogoImageUrl);
         }
         if (StringUtils.hasText(koreanName)) {
             origin.updateKoreanName(koreanName);
@@ -105,11 +104,9 @@ public class BrandService {
 
     @Transactional
     public void deleteBrand(long brandId) {
-        //TODO 삭제하는 브랜드 로고이미지 s3에서 삭제 로직 추가
-        if (!brandRepository.existsById(brandId)) {
-            throw new ApiException(BRAND_NOT_FOUND);
-        }
-        brandRepository.deleteById(brandId);
+        Brand brand = brandRepository.findById(brandId).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
+        imageManager.delete(brand.getLogoImage());
+        brandRepository.delete(brand);
     }
 
     @Transactional
@@ -122,7 +119,8 @@ public class BrandService {
     private BrandResponse getBrandResponse(Brand brand) {
         return new BrandResponse(
                 brand.getId(),
-                brand.getLogoImage(),
+                brand.getLogoImage() == null ?
+                        imageManager.getUrl(DIR_NAME + "/brand-basic-logo.png") : brand.getLogoImage(),
                 brand.getKoreanName(),
                 brand.getEnglishName(),
                 brand.getViewCount()

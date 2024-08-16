@@ -20,4 +20,7 @@ public interface ItemRepository extends JpaRepository<Item, Long>, ItemQueryRepo
             "OR i.code LIKE %:keyword% " +
             "ORDER BY i.viewCount DESC")
     Page<Item> searchItems(@Param("keyword") String keyword, Pageable pageable);
+
+    @Query("SELECT i.mainImage FROM Item i where i.id = :itemId")
+    String findMainImageByItemId(long itemId);
 }

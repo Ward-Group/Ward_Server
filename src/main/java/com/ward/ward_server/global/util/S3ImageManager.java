@@ -2,6 +2,7 @@ package com.ward.ward_server.global.util;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.ward.ward_server.global.exception.ApiException;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ import static com.ward.ward_server.global.response.error.ErrorMessage.FILE_CONVE
 @RequiredArgsConstructor
 @Component
 @Slf4j
-public class S3ImageUploader {
+public class S3ImageManager {
     private final AmazonS3Client amazonS3Client;
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -32,8 +33,8 @@ public class S3ImageUploader {
         File uploadFile = convert(multipartFile)
                 .orElseThrow(() -> new ApiException(INVALID_INPUT, FILE_CONVERT_FAIL.getMessage()));
         log.debug("uploadFile name: {}", uploadFile.getName());
-        String fileName = dirName + "/" + uploadFile.getName();
-        String uploadImageUrl = putS3(uploadFile, fileName);
+        String filePath = dirName + "/" + uploadFile.getName();
+        String uploadImageUrl = putS3(uploadFile, filePath);
         uploadFile.delete();
         return uploadImageUrl;
     }
@@ -46,8 +47,8 @@ public class S3ImageUploader {
         return cloudFrontDomain + "/" + fileName;
     }
 
-    public String getUrl(String bucket, String fileName) {
-        return amazonS3Client.getUrl(bucket, fileName).toString();
+    public String getUrl(String fileName) {
+        return cloudFrontDomain + "/" + fileName;
     }
 
     private Optional<File> convert(MultipartFile file) throws IOException {
@@ -60,5 +61,16 @@ public class S3ImageUploader {
             }
         }
         return Optional.of(convertFile);
+    }
+
+    public void delete(String url) {
+        if (url == null) return;
+        String fileOriginName = extractFileOriginName(url);
+        log.debug("delete file origin name: {}", fileOriginName);
+        amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, fileOriginName));
+    }
+
+    private String extractFileOriginName(String url) {
+        return url.substring(cloudFrontDomain.length() + 1);
     }
 }

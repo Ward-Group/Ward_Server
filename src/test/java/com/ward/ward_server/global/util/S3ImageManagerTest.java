@@ -26,12 +26,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @Import(S3MockConfig.class)
-@ContextConfiguration(classes = S3ImageUploader.class)
-class S3ImageUploaderTest {
+@ContextConfiguration(classes = S3ImageManager.class)
+class S3ImageManagerTest {
     @Autowired
     private S3Mock s3Mock;
     @Autowired
-    private S3ImageUploader s3ImageUploader;
+    private S3ImageManager s3ImageManager;
 
     @AfterEach
     public void tearDown() {
@@ -52,11 +52,11 @@ class S3ImageUploaderTest {
                 "image/png",
                 new FileInputStream(file)
         );
-        ReflectionTestUtils.setField(s3ImageUploader, "bucket", mockBucketName);
-        ReflectionTestUtils.setField(s3ImageUploader, "cloudFrontDomain", mockCloudFrontDomain);
+        ReflectionTestUtils.setField(s3ImageManager, "bucket", mockBucketName);
+        ReflectionTestUtils.setField(s3ImageManager, "cloudFrontDomain", mockCloudFrontDomain);
 
         // when
-        String urlPath = s3ImageUploader.upload(multipartFile, dirName);
+        String urlPath = s3ImageManager.upload(multipartFile, dirName);
 
         // then
         assertThat(urlPath).contains(mockCloudFrontDomain);
