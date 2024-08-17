@@ -44,7 +44,8 @@ public class ItemService {
     private final String SUB_IMAGES_DIR_NAME = "item/sub";
 
     @Transactional
-    public ItemDetailResponse createItem(String itemCode, String koreanName, String englishName, MultipartFile mainImage, List<MultipartFile> itemImages, Long brandId, Category category, Integer price) throws ApiException, IOException {
+    public ItemDetailResponse createItem(String itemCode, String koreanName, String englishName, Long brandId, Category category, Integer price,
+                                         MultipartFile mainImage, List<MultipartFile> itemImages) throws ApiException, IOException {
         if (!StringUtils.hasText(koreanName) && !StringUtils.hasText(englishName)) {
             throw new ApiException(INVALID_INPUT, NAME_MUST_BE_PROVIDED.getMessage());
         }
@@ -109,7 +110,6 @@ public class ItemService {
                 .build());
     }
 
-    @Transactional(readOnly = true)
     public List<ItemSimpleResponse> getItem10List(Long userId, Section section, Category category) {
         return switch (section) {
             case DUE_TODAY, RELEASE_NOW, RELEASE_SCHEDULE ->
@@ -118,7 +118,6 @@ public class ItemService {
         };
     }
 
-    @Transactional(readOnly = true)
     public PageResponse<ItemSimpleResponse> getItemPage(Long userId, Section section, Category category, int page, String date) {
         return switch (section) {
             case RELEASE_SCHEDULE, CLOSED -> {
@@ -129,7 +128,6 @@ public class ItemService {
         };
     }
 
-    @Transactional(readOnly = true)
     public List<ItemTopRankResponse> getTopItemsResponseByCategory(Category category, int limit) {
         List<ItemTopRank> topItems;
         if (category == Category.ALL) {
@@ -178,8 +176,7 @@ public class ItemService {
             origin.updateCode(itemCode);
         }
         if (mainImage != null) {
-            String originMainImage = itemRepository.findMainImageByItemId(itemId);
-            imageManager.delete(originMainImage);
+            imageManager.delete(origin.getMainImage());
             String uploadedImageUrl = imageManager.upload(mainImage, MAIN_IMAGE_DIR_NAME);
             origin.updateMainImage(uploadedImageUrl);
         }

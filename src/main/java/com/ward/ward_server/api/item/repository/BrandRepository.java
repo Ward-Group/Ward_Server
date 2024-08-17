@@ -24,7 +24,4 @@ public interface BrandRepository extends JpaRepository<Brand, Long>, BrandQueryR
             "OR LOWER(b.englishName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             "ORDER BY b.koreanName ASC")
     List<Brand> searchBrands(@Param("keyword") String keyword);
-
-    @Query("SELECT b.logoImage FROM Brand b where b.id = :brandId")
-    String findLogoImageByBrandId(long brandId);
 }

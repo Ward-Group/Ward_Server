@@ -35,7 +35,8 @@ public class AdminItemController {
                                                       @RequestPart(required = false) MultipartFile mainImage,
                                                       @RequestPart(required = false) List<MultipartFile> itemImages) throws ApiException, IOException {
         return ApiResponse.ok(ITEM_CREATE_SUCCESS,
-                itemService.createItem(request.itemCode(), request.koreanName(), request.englishName(), mainImage, itemImages, request.brandId(), request.category(), request.price()));
+                itemService.createItem(request.itemCode(), request.koreanName(), request.englishName(), request.brandId(), request.category(), request.price(),
+                        mainImage, itemImages));
     }
 
     @PatchMapping("/{itemId}")

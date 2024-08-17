@@ -88,8 +88,7 @@ public class BrandService {
         ValidationUtils.validationNames(koreanName, englishName);
         Brand origin = brandRepository.findById(brandId).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
         if (brandLogoImage != null) {
-            String originLogoImage = brandRepository.findLogoImageByBrandId(brandId);
-            imageManager.delete(originLogoImage);
+            imageManager.delete(origin.getLogoImage());
             String uploadedLogoImageUrl = imageManager.upload(brandLogoImage, DIR_NAME);
             origin.updateLogoImage(uploadedLogoImageUrl);
         }
