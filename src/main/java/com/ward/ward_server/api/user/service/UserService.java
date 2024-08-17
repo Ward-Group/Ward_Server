@@ -13,13 +13,14 @@ import com.ward.ward_server.api.wishBrand.repository.WishBrandRepository;
 import com.ward.ward_server.api.wishItem.WishItem;
 import com.ward.ward_server.api.wishItem.repository.WishItemRepository;
 import com.ward.ward_server.global.Object.Constants;
+import com.ward.ward_server.global.config.AppleConfig;
+import com.ward.ward_server.global.config.KakaoConfig;
 import com.ward.ward_server.global.exception.ApiException;
 import com.ward.ward_server.global.exception.ExceptionCode;
 import com.ward.ward_server.global.util.AppleClientSecretGenerator;
 import com.ward.ward_server.global.util.ValidationUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,7 @@ import java.util.Optional;
 @Slf4j
 @Transactional(readOnly = true)
 public class UserService {
+
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String KAKAO_AUTH_PREFIX = "KakaoAK ";
     private static final String CLIENT_ID_KEY = "client_id=";
@@ -46,27 +48,8 @@ public class UserService {
     private final SocialLoginRepository socialLoginRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final RestTemplate restTemplate;
-
-    @Value("${kakao.unlink-url}")
-    private String kakaoUnlinkUrl;
-
-    @Value("${kakao.service-app-admin-key}")
-    private String serviceAppAdminKey;
-
-    @Value("${apple.unlink-url}")
-    private String appleUnlinkUrl;
-
-    @Value("${apple.client-id}")
-    private String appleClientId;
-
-    @Value("${apple.key-id}")
-    private String appleKeyId;
-
-    @Value("${apple.team-id}")
-    private String appleTeamId;
-
-    @Value("${apple.private-key}")
-    private String applePrivateKey;
+    private final KakaoConfig kakaoConfig;
+    private final AppleConfig appleConfig;
 
     public String getNickname(Long userId) {
         return userRepository.findNicknameById(userId)
@@ -122,12 +105,12 @@ public class UserService {
 
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-                headers.set(AUTHORIZATION_HEADER, KAKAO_AUTH_PREFIX + serviceAppAdminKey);
+                headers.set(AUTHORIZATION_HEADER, KAKAO_AUTH_PREFIX + kakaoConfig.getServiceAppAdminKey());
 
                 String body = "target_id_type=user_id&target_id=" + providerId;
                 HttpEntity<String> entity = new HttpEntity<>(body, headers);
 
-                ResponseEntity<String> response = restTemplate.exchange(kakaoUnlinkUrl, HttpMethod.POST, entity, String.class);
+                ResponseEntity<String> response = restTemplate.exchange(kakaoConfig.getUnlinkUrl(), HttpMethod.POST, entity, String.class);
 
                 if (response.getStatusCode() != HttpStatus.OK) {
                     log.error("[UserService] 카카오 계정 연동 해제 실패. HTTP 상태 코드: {}, 사용자 ID: {}", response.getStatusCode(), user.getId());
@@ -152,16 +135,18 @@ public class UserService {
                     throw new ApiException(ExceptionCode.MISSING_REFRESH_TOKEN);
                 }
 
-                String clientSecret = AppleClientSecretGenerator.generateClientSecret(appleTeamId, appleClientId, appleKeyId, applePrivateKey);
+                String clientSecret = AppleClientSecretGenerator.generateClientSecret(
+                        appleConfig.getTeamId(), appleConfig.getClientId(), appleConfig.getKeyId(), appleConfig.getPrivateKey()
+                );
 
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-                String body = CLIENT_ID_KEY + appleClientId +
+                String body = CLIENT_ID_KEY + appleConfig.getClientId() +
                         CLIENT_SECRET_KEY + clientSecret +
                         TOKEN_KEY + appleRefreshToken;
                 HttpEntity<String> entity = new HttpEntity<>(body, headers);
 
-                ResponseEntity<String> response = restTemplate.exchange(appleUnlinkUrl, HttpMethod.POST, entity, String.class);
+                ResponseEntity<String> response = restTemplate.exchange(appleConfig.getUnlinkUrl(), HttpMethod.POST, entity, String.class);
 
                 if (response.getStatusCode() != HttpStatus.OK) {
                     log.error("[UserService] 애플 계정 연동 해제 실패. HTTP 상태 코드: {}, 사용자 ID: {}", response.getStatusCode(), user.getId());
