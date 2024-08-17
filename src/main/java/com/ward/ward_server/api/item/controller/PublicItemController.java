@@ -25,6 +25,10 @@ import static com.ward.ward_server.global.response.ApiResponseMessage.*;
 @RequestMapping("/public/items")
 public class PublicItemController {
 
+    private static final int TOP_LIMIT_10 = 10;
+    private static final int TOP_LIMIT_50 = 50;
+    private static final List<Integer> ALLOWED_LIMITS = List.of(TOP_LIMIT_10, TOP_LIMIT_50);
+
     private final ItemService itemService;
 
     @GetMapping("/{itemId}/details")
@@ -51,8 +55,8 @@ public class PublicItemController {
     @GetMapping("/top")
     public ApiResponse<List<ItemTopRankResponse>> getTopItemsByCategory(@RequestParam("category") Category category,
                                                                         @RequestParam("limit") int limit) {
-        if (limit != 10 && limit != 50) {
-            throw new ApiException(ExceptionCode.INVALID_INPUT, "Limit 는 10 or 50 이어야합니다.");
+        if (!ALLOWED_LIMITS.contains(limit)) {
+            throw new ApiException(ExceptionCode.INVALID_INPUT, "Limit는 10 또는 50이어야 합니다.");
         }
 
         List<ItemTopRankResponse> topItemsResponse = itemService.getTopItemsResponseByCategory(category, limit);

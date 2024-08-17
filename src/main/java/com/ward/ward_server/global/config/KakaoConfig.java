@@ -1,4 +1,4 @@
-package com.ward.ward_server.api.item.webCrawler;
+package com.ward.ward_server.global.config;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +8,8 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 @Setter
 @Configuration
-@ConfigurationProperties(prefix = "crawler")
-public class CrawlerProperties {
-    private String chromeDriverPath;
+@ConfigurationProperties(prefix = "kakao")
+public class KakaoConfig {
+    private String unlinkUrl;
+    private String serviceAppAdminKey;
 }

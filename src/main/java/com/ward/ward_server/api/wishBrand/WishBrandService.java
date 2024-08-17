@@ -19,6 +19,7 @@ import static com.ward.ward_server.global.exception.ExceptionCode.*;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class WishBrandService {
     private final WishBrandRepository wishBrandRepository;
     private final BrandRepository brandRepository;
@@ -33,7 +34,6 @@ public class WishBrandService {
         wishBrandRepository.save(new WishBrand(user, brand));
     }
 
-    @Transactional(readOnly = true)
     public PageResponse<WishBrandResponse> getWishBrandListByUser(long userId, BasicSort basicSort, int page) {
         Page<WishBrandResponse> wishBrandPage = wishBrandRepository.getWishBrandPage(userId, basicSort, PageRequest.of(page, API_PAGE_SIZE));
         return new PageResponse<>(wishBrandPage.getContent(), wishBrandPage);

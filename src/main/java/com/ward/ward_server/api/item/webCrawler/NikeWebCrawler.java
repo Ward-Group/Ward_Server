@@ -1,6 +1,7 @@
 package com.ward.ward_server.api.item.webCrawler;
 
 import com.ward.ward_server.api.item.dto.WebProductData;
+import com.ward.ward_server.global.config.CrawlerConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -24,8 +25,8 @@ public class NikeWebCrawler {
     private WebDriver driver;
 
     @Autowired
-    public NikeWebCrawler(CrawlerProperties crawlerProperties) {
-        String chromeDriverPath = crawlerProperties.getChromeDriverPath();
+    public NikeWebCrawler(CrawlerConfig crawlerConfig) {
+        String chromeDriverPath = crawlerConfig.getChromeDriverPath();
         ChromeOptions chromeOptions = new ChromeOptions();
 //        chromeOptions.setBinary("/usr/bin/google-chrome"); // EC2 쓸 때 해제
         chromeOptions.addArguments("--headless"); //헤드리스 모드로 실행, 실제 창이 표시되지 않는다.

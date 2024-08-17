@@ -14,14 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
 
-    // 토큰 생성
     @Transactional
-    public void saveRefreshToken(User user, String refreshToken) {
+    public void saveNewRefreshToken(User user, String refreshToken) {
         var refreshTokenEntity = new RefreshToken(refreshToken, user);
         refreshTokenRepository.save(refreshTokenEntity);
     }
 
-    // 토큰 무효화
     @Transactional
     public void invalidateRefreshToken(String refreshToken) {
         var token = refreshTokenRepository.findByToken(refreshToken)
@@ -35,10 +33,9 @@ public class RefreshTokenService {
                 .orElseThrow(() -> new ApiException(ExceptionCode.INVALID_REFRESH_TOKEN));
     }
 
-    // 토큰 갱신
     @Transactional
     public void invalidateAndSaveNewToken(RefreshToken oldToken, String newToken) {
         refreshTokenRepository.delete(oldToken);
-        saveRefreshToken(oldToken.getUser(), newToken);
+        saveNewRefreshToken(oldToken.getUser(), newToken);
     }
 }

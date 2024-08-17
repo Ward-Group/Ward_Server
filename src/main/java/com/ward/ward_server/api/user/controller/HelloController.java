@@ -19,14 +19,14 @@ public class HelloController {
 
     @GetMapping("/user/secured")
     public ApiResponse secured(@AuthenticationPrincipal CustomUserDetails principal) {
-        String secured = "If you see this, then you're logged in as user " + principal.getEmail()
+        String secured = "User 권한으로 접근 성공 - " + principal.getEmail()
                 + " User ID: " + principal.getUserId();
         return ApiResponse.ok(secured);
     }
 
     @GetMapping("/admin")
     public ApiResponse admin(@AuthenticationPrincipal CustomUserDetails principal) {
-        String admin = "If you see this, then you are an Admin. User ID: " + principal.getUserId();
+        String admin = "Admin 권한으로 접근 성공 - " + principal.getUserId();
         return ApiResponse.ok(admin);
     }
 }

@@ -1,9 +1,7 @@
 package com.ward.ward_server.api.wishItem;
 
-import com.ward.ward_server.api.entry.repository.EntryRecordRepository;
 import com.ward.ward_server.api.item.entity.Item;
 import com.ward.ward_server.api.item.repository.ItemRepository;
-import com.ward.ward_server.api.releaseInfo.repository.ReleaseInfoRepository;
 import com.ward.ward_server.api.user.entity.User;
 import com.ward.ward_server.api.user.repository.UserRepository;
 import com.ward.ward_server.api.wishItem.repository.WishItemRepository;
@@ -23,6 +21,7 @@ import static com.ward.ward_server.global.exception.ExceptionCode.*;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class WishItemService {
     private final WishItemRepository wishItemRepository;
     private final UserRepository userRepository;
@@ -38,7 +37,6 @@ public class WishItemService {
         wishItemRepository.save(new WishItem(user, item));
     }
 
-    @Transactional(readOnly = true)
     public PageResponse<WishItemResponse> getWishItemListByUser(long userId, BasicSort sort, int page) {
         Page<WishItemResponse> wishItemPage = wishItemRepository.getWishItemPage(userId, sort, PageRequest.of(page, API_PAGE_SIZE));
         return new PageResponse<>(wishItemPage.getContent(), wishItemPage);
