@@ -234,7 +234,7 @@ public class AuthService {
             var accessToken = jwtIssuer.issueAccessToken(principal.getUserId(), principal.getEmail(), roles);
             var refreshToken = jwtIssuer.issueRefreshToken();
 
-            refreshTokenService.saveRefreshToken(user, refreshToken);
+            refreshTokenService.saveNewRefreshToken(user, refreshToken);
 
             return new JwtTokens(accessToken, refreshToken);
         } catch (AuthenticationException e) {

@@ -36,6 +36,7 @@ import static com.ward.ward_server.global.response.error.ErrorMessage.SECTION_NO
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ReleaseInfoService {
     private final ReleaseInfoRepository releaseInfoRepository;
     private final DrawPlatformRepository drawPlatformRepository;
@@ -70,13 +71,11 @@ public class ReleaseInfoService {
         return getDetailResponse(item.getBrand(), item, platform, savedReleaseInfo);
     }
 
-    @Transactional(readOnly = true)
     public ReleaseInfoDetailResponse getReleaseInfo(Long releaseInfoId) {
         ReleaseInfo releaseInfo = releaseInfoRepository.findById(releaseInfoId).orElseThrow(() -> new ApiException(RELEASE_INFO_NOT_FOUND));
         return getDetailResponse(releaseInfo.getItem().getBrand(), releaseInfo.getItem(), releaseInfo.getDrawPlatform(), releaseInfo);
     }
 
-    @Transactional(readOnly = true)
     public List<ReleaseInfoSimpleResponse> getReleaseInfo10List(Long userId, Section section, Category category) {
         return switch (section){
             case DUE_TODAY, RELEASE_WISH, REGISTER_TODAY -> releaseInfoRepository.getReleaseInfo10List(userId, LocalDateTime.now().minusHours(9), category, section); //HACK DB 시간 설정 전까지는 -9시간으로 비교해야 한다.
@@ -84,7 +83,6 @@ public class ReleaseInfoService {
         };
     }
 
-    @Transactional(readOnly = true)
     public PageResponse<ReleaseInfoSimpleResponse> getReleaseInfoPage(Long userId, Section section, Category category, int page) {
         return switch (section){
             case DUE_TODAY, RELEASE_NOW, REGISTER_TODAY ->{
@@ -95,14 +93,12 @@ public class ReleaseInfoService {
         };
     }
 
-    @Transactional(readOnly = true)
     public Page<ReleaseInfo> getOngoingReleaseInfos(Long itemId, int page, int size) {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
         LocalDateTime now = LocalDateTime.now();
         return releaseInfoRepository.findByItemAndDueDateAfter(item, now, PageRequest.of(page, size));
     }
 
-    @Transactional(readOnly = true)
     public Page<ReleaseInfo> getCompletedReleaseInfos(Long itemId, int page, int size) {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new ApiException(ITEM_NOT_FOUND));
         LocalDateTime now = LocalDateTime.now();
@@ -196,7 +192,6 @@ public class ReleaseInfoService {
                 releaseInfo.getNotificationMethod().getDesc(), releaseInfo.getReleaseMethod().getDesc(), releaseInfo.getDeliveryMethod().getDesc());
     }
 
-    @Transactional(readOnly = true)
     public List<ExpiringItemResponse> getExpiringItems(int limit) {
         LocalDateTime now = LocalDateTime.now();
         Pageable pageable = PageRequest.of(0, limit);

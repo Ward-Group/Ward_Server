@@ -31,6 +31,10 @@ import static com.ward.ward_server.global.response.error.ErrorMessage.*;
 @Transactional(readOnly = true)
 @Slf4j
 public class ItemService {
+
+    private static final int FIRST_PAGE = 0;
+    private static final int HOURS_TO_SUBTRACT = 9;
+
     private final ItemRepository itemRepository;
     private final BrandRepository brandRepository;
     private final ItemImageRepository itemImageRepository;
@@ -89,34 +93,31 @@ public class ItemService {
                 .build());
     }
 
-    @Transactional(readOnly = true)
     public List<ItemSimpleResponse> getItem10List(Long userId, Section section, Category category) {
         return switch (section) {
             case DUE_TODAY, RELEASE_NOW, RELEASE_SCHEDULE ->
-                    itemRepository.getItem10List(userId, LocalDateTime.now().minusHours(9), category, section); //HACK DB 시간 설정 전까지는 -9시간으로 비교해야 한다.
+                    itemRepository.getItem10List(userId, LocalDateTime.now().minusHours(HOURS_TO_SUBTRACT), category, section); //HACK DB 시간 설정 전까지는 -9시간으로 비교해야 한다.
             default -> throw new ApiException(INVALID_INPUT, SECTION_NOT_AVAILABLE_THIS_PAGE.getMessage());
         };
     }
 
-    @Transactional(readOnly = true)
     public PageResponse<ItemSimpleResponse> getItemPage(Long userId, Section section, Category category, int page, String date) {
         log.info("하늘:{}", date);
         return switch (section) {
             case RELEASE_SCHEDULE, CLOSED -> {
-                Page<ItemSimpleResponse> itemPageInfo = itemRepository.getItemPage(userId, LocalDateTime.now().minusHours(9), category, section, date, PageRequest.of(page, API_PAGE_SIZE)); //HACK DB 시간 설정 전까지는 -9시간으로 비교해야 한다.
+                Page<ItemSimpleResponse> itemPageInfo = itemRepository.getItemPage(userId, LocalDateTime.now().minusHours(HOURS_TO_SUBTRACT), category, section, date, PageRequest.of(page, API_PAGE_SIZE)); //HACK DB 시간 설정 전까지는 -9시간으로 비교해야 한다.
                 yield new PageResponse<>(itemPageInfo.getContent(), itemPageInfo);
             }
             default -> throw new ApiException(INVALID_INPUT, SECTION_NOT_AVAILABLE_THIS_PAGE.getMessage());
         };
     }
 
-    @Transactional(readOnly = true)
     public List<ItemTopRankResponse> getTopItemsResponseByCategory(Category category, int limit) {
         List<ItemTopRank> topItems;
         if (category == Category.ALL) {
-            topItems = itemTopRankRepository.findTopItems(PageRequest.of(0, limit));
+            topItems = itemTopRankRepository.findTopItems(PageRequest.of(FIRST_PAGE, limit));
         } else {
-            topItems = itemTopRankRepository.findTopItemsByCategory(category, PageRequest.of(0, limit));
+            topItems = itemTopRankRepository.findTopItemsByCategory(category, PageRequest.of(FIRST_PAGE, limit));
         }
         return convertToTopResponse(topItems);
     }

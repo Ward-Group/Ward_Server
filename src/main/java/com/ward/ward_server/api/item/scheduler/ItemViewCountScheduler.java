@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ItemViewCountScheduler {
 
+    private static final int ONE_DAY = 1;
+
     private final ItemViewCountRepository itemViewCountRepository;
     private final ItemTopRankRepository itemTopRankRepository;
 
@@ -32,7 +34,7 @@ public class ItemViewCountScheduler {
     @Transactional
     public void executeUpdateViewCounts() {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime startTime = now.minusDays(1);
+        LocalDateTime startTime = now.minusDays(ONE_DAY);
 
         List<ItemViewCount> viewCounts = itemViewCountRepository.findViewCountsBetween(startTime, now);
 
@@ -48,7 +50,7 @@ public class ItemViewCountScheduler {
 
         // 새로운 순위 데이터를 삽입
         categoryItemViewCounts.forEach((category, itemViewCounts) -> {
-            int rank = 1;
+            int rank = ONE_DAY;
             for (Map.Entry<Item, Long> entry : itemViewCounts.entrySet()) {
                 ItemTopRank itemTopRank = ItemTopRank.builder()
                         .item(entry.getKey())

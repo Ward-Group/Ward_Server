@@ -30,6 +30,7 @@ import static com.ward.ward_server.global.response.error.ErrorMessage.NAME_MUST_
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class BrandService {
     private final BrandRepository brandRepository;
     private final ItemRepository itemRepository;
@@ -52,13 +53,11 @@ public class BrandService {
         return getBrandResponse(savedBrand);
     }
 
-    @Transactional(readOnly = true)
     public PageResponse<BrandInfoResponse> getBrandAndItem3Page(BasicSort sort, int page) {
         Page<BrandInfoResponse> brandInfoPage = brandRepository.getBrandAndItem3Page(sort, PageRequest.of(page, API_PAGE_SIZE));
         return new PageResponse<>(brandInfoPage.getContent(), brandInfoPage);
     }
 
-    @Transactional(readOnly = true)
     public List<BrandRecommendedResponse> getRecommendedBrands() {
         return brandRepository.findTop10ByOrderByViewCountDesc()
                 .stream()
@@ -66,13 +65,11 @@ public class BrandService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
     public PageResponse<BrandItemResponse> getBrandItemPage(long brandId, BasicSort sort, int page) {
         Page<BrandItemResponse> brandInfoPage = itemRepository.getBrandItemPage(brandId, sort, PageRequest.of(page, API_PAGE_SIZE));
         return new PageResponse<>(brandInfoPage.getContent(), brandInfoPage);
     }
 
-    @Transactional(readOnly = true)
     public PageResponse<ReleaseInfoSimpleResponse> getBrandReleaseInfoPage(long brandId, int page) {
         Page<ReleaseInfoSimpleResponse> releaseInfoInfoPage = releaseInfoRepository.getBrandReleaseInfoPage(brandId, PageRequest.of(page, API_PAGE_SIZE));
         return new PageResponse<>(releaseInfoInfoPage.getContent(), releaseInfoInfoPage);
