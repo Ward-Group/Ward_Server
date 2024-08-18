@@ -25,8 +25,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
-@Import(S3MockConfig.class)
-@ContextConfiguration(classes = S3ImageManager.class)
+@ContextConfiguration(classes = {
+        S3ImageManager.class,
+        S3MockConfig.class
+})
 class S3ImageManagerTest {
     @Autowired
     private S3Mock s3Mock;
