@@ -12,7 +12,7 @@ import com.ward.ward_server.api.releaseInfo.repository.ReleaseInfoRepository;
 import com.ward.ward_server.global.Object.PageResponse;
 import com.ward.ward_server.global.Object.enums.BasicSort;
 import com.ward.ward_server.global.exception.ApiException;
-import com.ward.ward_server.global.exception.ExceptionCode;
+import com.ward.ward_server.global.util.S3ImageManager;
 import com.ward.ward_server.global.util.ValidationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,7 +20,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,18 +36,21 @@ public class BrandService {
     private final BrandRepository brandRepository;
     private final ItemRepository itemRepository;
     private final ReleaseInfoRepository releaseInfoRepository;
+    private final S3ImageManager imageManager;
+    private final String DIR_NAME = "brand/logo";
 
     @Transactional
-    public BrandResponse createBrand(String koreanName, String englishName, String brandLogoImage) {
+    public BrandResponse createBrand(String koreanName, String englishName, MultipartFile brandLogoImage) throws IOException {
         if (!StringUtils.hasText(koreanName) && !StringUtils.hasText(englishName)) {
             throw new ApiException(INVALID_INPUT, NAME_MUST_BE_PROVIDED.getMessage());
         }
         ValidationUtils.validationNames(koreanName, englishName);
-        if (brandRepository.existsByKoreanNameOrEnglishName(koreanName, englishName))
+        if (brandRepository.existsByKoreanNameOrEnglishName(koreanName, englishName)) {
             throw new ApiException(DUPLICATE_BRAND);
-
+        }
+        String uploadedImageUrl = brandLogoImage != null ? imageManager.upload(brandLogoImage, DIR_NAME) : null;
         Brand savedBrand = brandRepository.save(Brand.builder()
-                .logoImage(brandLogoImage)
+                .logoImage(uploadedImageUrl)
                 .koreanName(koreanName)
                 .englishName(englishName)
                 .build());
@@ -79,13 +84,13 @@ public class BrandService {
     }
 
     @Transactional
-    public BrandResponse updateBrand(long brandId, String koreanName, String englishName, String brandLogoImage) {
-        if (koreanName == null && englishName == null && brandLogoImage == null)
-            throw new ApiException(ExceptionCode.INVALID_INPUT);
+    public BrandResponse updateBrand(long brandId, String koreanName, String englishName, MultipartFile brandLogoImage) throws IOException {
         ValidationUtils.validationNames(koreanName, englishName);
         Brand origin = brandRepository.findById(brandId).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
-        if (StringUtils.hasText(brandLogoImage)) {
-            origin.updateLogoImage(brandLogoImage);
+        if (brandLogoImage != null) {
+            imageManager.delete(origin.getLogoImage());
+            String uploadedLogoImageUrl = imageManager.upload(brandLogoImage, DIR_NAME);
+            origin.updateLogoImage(uploadedLogoImageUrl);
         }
         if (StringUtils.hasText(koreanName)) {
             origin.updateKoreanName(koreanName);
@@ -98,10 +103,9 @@ public class BrandService {
 
     @Transactional
     public void deleteBrand(long brandId) {
-        if (!brandRepository.existsById(brandId)) {
-            throw new ApiException(BRAND_NOT_FOUND);
-        }
-        brandRepository.deleteById(brandId);
+        Brand brand = brandRepository.findById(brandId).orElseThrow(() -> new ApiException(BRAND_NOT_FOUND));
+        imageManager.delete(brand.getLogoImage());
+        brandRepository.delete(brand);
     }
 
     @Transactional
@@ -114,7 +118,8 @@ public class BrandService {
     private BrandResponse getBrandResponse(Brand brand) {
         return new BrandResponse(
                 brand.getId(),
-                brand.getLogoImage(),
+                brand.getLogoImage() == null ?
+                        imageManager.getUrl(DIR_NAME + "/brand-basic-logo.png") : brand.getLogoImage(),
                 brand.getKoreanName(),
                 brand.getEnglishName(),
                 brand.getViewCount()
